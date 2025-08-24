@@ -1,0 +1,62 @@
+package com.github.mdcdi1315.mdex.features;
+
+import com.github.mdcdi1315.mdex.features.config.ModdedOreFeatureConfiguration;
+import com.github.mdcdi1315.mdex.util.SingleBlockState;
+import com.mojang.serialization.Codec;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+
+public final class ModdedScatteredOreFeature
+    extends ModdedFeature<ModdedOreFeatureConfiguration>
+{
+    public ModdedScatteredOreFeature(Codec<ModdedOreFeatureConfiguration> codec) {
+        super(codec);
+    }
+
+    @Override
+    protected boolean placeModdedFeature(FeaturePlaceContext<ModdedOreFeatureConfiguration> fpc)
+    {
+        WorldGenLevel worldgenlevel = fpc.level();
+        RandomSource randomsource = fpc.random();
+        ModdedOreFeatureConfiguration oreconfiguration = fpc.config();
+        BlockPos blockpos = fpc.origin();
+        BlockPos.MutableBlockPos current = new BlockPos.MutableBlockPos();
+
+        int attempts = randomsource.nextInt(oreconfiguration.Size + 1);
+        boolean atleastone = false;
+
+        for (int j = 0; j < attempts; ++j)
+        {
+            offsetTargetPos(current, randomsource, blockpos, Math.min(j, 7));
+            BlockState blockstate = worldgenlevel.getBlockState(current);
+
+            for (SingleBlockState targetblockstate : oreconfiguration.TargetStates)
+            {
+                if (ModdedOreFeature.CanPlaceOre(blockstate, worldgenlevel::getBlockState, randomsource, oreconfiguration.DiscardChanceOnAirExposure, targetblockstate, current))
+                {
+                    worldgenlevel.setBlock(current, targetblockstate.State.BlockState, 2);
+                    atleastone = true;
+                    break;
+                }
+            }
+        }
+
+        return atleastone;
+    }
+
+    private static void offsetTargetPos(BlockPos.MutableBlockPos mutablePos, RandomSource random, BlockPos pos, int magnitude)
+    {
+        mutablePos.setWithOffset(pos,
+                getRandomPlacementInOneAxisRelativeToOrigin(random, magnitude),
+                getRandomPlacementInOneAxisRelativeToOrigin(random, magnitude),
+                getRandomPlacementInOneAxisRelativeToOrigin(random, magnitude));
+    }
+
+    private static int getRandomPlacementInOneAxisRelativeToOrigin(RandomSource random, int magnitude) {
+        return Math.round((random.nextFloat() - random.nextFloat()) * (float)magnitude);
+    }
+}
+

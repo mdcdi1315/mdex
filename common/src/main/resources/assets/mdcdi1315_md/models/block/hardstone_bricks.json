@@ -1,0 +1,6 @@
+{
+	  "parent": "minecraft:block/cube_all",
+	  "textures": {
+			"all": "mdcdi1315_md:block/hardstone_bricks"
+	  }
+}

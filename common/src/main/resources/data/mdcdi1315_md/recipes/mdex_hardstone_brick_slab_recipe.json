@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "mdex:hardstone_bricks"
+		},
+		{
+			"item": "mdex:hardstone_bricks"
+		},
+		{
+			"item": "mdex:hardstone_bricks"
+		}
+	],
+	"result": {
+		"item": "mdex:hardstone_brick_slab",
+		"count": 6
+	}
+}

@@ -1,11 +1,12 @@
 package com.github.mdcdi1315.mdex.features.config;
 
-import com.github.mdcdi1315.mdex.util.InvalidFeatureConfigurationException;
-import com.mojang.serialization.Codec;
-import com.github.mdcdi1315.mdex.features.geode.*;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
-import net.minecraft.util.valueproviders.UniformInt;
+import com.github.mdcdi1315.mdex.features.geode.GeodeBlockSettings;
+import com.github.mdcdi1315.mdex.features.geode.GeodeCrackSettings;
+import com.github.mdcdi1315.mdex.features.geode.GeodeLayerSettings;
+import com.mojang.serialization.Codec;
 import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.UniformInt;
 
 import java.util.List;
 
@@ -83,32 +84,12 @@ public final class ModdedGeodeConfiguration
     }
 
     @Override
-    protected void compileConfigData() {
-        var s = geodeBlockSettings;
-        s.fillingProvider.Compile();
-        if (!s.fillingProvider.IsCompiled())
+    protected void compileConfigData()
+    {
+        geodeBlockSettings.Compile();
+        if (!geodeBlockSettings.IsCompiled())
         {
-            throw new InvalidFeatureConfigurationException("Cannot compile the feature data.");
-        }
-        s.alternateInnerLayerProvider.Compile();
-        if (!s.alternateInnerLayerProvider.IsCompiled())
-        {
-            throw new InvalidFeatureConfigurationException("Cannot compile the feature data.");
-        }
-        s.innerLayerProvider.Compile();
-        if (!s.innerLayerProvider.IsCompiled())
-        {
-            throw new InvalidFeatureConfigurationException("Cannot compile the feature data.");
-        }
-        s.middleLayerProvider.Compile();
-        if (!s.middleLayerProvider.IsCompiled())
-        {
-            throw new InvalidFeatureConfigurationException("Cannot compile the feature data.");
-        }
-        s.outerLayerProvider.Compile();
-        if (!s.outerLayerProvider.IsCompiled())
-        {
-            throw new InvalidFeatureConfigurationException("Cannot compile the feature data.");
+            setConfigAsInvalid();
         }
     }
 

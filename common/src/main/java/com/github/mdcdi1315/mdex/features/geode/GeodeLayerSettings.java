@@ -9,10 +9,10 @@ public class GeodeLayerSettings
     {
         Codec<Double> LAYER_RANGE = Codec.doubleRange(0.01, 50.0);
         return CodecUtils.CreateCodecDirect(
-                LAYER_RANGE.fieldOf("filling").orElse(1.7).forGetter((s) -> s.filling),
-                LAYER_RANGE.fieldOf("inner_layer").orElse(2.2).forGetter((s) -> s.innerLayer),
-                LAYER_RANGE.fieldOf("middle_layer").orElse(3.2).forGetter((s) -> s.middleLayer),
-                LAYER_RANGE.fieldOf("outer_layer").orElse(4.2).forGetter((s) -> s.outerLayer),
+                LAYER_RANGE.optionalFieldOf("filling" , 1.7).forGetter((s) -> s.filling),
+                LAYER_RANGE.optionalFieldOf("inner_layer" , 2.2).forGetter((s) -> s.innerLayer),
+                LAYER_RANGE.optionalFieldOf("middle_layer" , 3.2).forGetter((s) -> s.middleLayer),
+                LAYER_RANGE.optionalFieldOf("outer_layer" , 4.2).forGetter((s) -> s.outerLayer),
                 GeodeLayerSettings::new
         );
     }

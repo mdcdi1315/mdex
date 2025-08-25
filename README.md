@@ -16,3 +16,4 @@ it adds a lot of stuff to the game such as:
 - Perf enhancements to world gen due to the aforementioned features
 - Copper tools for your first adventures in the dimension
 
+© mdcdi1315. Content published under the MIT License.

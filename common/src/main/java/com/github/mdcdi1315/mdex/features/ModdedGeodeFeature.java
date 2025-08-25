@@ -1,25 +1,27 @@
 package com.github.mdcdi1315.mdex.features;
 
-import com.github.mdcdi1315.mdex.features.geode.*;
 import com.github.mdcdi1315.mdex.features.config.ModdedGeodeConfiguration;
-
+import com.github.mdcdi1315.mdex.features.geode.GeodeBlockSettings;
+import com.github.mdcdi1315.mdex.features.geode.GeodeCrackSettings;
+import com.github.mdcdi1315.mdex.features.geode.GeodeLayerSettings;
+import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
+import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
 import net.minecraft.Util;
-import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
-import com.mojang.serialization.Codec;
-import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BuddingAmethystBlock;
-import net.minecraft.world.level.levelgen.synth.NormalNoise;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.synth.NormalNoise;
+import net.minecraft.world.level.material.FluidState;
 
 import java.util.List;
 
@@ -155,10 +157,10 @@ public final class ModdedGeodeFeature
             }
         }
 
-        List<BlockState> list3 = geodeblocksettings.innerPlacements;
+        List<CompilableTargetBlockState> list3 = geodeblocksettings.innerPlacements;
 
         for (BlockPos blockpos4 : list2) {
-            BlockState blockstate1 = Util.getRandom(list3, randomsource);
+            BlockState blockstate1 = Util.getRandom(list3, randomsource).BlockState;
 
             for (Direction direction : Direction.values())
             {

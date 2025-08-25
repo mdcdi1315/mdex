@@ -1,19 +1,18 @@
 package com.github.mdcdi1315.mdex.features;
 
-import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.DotNetLayer.System.Predicate;
+import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.features.config.AdvancedFloatingIslandConfiguration;
 import com.github.mdcdi1315.mdex.features.floatingisland.AdvancedCompilableIslandLayer;
 import com.github.mdcdi1315.mdex.features.floatingisland.FloatingIslandLayerDimensions;
-
-import net.minecraft.core.BlockPos;
 import com.mojang.serialization.Codec;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 public final class AdvancedFloatingIslandFeature
     extends ModdedFeature<AdvancedFloatingIslandConfiguration>
@@ -76,11 +75,14 @@ public final class AdvancedFloatingIslandFeature
         for (int r = 0; r < rtimes; r++)
         {
             // We do not care whether these will succeed or not.
-            p.place(cfg.level() , cfg.chunkGenerator() , rd , layer.offset(
+            // However, break the loop on one such successful placement.
+            if (p.place(cfg.level() , cfg.chunkGenerator() , rd , layer.offset(
                     rd.nextIntBetweenInclusive(lastlayerdims.MINUS_X(), lastlayerdims.X()) ,
                     rd.nextIntBetweenInclusive(0 , 3), // Play with y too but by only 3 blocks max
                     rd.nextIntBetweenInclusive(lastlayerdims.MINUS_Z(), lastlayerdims.Z())
-            ));
+            ))) {
+                break;
+            }
         }
     }
 

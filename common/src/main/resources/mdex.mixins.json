@@ -8,9 +8,10 @@
 	  "MinecraftClientMixin"
   ],
   "mixins": [
+	  "Biome_MobSpawnSettingsAccessor",
 	  "DedicatedMinecraftServerMixin",
-	  "PlainBuilder_BiomeGenerationSettingsMixin",
-	  "Biome_MobSpawnSettingsAccessor"
+	  "DimensionDataStorageMixin",
+	  "PlainBuilder_BiomeGenerationSettingsMixin"
   ],
   "injectors": {
     "defaultRequire": 1

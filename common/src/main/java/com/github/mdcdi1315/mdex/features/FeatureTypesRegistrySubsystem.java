@@ -1,12 +1,11 @@
 package com.github.mdcdi1315.mdex.features;
 
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
+import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureConfiguration;
+import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureType;
 import com.github.mdcdi1315.mdex.features.config.*;
-
-import net.blay09.mods.balm.api.world.BalmWorldGen;
-
 import com.mojang.serialization.Codec;
-
+import net.blay09.mods.balm.api.world.BalmWorldGen;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
@@ -38,5 +37,6 @@ public final class FeatureTypesRegistrySubsystem
         RegisterCustomFeatureType(wg,"noise_generation_based_ore" , () -> new NoiseGenerationBasedOreFeature(NoiseGenerationBasedOreFeatureConfiguration.GetCodec()));
         RegisterCustomFeatureType(wg,"modded_ore_vein" , () -> new ModdedOreVeinFeature(ModdedOreVeinFeatureConfiguration.GetCodec()));
         RegisterCustomFeatureType(wg,"modded_legacy_ore" , () -> new ModdedLegacyOreFeature(mc));
+        RegisterCustomFeatureType(wg,"base_teleporter_placement", () -> new BaseTeleporterPlacementFeatureType(BaseTeleporterPlacementFeatureConfiguration.GetCodec()));
     }
 }

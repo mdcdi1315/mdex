@@ -25,4 +25,5 @@ runs
 runserver
 logs
 
-src/generated/resources/
+# Any /src/generated/resources/ should be excluded
+*/src/generated/resources/

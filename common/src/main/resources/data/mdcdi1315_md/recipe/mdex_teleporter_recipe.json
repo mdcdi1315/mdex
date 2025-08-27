@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "I I",
+    "GPG",
+    "D D"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot",
+      "count": 2
+    },
+    "G": {
+      "item": "minecraft:gold_ingot",
+      "count": 2
+    },
+    "P": {
+      "item": "minecraft:iron_pickaxe"
+    },
+    "D": {
+      "item": "minecraft:diamond",
+      "count": 2
+    }
+  },
+  "result": {
+    "id": "mdex:teleporter",
+    "count": 1
+  },
+  "mirrored": true
+}

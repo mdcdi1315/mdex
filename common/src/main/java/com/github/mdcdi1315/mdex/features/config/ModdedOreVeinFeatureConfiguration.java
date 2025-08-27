@@ -1,12 +1,10 @@
 package com.github.mdcdi1315.mdex.features.config;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
-import com.github.mdcdi1315.mdex.util.SingleBlockState;
 import com.github.mdcdi1315.mdex.features.orevein.RareBlockPlacementSettings;
-
-import net.minecraft.core.Holder;
+import com.github.mdcdi1315.mdex.util.SingleBlockState;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.ListCodec;
+import net.minecraft.core.Holder;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
@@ -28,7 +26,7 @@ public final class ModdedOreVeinFeatureConfiguration
         return CodecUtils.CreateCodecDirect(
                 GetBaseCodec(),
                 RareBlockPlacementSettings.GetCodec().fieldOf("rare_placement").forGetter((f) -> f.RarePlacementSettings),
-                new ListCodec<>(SingleBlockState.GetCodec()).fieldOf("targets").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.TargetStates),
+                SingleBlockState.GetCodec().listOf().fieldOf("targets").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.TargetStates),
                 NormalNoise.NoiseParameters.CODEC.fieldOf("noise").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.Parameters),
                 IntProvider.codec(5 , 58).optionalFieldOf("size" , ConstantInt.of(12)).forGetter((f) -> f.Size),
                 IntProvider.codec(4 , 18).optionalFieldOf("y_scale" , ConstantInt.of(2)).forGetter((f) -> f.Y_Scale),

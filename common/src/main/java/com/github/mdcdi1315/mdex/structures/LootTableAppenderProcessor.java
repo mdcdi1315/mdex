@@ -1,19 +1,22 @@
 package com.github.mdcdi1315.mdex.structures;
 
+import com.github.mdcdi1315.mdex.block.BlockUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.resources.ResourceLocation;
-import com.github.mdcdi1315.mdex.block.BlockUtils;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class LootTableAppenderProcessor
     extends AbstractModdedStructureProcessor
@@ -51,8 +54,10 @@ public final class LootTableAppenderProcessor
         {
             BlockEntity ent = level.getBlockEntity(rbipos);
             if (ent instanceof RandomizableContainerBlockEntity rdcbe) {
-                rdcbe.setLootTable(LootTable , rs.nextLong());
-                return new StructureTemplate.StructureBlockInfo(rbipos , bs , rdcbe.saveWithFullMetadata());
+                rdcbe.setLootTable(ResourceKey.create(Registries.LOOT_TABLE , LootTable), rs.nextLong());
+                var lvl = rdcbe.getLevel();
+                Objects.requireNonNull(lvl);
+                return new StructureTemplate.StructureBlockInfo(rbipos , bs , rdcbe.saveWithFullMetadata(lvl.registryAccess()));
             } else {
                 return relativeBlockInfo;
             }

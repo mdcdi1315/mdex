@@ -43,7 +43,7 @@ public class WeightedStateProvider
       CompilableTargetBlockState s;
       for (var i : weightedList.unwrap())
       {
-         (s = i.getData()).Compile();
+         (s = i.data()).Compile();
          if (s.IsCompiled() == false)
          {
             compiled = false;

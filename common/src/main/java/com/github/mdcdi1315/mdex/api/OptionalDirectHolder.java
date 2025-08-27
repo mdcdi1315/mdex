@@ -1,18 +1,16 @@
 package com.github.mdcdi1315.mdex.api;
 
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
-
-
-import net.minecraft.core.Holder;
-import net.minecraft.tags.TagKey;
-import net.minecraft.core.HolderOwner;
 import com.mojang.datafixers.util.Either;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderOwner;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 
 import java.util.Optional;
-import java.util.stream.Stream;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * This holder implementation acts as the {@link Optional} interface, except that it is wrapped into a {@link Holder} interface.
@@ -70,6 +68,10 @@ public final class OptionalDirectHolder<T>
     @Override
     public boolean is(TagKey<T> tagKey) {
         return false;
+    }
+
+    public boolean is(Holder<T> holder) {
+        return this == holder;
     }
 
     @Override

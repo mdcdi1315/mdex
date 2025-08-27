@@ -3,7 +3,6 @@ package com.github.mdcdi1315.mdex.features.config;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.SingleBlockState;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.ListCodec;
 
 import java.util.List;
 
@@ -27,7 +26,7 @@ public final class ModdedOreFeatureConfiguration
     {
         return CodecUtils.CreateCodecDirect(
                 GetBaseCodec(),
-                new ListCodec<>(SingleBlockState.GetCodec()).fieldOf("targets").forGetter((ModdedOreFeatureConfiguration f) -> f.TargetStates),
+                SingleBlockState.GetCodec().listOf().fieldOf("targets").forGetter((ModdedOreFeatureConfiguration f) -> f.TargetStates),
                 Codec.intRange(0 , 64).optionalFieldOf("size" , 12).forGetter((ModdedOreFeatureConfiguration f) -> f.Size),
                 Codec.floatRange(0f , 1f).optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((ModdedOreFeatureConfiguration f) -> f.DiscardChanceOnAirExposure),
                 ModdedOreFeatureConfiguration::new

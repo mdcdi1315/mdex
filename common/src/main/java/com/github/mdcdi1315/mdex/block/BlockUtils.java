@@ -1,20 +1,19 @@
 package com.github.mdcdi1315.mdex.block;
 
+import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.DotNetLayer.System.Exception;
 import com.github.mdcdi1315.DotNetLayer.System.Runtime.CompilerServices.Extension;
 import com.github.mdcdi1315.mdex.util.BlockNotFoundException;
 import com.github.mdcdi1315.mdex.util.BlockPropertyNotFoundException;
-import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
-import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
-
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.AirBlock;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
@@ -116,15 +115,21 @@ public final class BlockUtils
     /**
      * Gets the {@link Block} corresponding to the specified ID, or fails with {@link BlockNotFoundException}.
      */
+    @SuppressWarnings("all")
     public static @NotNull Block GetBlockFromID(ResourceLocation location)
         throws BlockNotFoundException , ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(location , "location");
+        Block blk = null;
         try {
-            return BuiltInRegistries.BLOCK.get(location);
+            blk = BuiltInRegistries.BLOCK.get(location);
         } catch (Exception e) {
             throw new BlockNotFoundException(location);
         }
+        if (blk == null) {
+            throw new BlockNotFoundException(location);
+        }
+        return blk;
     }
 
     /**

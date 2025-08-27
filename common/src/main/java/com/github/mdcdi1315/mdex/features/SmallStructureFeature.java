@@ -1,19 +1,21 @@
 package com.github.mdcdi1315.mdex.features;
 
-import net.minecraft.core.Vec3i;
-import net.minecraft.core.BlockPos;
-import com.mojang.serialization.Codec;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.features.config.SmallStructureConfiguration;
 import com.github.mdcdi1315.mdex.features.smallstructure.StructureElementConfig;
+import com.mojang.serialization.Codec;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public final class SmallStructureFeature
     extends ModdedFeature<SmallStructureConfiguration>
@@ -79,7 +81,7 @@ public final class SmallStructureFeature
         sets.setRotation(settings.PlacementRotation);
         sets.setMirror(settings.PlacementMirror);
         sets.setIgnoreEntities(settings.ShouldIgnoreEntities);
-        sets.setKeepLiquids(settings.ShouldKeepFluids);
+        sets.setLiquidSettings(settings.ShouldKeepFluids ? LiquidSettings.APPLY_WATERLOGGING : LiquidSettings.IGNORE_WATERLOGGING);
         // Apply all the found processors
         for (var proc : fpc.config().StructuresProcessors.value().list())
         {

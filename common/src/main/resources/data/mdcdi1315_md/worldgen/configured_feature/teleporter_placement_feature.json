@@ -1,0 +1,17 @@
+{
+	"type": "mdex:base_teleporter_placement",
+	"config": {
+		"base_plate_provider": {
+			"type": "mdex:simple_state_provider",
+			"state": {
+				"Name": "minecraft:stone_bricks"
+			}
+		},
+		"light_block_provider": {
+			"type": "mdex:simple_state_provider",
+			"state": {
+				"Name": "minecraft:torch"
+			}
+		}
+	}
+}

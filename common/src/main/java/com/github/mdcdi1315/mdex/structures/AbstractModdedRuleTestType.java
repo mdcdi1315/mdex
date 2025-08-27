@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.structures;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 
 public abstract class AbstractModdedRuleTestType<T extends AbstractModdedRuleTest>
@@ -14,7 +15,7 @@ public abstract class AbstractModdedRuleTestType<T extends AbstractModdedRuleTes
 
     protected abstract Codec<T> GetCodecInstance();
 
-    public final Codec<T> codec() {
-        return cdc;
+    public final MapCodec<T> codec() {
+        return MapCodec.assumeMapUnsafe(cdc);
     }
 }

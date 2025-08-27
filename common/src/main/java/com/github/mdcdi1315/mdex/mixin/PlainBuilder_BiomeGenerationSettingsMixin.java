@@ -1,11 +1,9 @@
 package com.github.mdcdi1315.mdex.mixin;
 
 import com.github.mdcdi1315.mdex.features.FeaturePlacementUtils;
-
 import net.minecraft.core.Holder;
 import net.minecraft.world.level.biome.BiomeGenerationSettings;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,7 +24,7 @@ public class PlainBuilder_BiomeGenerationSettingsMixin
     @Unique
     private static boolean MDEX$REMOVALPREDICATE(Holder<PlacedFeature> pf)
     {
-        return FeaturePlacementUtils.IsInvalidModdedPlacedFeature(pf.value());
+        return pf.isBound() && FeaturePlacementUtils.IsInvalidModdedPlacedFeature(pf.value());
     }
 
     @Final

@@ -1,13 +1,12 @@
 package com.github.mdcdi1315.mdex.features.config;
 
 
-import net.minecraft.core.Holder;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.ListCodec;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.mdex.util.SingleBlockState;
+import com.mojang.serialization.Codec;
+import net.minecraft.core.Holder;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
-import com.github.mdcdi1315.mdex.util.SingleBlockState;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 import java.util.List;
@@ -25,7 +24,7 @@ public final class NoiseGenerationBasedOreFeatureConfiguration
     {
         return CodecUtils.CreateCodecDirect(
                 GetBaseCodec(),
-                new ListCodec<>(SingleBlockState.GetCodec()).fieldOf("targets").forGetter((f) -> f.TargetStates),
+                SingleBlockState.GetCodec().listOf().fieldOf("targets").forGetter((f) -> f.TargetStates),
                 IntProvider.codec(1 , 58).optionalFieldOf("size" , ConstantInt.of(12)).forGetter((f) -> f.Size),
                 IntProvider.codec(1 , 18).optionalFieldOf("y_scale" , ConstantInt.of(2)).forGetter((f) -> f.Y_Scale),
                 NormalNoise.NoiseParameters.CODEC.fieldOf("noise").forGetter((f) -> f.NoiseParameters),

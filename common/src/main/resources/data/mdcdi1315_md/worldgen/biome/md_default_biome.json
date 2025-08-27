@@ -73,12 +73,6 @@
           "minCount": 1,
           "maxCount": 3
         },
-        {
-          "type": "tconstruct:terracube",
-          "weight": 530,
-          "minCount": 2,
-          "maxCount": 5
-        },
 		{
 		  "type": "minecraft:vindicator",
 		  "weight": 280,

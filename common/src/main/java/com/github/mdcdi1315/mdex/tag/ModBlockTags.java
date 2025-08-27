@@ -1,10 +1,10 @@
 package com.github.mdcdi1315.mdex.tag;
 
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.Block;
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 
 public final class ModBlockTags
 {
@@ -12,14 +12,24 @@ public final class ModBlockTags
 
     public static TagKey<Block> NEEDS_COPPER_TOOL;
 
+    public static TagKey<Block> INCORRECT_BLOCKS_FOR_DROPS_COPPER;
+
     public static void Initialize()
     {
-        ResourceLocation loc = ResourceLocation.tryBuild(MDEXBalmLayer.COMPATIBILITY_NAMESPACE , "blocks/needs_copper_tool");
+        ResourceLocation loc = ResourceLocation.tryBuild(MDEXBalmLayer.COMPATIBILITY_NAMESPACE , "block/needs_copper_tool");
         if (loc != null)
         {
             NEEDS_COPPER_TOOL = TagKey.create(
                     Registries.BLOCK,
                     loc
+            );
+        }
+        loc = ResourceLocation.tryBuild(MDEXBalmLayer.COMPATIBILITY_NAMESPACE , "block/incorrect_blocks_for_drops_copper_tools");
+        if (loc != null)
+        {
+            INCORRECT_BLOCKS_FOR_DROPS_COPPER = TagKey.create(
+                Registries.BLOCK,
+                loc
             );
         }
     }

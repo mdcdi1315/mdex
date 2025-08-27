@@ -1,8 +1,11 @@
 package com.github.mdcdi1315.mdex.item;
 
-import net.minecraft.world.item.Tier;
+import com.github.mdcdi1315.mdex.tag.ModBlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.block.Block;
 
 public class CopperFamilyTier
     implements Tier
@@ -25,8 +28,8 @@ public class CopperFamilyTier
     }
 
     @Override
-    public int getLevel() {
-        return 1;
+    public TagKey<Block> getIncorrectBlocksForDrops() {
+        return ModBlockTags.INCORRECT_BLOCKS_FOR_DROPS_COPPER;
     }
 
     @Override

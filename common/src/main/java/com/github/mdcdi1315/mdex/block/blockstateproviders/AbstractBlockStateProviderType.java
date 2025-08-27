@@ -1,8 +1,8 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 public abstract class AbstractBlockStateProviderType<T extends AbstractBlockStateProvider>
 {
-    public abstract Codec<T> Codec();
+    public abstract MapCodec<T> Codec();
 }

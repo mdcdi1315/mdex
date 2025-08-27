@@ -2,30 +2,25 @@ package com.github.mdcdi1315.mdex.features;
 
 import com.github.mdcdi1315.DotNetLayer.System.*;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
-
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
-import com.github.mdcdi1315.mdex.util.RectAreaIterable;
 import com.github.mdcdi1315.mdex.features.config.ModdedFeatureConfiguration;
-
-import net.minecraft.tags.TagKey;
+import com.github.mdcdi1315.mdex.util.RectAreaIterable;
+import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
-import net.minecraft.world.entity.*;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.util.random.WeightedRandom;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.util.random.WeightedEntry;
-import net.minecraft.world.level.block.AirBlock;
-import net.minecraft.util.random.WeightedRandom;
-import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-
+import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 
 import java.lang.Exception;
 import java.util.List;
@@ -287,10 +282,12 @@ public final class FeaturePlacementUtils
             {
                 // Finalize the mob.
                 RandomSource rs = level.getRandom();
+                /*
                 var attr = m.getAttribute(Attributes.FOLLOW_RANGE);
                 if (attr != null) {
-                    attr.addPermanentModifier(new AttributeModifier("Random spawn bonus", rs.triangle(0.0D, 0.11485000000000001), AttributeModifier.Operation.MULTIPLY_BASE));
+                    attr.addPermanentModifier(new AttributeModifier("Random spawn bonus", rs.triangle(0.0D, 0.11485000000000001), AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
                 }
+                */
                 m.setLeftHanded(rs.nextFloat() < 0.05F);
             }
             level.addFreshEntityWithPassengers(le);

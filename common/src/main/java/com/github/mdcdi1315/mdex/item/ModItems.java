@@ -1,15 +1,14 @@
 package com.github.mdcdi1315.mdex.item;
 
 import com.github.mdcdi1315.DotNetLayer.System.Func2;
-
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.tag.ModBlockTags;
-
 import net.blay09.mods.balm.api.item.BalmItems;
-
-import net.minecraft.world.item.*;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.level.block.state.BlockState;
 
 public final class ModItems
@@ -35,23 +34,23 @@ public final class ModItems
     {
         COPPER_TIER_DEFAULT = new CopperFamilyTier();
         items.registerItem(
-                (id) -> COPPER_PICKAXE = new CopperPickaxe(COPPER_TIER_DEFAULT , 1 , -2.873F)
+                (id) -> COPPER_PICKAXE = new CopperPickaxe(COPPER_TIER_DEFAULT, 1 , -2.873F)
                 , MDEXBalmLayer.id("copper_pickaxe"),
                 ResourceLocation.tryParse(CREATIVE_TOOLS_AND_UTILITIES_CATEGORY));
         items.registerItem(
-                (id) -> COPPER_SWORD = new SwordItem(COPPER_TIER_DEFAULT , 3, -2.4F , new Item.Properties())
+                (id) -> COPPER_SWORD = new SwordItem(COPPER_TIER_DEFAULT , new Item.Properties().attributes(SwordItem.createAttributes(COPPER_TIER_DEFAULT , 3, -2.4F)))
                 , MDEXBalmLayer.id("copper_sword"),
                 ResourceLocation.tryParse(CREATIVE_COMBAT_TAB_CATEGORY));
         items.registerItem(
-                (id) -> COPPER_SHOVEL = new ShovelItem(COPPER_TIER_DEFAULT , 1.5F, -3F , new Item.Properties())
+                (id) -> COPPER_SHOVEL = new ShovelItem(COPPER_TIER_DEFAULT , new Item.Properties().attributes(ShovelItem.createAttributes(COPPER_TIER_DEFAULT , 1.5F, -3F)))
                 , MDEXBalmLayer.id("copper_shovel"),
                 ResourceLocation.tryParse(CREATIVE_TOOLS_AND_UTILITIES_CATEGORY));
         items.registerItem(
-                (id) -> COPPER_AXE = new CopperAxe(COPPER_TIER_DEFAULT , 7.8F , -3.0104F)
+                (id) -> COPPER_AXE = new CopperAxe(COPPER_TIER_DEFAULT, 5.8F , -3.0104F)
                 , MDEXBalmLayer.id("copper_axe"),
                 ResourceLocation.tryParse(CREATIVE_COMBAT_TAB_CATEGORY));
         items.registerItem(
-                (id) -> COPPER_HOE = new CopperHoe(COPPER_TIER_DEFAULT , -1 , -1.75F)
+                (id) -> COPPER_HOE = new CopperHoe(COPPER_TIER_DEFAULT ,  -1 , -1.75F)
                 , MDEXBalmLayer.id("copper_hoe"),
                 ResourceLocation.tryParse(CREATIVE_TOOLS_AND_UTILITIES_CATEGORY));
         items.registerItem(

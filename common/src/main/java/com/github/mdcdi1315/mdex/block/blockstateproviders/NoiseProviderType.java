@@ -1,20 +1,20 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public final class NoiseProviderType
     extends AbstractBlockStateProviderType<NoiseProvider>
 {
-    private final Codec<NoiseProvider> codec;
+    private final MapCodec<NoiseProvider> codec;
 
     public NoiseProviderType()
     {
-        codec = RecordCodecBuilder.create((o) -> NoiseProvider.noiseProviderCodec(o).apply(o , NoiseProvider::new));
+        codec = RecordCodecBuilder.mapCodec((o) -> NoiseProvider.noiseProviderCodec(o).apply(o , NoiseProvider::new));
     }
 
     @Override
-    public Codec<NoiseProvider> Codec() {
+    public MapCodec<NoiseProvider> Codec() {
         return codec;
     }
 }

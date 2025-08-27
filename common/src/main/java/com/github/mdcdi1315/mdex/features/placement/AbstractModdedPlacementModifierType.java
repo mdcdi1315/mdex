@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.features.placement;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 
 public abstract class AbstractModdedPlacementModifierType<T extends AbstractModdedPlacementModifier>
@@ -14,7 +15,7 @@ public abstract class AbstractModdedPlacementModifierType<T extends AbstractModd
 
     protected abstract Codec<T> GetCodecInstance();
 
-    public final Codec<T> codec() {
-        return codec;
+    public final MapCodec<T> codec() {
+        return MapCodec.assumeMapUnsafe(codec);
     }
 }

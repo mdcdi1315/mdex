@@ -4,17 +4,11 @@ import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
 import com.github.mdcdi1315.DotNetLayer.System.NotSupportedException;
-
 import com.github.mdcdi1315.mdex.util.RegistryNotFoundException;
-
 import com.mojang.serialization.Codec;
 import net.blay09.mods.balm.api.DeferredObject;
-
 import net.minecraft.core.Registry;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.Function;
@@ -29,27 +23,22 @@ public interface ModLoaderMethods
     extends IDisposable
 {
     /**
-     * Changes dimensions based on a specified teleporter implementation.
-     * For forge, this will create on the fly an {@link ITeleporter} for the forge implementation
-     * and send that to the player.
-     * @param sp The victim to be changed dimension.
-     * @param server The server where the player is now.
-     * @param teleporter The teleporter implementation to use.
-     * @return The player or entity that changed dimension, or null if change failed.
+     * Gets the teleporting manager for the current mod loader.
+     * @return The teleporting manager.
      */
     @MaybeNull
-    Entity ChangeDimension(ServerPlayer sp, ServerLevel server, ITeleporter teleporter);
+    TeleportingManager GetTeleportingManager();
 
     /**
      * Creates a simple registry, and makes it known to the mod loader. <br />
      * The registry can be accessed with {@link ModLoaderMethods#GetRegistry(ResourceLocation)} when
-     * a runnable provided by {@link ModLoaderMethods#RunMethodOnWhenRegistriesAreReady(Runnable)} is run.
-     * @param key The resource key where this new registry will be located to.
+     * a runnable provided by {@link ModLoaderMethods#RunMethodOnWhenRegistriesAreReady(Runnable)} is run, <br />
+     * or by using the field reference {@link RegistryCreationInformation#Registry}.
+     * @param info The registry creation information.
      * @param <T> The type of the elements that the new registry will hold.
-     * @throws ArgumentNullException <em>key</em> or <em>elementcodec</em> are null.
-     * @throws NotSupportedException A network codec was provided, but it is not supported by the current mod loader.
+     * @throws ArgumentNullException <em>info</em> is null.
      */
-    <T> void CreateSimpleRegistry(ResourceKey<Registry<T>> key)
+    <T> void CreateSimpleRegistry(RegistryCreationInformation<T> info)
             throws ArgumentNullException;
 
     /**
@@ -101,6 +90,15 @@ public interface ModLoaderMethods
      * @throws ArgumentNullException <em>runnable</em> was null.
      */
     void RunMethodOnWhenRegistriesAreReady(Runnable runnable) throws ArgumentNullException;
+
+    /**
+     * Provides a method to be executed after all the simple registries are registered. <br />
+     * You may use this in cases that you need only fast read-only access to it to register codecs and other things. <br />
+     * Unlike {@link ModLoaderMethods#RunMethodOnWhenRegistriesAreReady} which does dispatch all the methods async, this does synchronize with the new registry event instead.
+     * @param runnable The {@link Runnable} to run.
+     * @throws ArgumentNullException <em>runnable</em> was null.
+     */
+    void RunMethodOnWhenAllRegistriesAreRegistered(Runnable runnable) throws ArgumentNullException;
 
     /**
      * Gets a registry at the specified location.

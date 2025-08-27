@@ -26,6 +26,10 @@ repositories {
     }
 }
 
+base {
+    archivesName = "${mod_id}-forge-${release_cycle}-${minecraft_version}"
+}
+
 mixin {
     add(sourceSets.main, "${mod_id}.refmap.json")
 

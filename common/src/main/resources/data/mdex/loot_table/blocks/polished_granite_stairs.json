@@ -1,0 +1,15 @@
+{
+	"type": "minecraft:block",
+	"pools": [
+		{
+			"name": "polished_granite_stairs_loot_table",
+			"rolls": 1,
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "mdex:polished_granite_stairs"
+				}
+			]
+		}
+	]
+}

@@ -25,4 +25,4 @@ runs
 runserver
 logs
 
-common/src/generated/resources/.cache
+src/generated/resources/

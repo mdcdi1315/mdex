@@ -1,0 +1,15 @@
+{
+	"type": "minecraft:block",
+	"pools": [
+		{
+			"name": "hardstone_brick_stairs_loot_table",
+			"rolls": 1,
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "mdex:hardstone_brick_stairs"
+				}
+			]
+		}
+	]
+}

@@ -5,8 +5,8 @@ import com.github.mdcdi1315.mdex.api.MDEXModAPI;
 import com.github.mdcdi1315.mdex.api.client.MDEXClientModule;
 import com.github.mdcdi1315.mdex.forge.api.ModLoaderMethodsImplementation;
 import net.blay09.mods.balm.api.Balm;
-import net.blay09.mods.balm.api.EmptyLoadContext;
 import net.blay09.mods.balm.api.client.BalmClient;
+import net.blay09.mods.balm.forge.ForgeLoadContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -22,19 +22,15 @@ public final class MDEXForge
     public MDEXForge(FMLJavaModLoadingContext cxt)
     {
         var evb = cxt.getModEventBus();
-        Balm.initializeMod(MDEXBalmLayer.MODID, EmptyLoadContext.INSTANCE, () -> {
+        ForgeLoadContext FLC = new ForgeLoadContext(evb);
+        Balm.initializeMod(MDEXBalmLayer.MODID, FLC, () -> {
             MDEXBalmLayer.Initialize();
             evb.addListener(MDEXForge::NewRegistryEventLoader);
             evb.addListener(MDEXForge::NewDataPackRegistryEventLoader);
             evb.addListener(MDEXForge::CompletedEventHandler);
             evb.addListener(MDEXForge::RegisterCapabilitiesEventAfterThisSafeToLoadRegistries);
         });
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> MDEXForge::RunClient);
-    }
-
-    private static void RunClient()
-    {
-        BalmClient.initializeMod(MDEXBalmLayer.MODID, EmptyLoadContext.INSTANCE, new MDEXClientModule());
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> BalmClient.initializeMod(MDEXBalmLayer.MODID, FLC, new MDEXClientModule()));
     }
 
     // TODO: Find the next event after the registries have been registered

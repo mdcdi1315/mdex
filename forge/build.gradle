@@ -100,13 +100,16 @@ minecraft {
     }
 }
 
-tasks.named("jar") {
-    dependsOn "build_finalize"
-}
-
-// Add a task to manually copy the refmap and plant into the mod data.
-tasks.register("build_finalize") {
-    Files.copy(file("build/tmp/compileJava/${mod_id}.refmap.json").toPath() , project(":forge").file("src/generated/resources/${mod_id}.refmap.json").toPath() , StandardCopyOption.REPLACE_EXISTING)
+// Modify the processResources task to manually copy the refmap and plant into the mod data.
+tasks.named("processResources") {
+    doFirst {
+        logger.debug("FORGE: Copying refmap to resources directory\n")
+        try {
+            Files.copy(file("build/tmp/compileJava/${mod_id}.refmap.json").toPath(), project(":forge").file("src/generated/resources/${mod_id}.refmap.json").toPath(), StandardCopyOption.REPLACE_EXISTING)
+        } catch (IOException ioex) {
+            logger.error("ERR: Cannot copy refmap to specified directory because of an I/O exception." , ioex)
+        }
+    }
 }
 
 sourceSets.main.resources.srcDir 'src/generated/resources'

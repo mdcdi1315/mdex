@@ -15,15 +15,15 @@ public abstract class AbstractModdedStructureProcessorType<T extends AbstractMod
         return Codec.STRING.listOf().optionalFieldOf("modids" , List.of()).forGetter((T inst) -> inst.ModIds);
     }
 
-    private final Codec<T> codec;
+    private final MapCodec<T> codec;
 
     protected AbstractModdedStructureProcessorType() {
         codec = GetCodecInstance();
     }
 
-    protected abstract Codec<T> GetCodecInstance();
+    protected abstract MapCodec<T> GetCodecInstance();
 
     public final MapCodec<T> codec() {
-        return MapCodec.assumeMapUnsafe(codec);
+        return codec;
     }
 }

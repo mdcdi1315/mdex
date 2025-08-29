@@ -6,9 +6,7 @@
 		"SSS"
 	],
 	"key": {
-		"S": {
-			"item": "mdex:hardstone_bricks"
-		}
+		"S": "mdex:hardstone_bricks"
 	},
 	"result": {
 		"id": "mdex:hardstone_brick_stairs",

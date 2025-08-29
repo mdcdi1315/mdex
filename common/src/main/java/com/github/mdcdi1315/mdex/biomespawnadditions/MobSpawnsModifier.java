@@ -9,10 +9,11 @@ import com.github.mdcdi1315.mdex.util.MDEXException;
 import com.github.mdcdi1315.mdex.util.EntityTypeNotFoundException;
 import com.github.mdcdi1315.mdex.mixin.Biome_MobSpawnSettingsAccessor;
 
+import net.minecraft.util.random.Weighted;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.entity.MobCategory;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ public final class MobSpawnsModifier
 {
     private MobCategory category;
     private MobSpawnSettings spawnsettings;
-    private ArrayList<MobSpawnSettings.SpawnerData> entities;
+    private ArrayList<Weighted<MobSpawnSettings.SpawnerData>> entities;
 
     public MobSpawnsModifier(Biome tobemodified , MobCategory category) throws ArgumentNullException
     {
@@ -77,16 +78,16 @@ public final class MobSpawnsModifier
     private void ApplySpawnerChanges(Biome_MobSpawnSettingsAccessor accessor)
     {
         var spawners = accessor.GetSpawners();
-        if (spawners instanceof ImmutableMap<MobCategory, WeightedRandomList<MobSpawnSettings.SpawnerData>> m)
+        if (spawners instanceof ImmutableMap<MobCategory, WeightedList<MobSpawnSettings.SpawnerData>> m)
         {
             spawners = new HashMap<>(m);
         }
         var old = spawners.get(category);
         if (old == null || old.isEmpty()) {
-            spawners.put(category , WeightedRandomList.create(entities));
+            spawners.put(category , WeightedList.of(entities));
         } else {
             entities.addAll(old.unwrap());
-            spawners.put(category , WeightedRandomList.create(entities));
+            spawners.put(category , WeightedList.of(entities));
         }
         try {
             accessor.SetSpawners(spawners);

@@ -1,39 +1,41 @@
 package com.github.mdcdi1315.mdex.api;
 
+import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
-import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
+
+
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.MDEXModConfig;
+
 import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureConfiguration;
 import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureType;
 import com.github.mdcdi1315.mdex.api.teleporter.TeleporterSpawnData;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.util.MDEXException;
 import com.github.mdcdi1315.mdex.util.RectAreaIterable;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.SectionPos;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.level.Level;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.Objects;
 
@@ -50,7 +52,7 @@ public abstract class TeleportingManager
     @MaybeNull
     private MinecraftServer Server;
     private ResourceKey<Level> TargetDim;
-    private SavedData.Factory<TeleporterSpawnData> factory;
+    private SavedDataType<TeleporterSpawnData> factory;
     private ConfiguredFeature<BaseTeleporterPlacementFeatureConfiguration , BaseTeleporterPlacementFeatureType> genfeature;
 
     /**
@@ -64,16 +66,24 @@ public abstract class TeleportingManager
         ArgumentNullException.ThrowIfNull(server , "server");
         MDEXBalmLayer.LOGGER.info("TeleportingManager: Creating teleporting manager for Minecraft Server named as {}" , server.getMotd());
         Server = server;
-        factory = new SavedData.Factory<>(TeleporterSpawnData::new , TeleportingManager::SpawnDataLoader , DataFixTypes.LEVEL);
-        var f = Server.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(FEATURE_RESOURCE_LOCATION));
-        if (f == null)
+        factory = new SavedDataType<>(TELEPORTER_DATA_DIMFILE_NAME, TeleporterSpawnData::new , TeleporterSpawnData.GetCodec() , DataFixTypes.LEVEL);
+        var ra = Server.registryAccess().lookup(Registries.CONFIGURED_FEATURE);
+        if (ra.isEmpty()) {
+            throw new MDEXException("Cannot look-up the configured feature registry!!!???");
+        }
+        var rc = ResourceLocation.tryParse(FEATURE_RESOURCE_LOCATION);
+        if (rc == null) {
+            throw new MDEXException("Cannot build the feature resource location.");
+        }
+        var f = ra.get().get(rc);
+        if (f.isEmpty())
         {
             MDEXBalmLayer.LOGGER.error("Cannot find feature with ID {}." , FEATURE_RESOURCE_LOCATION);
             throw new MDEXException("TeleportingManager Feature is missing");
         }
-        if (f.feature() instanceof BaseTeleporterPlacementFeatureType) {
+        if (f.get().value().feature() instanceof BaseTeleporterPlacementFeatureType) {
             // Not unchecked cast because we have safely checked it with the above statement
-            genfeature = (ConfiguredFeature<BaseTeleporterPlacementFeatureConfiguration , BaseTeleporterPlacementFeatureType>)f;
+            genfeature = (ConfiguredFeature<BaseTeleporterPlacementFeatureConfiguration , BaseTeleporterPlacementFeatureType>)f.get().value();
         } else {
             throw new MDEXException("TeleportingManager Feature misconfiguration. The feature type is not BaseTeleporterPlacementFeatureType.");
         }
@@ -127,8 +137,8 @@ public abstract class TeleportingManager
         }
         ServerLevel lvl = ComputeTargetLevel();
         if (lvl == null) { return false; }
-        ((ServerLevel)sp.level()).getDataStorage().computeIfAbsent(factory , TELEPORTER_DATA_DIMFILE_NAME).AddEntry(sp , teleporterposcurrentworld.above());
-        var lvldat = lvl.getDataStorage().computeIfAbsent(factory , TELEPORTER_DATA_DIMFILE_NAME);
+        ((ServerLevel)sp.level()).getDataStorage().computeIfAbsent(factory).AddEntry(sp , teleporterposcurrentworld.above());
+        var lvldat = lvl.getDataStorage().computeIfAbsent(factory);
         BlockPos bp = FindTeleporterArea(sp , lvl , teleporterposcurrentworld , lvldat);
         if (!TeleporterIsExisting(lvl.getBlockState(bp.below()))) {
             bp = PlaceTeleporterFeature(lvl , bp);
@@ -147,13 +157,6 @@ public abstract class TeleportingManager
             return true;
         }
         return false;
-    }
-
-    private static TeleporterSpawnData SpawnDataLoader(CompoundTag c , HolderLookup.Provider p)
-    {
-        TeleporterSpawnData t = new TeleporterSpawnData();
-        t.FromDeserialized(c);
-        return t;
     }
 
     private BlockPos FindTeleporterArea(ServerPlayer sp ,ServerLevel target , BlockPos tps , TeleporterSpawnData tsd)
@@ -177,33 +180,36 @@ public abstract class TeleportingManager
             possible = FindEmptyPlace(
                     target.getChunk(basepos) ,
                     MDEXModConfig.getActive().ShouldSpawnPortalInDeep ?
-                            target.getMinBuildHeight() + 40 :
-                            target.getMaxBuildHeight() - 40 ,
+                            target.getMinY() + 40 :
+                            target.getMaxY() - 40 ,
                     basepos
             );
         } else {
             temp = FindSurface(target , basepos);
             possible = Objects.requireNonNullElse(temp, basepos);
         }
-        if (possible != null && !target.getFluidState(possible).is(Fluids.EMPTY))
-        {
-            // We are into a fluid region???!!
-            // We need to remediate this since the player cannot be spawned there, he will die by lava or drown by the water.
-            possible = AvoidFluidRegion(target , possible);
-            if (possible == null) { return null; }
-            MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Attempting to place the teleporter at a higher because it ended up into a fluid region.");
+        if (possible == null) {
+            return null;
+        } else {
+            if (!target.getFluidState(possible).is(Fluids.EMPTY))
+            {
+                // We are into a fluid region???!!
+                // We need to remediate this since the player cannot be spawned there, he will die by lava or drown by the water.
+                possible = AvoidFluidRegion(target , possible);
+                if (possible == null) { return null; }
+                MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Attempting to place the teleporter at a higher level because it ended up into a fluid region.");
+            }
+            return genfeature.place(target , target.getChunkSource().getGenerator(), target.random , possible) ? possible : null;
         }
-        boolean test = genfeature.place(target , target.getChunkSource().getGenerator(), target.random , possible);
-        return test ? possible : null;
     }
 
     private static BlockPos FindSurface(ServerLevel level , BlockPos basepos)
     {
-        int minheight = level.getMinBuildHeight() + 2;
+        int minheight = level.getMinY() + 2;
 
         BlockPos temp;
 
-        for (int I = level.getMaxBuildHeight() - 2; I > minheight; I--)
+        for (int I = level.getMaxY() - 2; I > minheight; I--)
         {
             temp = basepos.atY(I);
             if (BlockUtils.BlockIsSolidAndAboveIsAir(level , temp))
@@ -217,10 +223,10 @@ public abstract class TeleportingManager
 
     private static BlockPos FindEmptyPlace(ChunkAccess access, int endY , BlockPos relto)
     {
-        int startY = access.getMinBuildHeight();
+        int startY = access.getMinY();
 
-        if (endY >= access.getMaxBuildHeight()) {
-            endY = access.getMaxBuildHeight() - 1;
+        if (endY >= access.getMaxY()) {
+            endY = access.getMaxY() - 1;
         }
 
         SectionPos pg;
@@ -256,7 +262,7 @@ public abstract class TeleportingManager
 
     private static BlockPos AvoidFluidRegion(ServerLevel target , BlockPos current)
     {
-        int ymax = target.getMaxBuildHeight() - 15;
+        int ymax = target.getMaxY() - 15;
 
         BlockPos temp;
 

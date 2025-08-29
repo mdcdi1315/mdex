@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.*;
+import java.nio.file.Path;
 
 @Mixin(DimensionDataStorage.class)
 public abstract class DimensionDataStorageMixin
@@ -25,7 +26,7 @@ public abstract class DimensionDataStorageMixin
     protected abstract boolean IsGZip(PushbackInputStream inputStream) throws IOException;
 
     @Invoker("getDataFile")
-    protected abstract File GetDataFile(String name);
+    protected abstract Path GetDataFile(String name);
 
     @Inject(at = @At("HEAD") , method = "readTagFromDisk" , cancellable = true)
     public void readTagFromDisk(String filename, DataFixTypes dataFixType, int version , CallbackInfoReturnable<CompoundTag> ci) throws IOException
@@ -40,8 +41,8 @@ public abstract class DimensionDataStorageMixin
     private CompoundTag MDEX$ReadTagFromDisk(String filename) throws IOException
     {
         try (
-                InputStream inputstream = new FileInputStream(GetDataFile(filename));
-                PushbackInputStream pushbackinputstream = new PushbackInputStream(new FastBufferedInputStream(inputstream), 2);
+                InputStream inputstream = new FileInputStream(GetDataFile(filename).toFile());
+                PushbackInputStream pushbackinputstream = new PushbackInputStream(new FastBufferedInputStream(inputstream), 2)
         ) {
             CompoundTag compoundtag;
             if (IsGZip(pushbackinputstream)) {

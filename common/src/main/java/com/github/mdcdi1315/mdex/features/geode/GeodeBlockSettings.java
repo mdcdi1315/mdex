@@ -34,7 +34,7 @@ public class GeodeBlockSettings
                 AbstractBlockStateProvider.CODEC.fieldOf("alternate_inner_layer_provider").forGetter((p_158319_) -> p_158319_.alternateInnerLayerProvider),
                 AbstractBlockStateProvider.CODEC.fieldOf("middle_layer_provider").forGetter((p_158317_) -> p_158317_.middleLayerProvider),
                 AbstractBlockStateProvider.CODEC.fieldOf("outer_layer_provider").forGetter((p_158315_) -> p_158315_.outerLayerProvider),
-                ExtraCodecs.nonEmptyList(CompilableTargetBlockState.GetCodec().listOf()).fieldOf("inner_placements").forGetter((p_158313_) -> p_158313_.innerPlacements),
+                ExtraCodecs.nonEmptyList(CompilableTargetBlockState.GetCodec().codec().listOf()).fieldOf("inner_placements").forGetter((p_158313_) -> p_158313_.innerPlacements),
                 HASHED_CODEC.fieldOf("cannot_replace").forGetter((p_204566_) -> p_204566_.cannotReplace),
                 HASHED_CODEC.fieldOf("invalid_blocks").forGetter((p_204564_) -> p_204564_.invalidBlocks),
                 GeodeBlockSettings::new

@@ -37,11 +37,11 @@ public final class BiomeSpawnAdditionsRegistrySubsystem
     {
         ArgumentNullException.ThrowIfNull(server , "server");
         var sac = server.registryAccess();
-        Optional<Registry<Biome>> biomes = sac.registry(Registries.BIOME);
+        Optional<Registry<Biome>> biomes = sac.lookup(Registries.BIOME);
         if (biomes.isEmpty()) {
             throw new InvalidOperationException("Cannot load the biomes registry!!!");
         }
-        Optional<Registry<BiomeSpawnAdditions>> bsregistry = sac.registry(REGISTRYKEY);
+        Optional<Registry<BiomeSpawnAdditions>> bsregistry = sac.lookup(REGISTRYKEY);
         if (bsregistry.isEmpty()) {
             throw new InvalidOperationException("Cannot load the biome spawn additions registry!!!");
         }

@@ -64,12 +64,7 @@ public final class BlockIdOrBlockTagEntry
                 throw new BlockNotFoundException(BlockID);
             }
         }
-        var optlist = BuiltInRegistries.BLOCK.getTag(Tag);
-        if (optlist.isPresent()) {
-            return optlist.get();
-        } else {
-            throw new MDEXException("The specified tag is not bound with the Block Registry!!");
-        }
+        return new ConcatenatingHolderSet<>(BuiltInRegistries.BLOCK.getTagOrEmpty(Tag));
     }
 
     public void Invalidate()

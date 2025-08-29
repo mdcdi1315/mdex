@@ -13,7 +13,7 @@ public class NoiseThresholdProviderType
     public NoiseThresholdProviderType()
     {
         codec = RecordCodecBuilder.mapCodec((n) -> {
-            Codec<CompilableTargetBlockState> codec = CompilableTargetBlockState.GetCodec();
+            Codec<CompilableTargetBlockState> codec = CompilableTargetBlockState.GetCodec().codec();
             return NoiseThresholdProvider.noiseCodec(n).and(n.group(
                             Codec.floatRange(-1.0F, 1.0F).fieldOf("threshold").forGetter((p) -> p.threshold),
                             Codec.floatRange(0.0F, 1.0F).fieldOf("high_chance").forGetter((p) -> p.highChance),

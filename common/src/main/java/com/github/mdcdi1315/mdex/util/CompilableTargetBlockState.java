@@ -3,6 +3,7 @@ package com.github.mdcdi1315.mdex.util;
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.resources.ResourceLocation;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public final class CompilableTargetBlockState
     implements Compilable
 {
-    private static Codec<CompilableTargetBlockState> codec;
+    private static MapCodec<CompilableTargetBlockState> codec;
     public ResourceLocation Name;
     public BlockState BlockState;
     public Map<String , String> IProperties;
@@ -30,11 +31,11 @@ public final class CompilableTargetBlockState
         Properties = null;
     }
 
-    public static Codec<CompilableTargetBlockState> GetCodec()
+    public static MapCodec<CompilableTargetBlockState> GetCodec()
     {
         if (codec == null)
         {
-            codec = CodecUtils.CreateCodecDirect(
+            codec = CodecUtils.CreateMapCodecDirect(
                     ResourceLocation.CODEC.fieldOf(net.minecraft.world.level.block.state.BlockState.NAME_TAG).forGetter((CompilableTargetBlockState se) -> se.Name),
                     Codec.unboundedMap(Codec.STRING , Codec.STRING).optionalFieldOf(net.minecraft.world.level.block.state.BlockState.PROPERTIES_TAG , Map.of()).forGetter((CompilableTargetBlockState se) -> se.IProperties),
                     CompilableTargetBlockState::new

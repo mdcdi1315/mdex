@@ -1,14 +1,15 @@
 package com.github.mdcdi1315.mdex.forge.api;
 
-import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.block.ModBlocks;
+import com.github.mdcdi1315.mdex.api.TeleportingManager;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.portal.DimensionTransition;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.portal.TeleportTransition;
 
 public final class ForgeTeleportingManager
     extends TeleportingManager
@@ -26,6 +27,6 @@ public final class ForgeTeleportingManager
 
     @Override
     protected boolean TeleportImpl(ServerPlayer player, ServerLevel target, BlockPos teleporterposition, boolean playteleportsound) {
-        return player.changeDimension(new DimensionTransition(target , new Vec3(teleporterposition.getX() , teleporterposition.getY() , teleporterposition.getZ()) , Vec3.ZERO , 0f , 0f, playteleportsound ? DimensionTransition.PLAY_PORTAL_SOUND : DimensionTransition.DO_NOTHING)) != null;
+        return player.teleport(new TeleportTransition(target , new Vec3(teleporterposition.getX() , teleporterposition.getY() , teleporterposition.getZ()) , Vec3.ZERO , 0f , 0f, playteleportsound ? TeleportTransition.PLAY_PORTAL_SOUND : TeleportTransition.DO_NOTHING)) != null;
     }
 }

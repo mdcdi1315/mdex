@@ -1,7 +1,7 @@
 package com.github.mdcdi1315.mdex.util;
 
-import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.mojang.serialization.Codec;
+import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 
 public class SingleBlockState

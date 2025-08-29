@@ -3,13 +3,15 @@ package com.github.mdcdi1315.mdex.block;
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.entity.TeleporterTileEntity;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.valueproviders.UniformInt;
 
-import net.blay09.mods.balm.api.item.BalmItems;
 import net.blay09.mods.balm.api.DeferredObject;
 import net.blay09.mods.balm.api.block.BalmBlocks;
 import net.blay09.mods.balm.api.block.BalmBlockEntities;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.resources.ResourceLocation;
@@ -195,6 +197,8 @@ public final class ModBlocks
                             .lightLevel(BlockUtils.GetBlockLightEmissionWhenLit(9))
                             .requiresCorrectToolForDrops()
                             .strength(4.27F, 3.45F)
+                            .setId(ResourceKey.create(Registries.BLOCK , MDEXBalmLayer.BlockID("hardstone_redstone_ore")))
+                            .overrideDescription(BlockUtils.ConstructExactDescriptionID(MDEXBalmLayer.MODID , "hardstone_redstone_ore"))
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("hardstone_redstone_ore"),
@@ -279,7 +283,7 @@ public final class ModBlocks
     private static BlockItem GetBlockItem(Block block , ResourceLocation identifier)
     {
         MDEXBalmLayer.LOGGER.trace("Registering block item named as {}" , identifier);
-        return new BlockItem(block, BalmItems.itemProperties(identifier));
+        return new BlockItem(block, new Item.Properties().setId(ResourceKey.create(Registries.ITEM , identifier)).useBlockDescriptionPrefix());
     }
 
     public static void InitBlockEntities(BalmBlockEntities blockentities)

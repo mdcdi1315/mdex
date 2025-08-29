@@ -1,21 +1,21 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
+
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
-import com.github.mdcdi1315.mdex.api.IModLoaderRegistry;
-import com.github.mdcdi1315.mdex.api.MDEXModAPI;
-import com.github.mdcdi1315.mdex.api.RegistryCreationInformation;
-import net.blay09.mods.balm.api.DeferredObject;
+
+import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Provides registry and JSON serialization services for custom block state providers.
+ * Provides registry and JSON serialization services for custom block state providers. <br />
+ * The registry is not tracked by any mod loader since registry access cannot be controlled.
  */
 public final class CustomBlockStateProviderRegistrySubsystem
 {
-    public static DeferredObject<IModLoaderRegistry<AbstractBlockStateProviderType<?>>> REGISTRY;
+    public static Registry<AbstractBlockStateProviderType<?>> REGISTRY;
     public static ResourceKey<Registry<AbstractBlockStateProviderType<?>>> REGISTRYKEY;
     public static NoiseProviderType NOISE_PROVIDER;
     public static DualNoiseProviderType DUAL_NOISE_PROVIDER;
@@ -32,11 +32,8 @@ public final class CustomBlockStateProviderRegistrySubsystem
     {
         MDEXBalmLayer.LOGGER.info("Initializing custom block state providers registry.");
         REGISTRYKEY = ResourceKey.createRegistryKey(MDEXBalmLayer.id("custom_blockstate_provider_types"));
-        var mi = MDEXModAPI.getMethodImplementation();
-        var rci = new RegistryCreationInformation<>(REGISTRYKEY);
-        mi.CreateSimpleRegistry(rci);
-        REGISTRY = rci.Registry;
-        mi.RunMethodOnWhenAllRegistriesAreRegistered(CustomBlockStateProviderRegistrySubsystem::RegisterBlockStateProviders);
+        REGISTRY = new MappedRegistry<>(REGISTRYKEY , com.mojang.serialization.Lifecycle.stable());
+        RegisterBlockStateProviders();
     }
 
     public static void DestroyRegistry()
@@ -52,7 +49,7 @@ public final class CustomBlockStateProviderRegistrySubsystem
         ArgumentNullException.ThrowIfNull(any , "any");
         ArgumentNullException.ThrowIfNull(boundname , "boundname");
         MDEXBalmLayer.LOGGER.trace("Registering custom block state provider with ID {}" , boundname);
-        REGISTRY.get().Register(boundname , any);
+        Registry.register(REGISTRY, boundname , any);
         return any;
     }
 
@@ -63,7 +60,7 @@ public final class CustomBlockStateProviderRegistrySubsystem
 
     private static void RegisterBlockStateProviders()
     {
-        AbstractBlockStateProvider.CODEC = REGISTRY.get().ByNameCodec().dispatch(AbstractBlockStateProvider::type , AbstractBlockStateProviderType::Codec);
+        AbstractBlockStateProvider.CODEC = REGISTRY.byNameCodec().dispatch(AbstractBlockStateProvider::type , AbstractBlockStateProviderType::Codec);
         NOISE_PROVIDER = Register(new NoiseProviderType() , "noise_provider");
         DUAL_NOISE_PROVIDER = Register(new DualNoiseProviderType() , "dual_noise_provider");
         ROTATED_BLOCK_PROVIDER = Register(new RotatedBlockProviderType() , "rotated_block_provider");
@@ -71,5 +68,6 @@ public final class CustomBlockStateProviderRegistrySubsystem
         WEIGHTED_STATE_PROVIDER = Register(new WeightedStateProviderType() , "weighted_state_provider");
         NOISE_THRESHOLD_PROVIDER = Register(new NoiseThresholdProviderType() , "noise_threshold_provider");
         RANDOMIZED_INT_STATE_PROVIDER = Register(new RandomizedIntStateProviderType() , "randomized_int_state_provider");
+        REGISTRY.freeze();
     }
 }

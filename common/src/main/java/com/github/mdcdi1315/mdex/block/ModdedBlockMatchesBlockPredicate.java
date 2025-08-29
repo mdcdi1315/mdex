@@ -1,12 +1,12 @@
 package com.github.mdcdi1315.mdex.block;
 
 
+import com.github.mdcdi1315.mdex.util.BlockNotFoundException;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.WorldGenLevel;
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicateType;
 
 import java.util.List;
@@ -38,8 +38,8 @@ public final class ModdedBlockMatchesBlockPredicate
         if (blockdef == null)
         {
             try {
-                blockdef = BuiltInRegistries.BLOCK.get(BlockID);
-            } catch (Exception e) {
+                blockdef = BlockUtils.GetBlockFromID(BlockID);
+            } catch (BlockNotFoundException e) {
                 MDEXBalmLayer.LOGGER.error("ERROR: Cannot get the block for the block ID {}." , BlockID.toDebugFileName());
                 return false;
             } finally {

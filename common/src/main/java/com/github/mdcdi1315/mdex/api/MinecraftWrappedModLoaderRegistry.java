@@ -1,15 +1,16 @@
 package com.github.mdcdi1315.mdex.api;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
-import com.mojang.datafixers.util.Pair;
-import net.minecraft.core.HolderSet;
+
 import net.minecraft.core.Registry;
+import net.minecraft.core.WritableRegistry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -57,7 +58,7 @@ public final class MinecraftWrappedModLoaderRegistry<T>
 
     @Override
     public Stream<ITag<T>> GetTags() {
-        return reg.getTags().map((Pair<TagKey<T> , HolderSet.Named<T>> p) -> new MinecraftWrappedITag<>(p.getSecond()));
+        return reg.getTags().map(MinecraftWrappedITag::new);
     }
 
     @Override
@@ -65,7 +66,15 @@ public final class MinecraftWrappedModLoaderRegistry<T>
             throws ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(key , "key");
-        return new MinecraftWrappedITag<>(reg.getOrCreateTag(key));
+        var t = reg.get(key);
+        if (t.isEmpty()) {
+            if (reg instanceof WritableRegistry<T> d) {
+                d.bindTag(key , List.of());
+            }
+            return new MinecraftWrappedITag<>(reg.getOrThrow(key));
+        } else {
+            return new MinecraftWrappedITag<>(t.get());
+        }
     }
 
     @Override

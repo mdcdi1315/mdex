@@ -18,7 +18,7 @@ public class NoiseProvider extends NoiseBasedStateProvider {
     private boolean compiled;
 
     protected static <P extends NoiseProvider> Products.P4<RecordCodecBuilder.Mu<P>, Long, NormalNoise.NoiseParameters, Float, List<CompilableTargetBlockState>> noiseProviderCodec(RecordCodecBuilder.Instance<P> instance) {
-        return noiseCodec(instance).and(Codec.list(CompilableTargetBlockState.GetCodec()).fieldOf("states").forGetter((p_191448_) -> p_191448_.states));
+        return noiseCodec(instance).and(Codec.list(CompilableTargetBlockState.GetCodec().codec()).fieldOf("states").forGetter((p_191448_) -> p_191448_.states));
     }
 
     public NoiseProvider(long seed, NormalNoise.NoiseParameters parameters, float scale, List<CompilableTargetBlockState> states) {

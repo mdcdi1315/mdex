@@ -7,6 +7,8 @@ import com.github.mdcdi1315.mdex.block.ModBlocks;
 import com.github.mdcdi1315.mdex.tag.ModBlockTags;
 import com.github.mdcdi1315.mdex.api.OperationsTasker;
 import com.github.mdcdi1315.mdex.network.ModNetworking;
+import com.github.mdcdi1315.mdex.tag.ModItemTags;
+import com.github.mdcdi1315.mdex.util.MDEXException;
 import com.github.mdcdi1315.mdex.util.MDEXInitException;
 
 // Registry subsystems
@@ -62,6 +64,7 @@ public final class MDEXBalmLayer
             ModBlocks.InitBlockEntities(Balm.getBlockEntities());
             LOGGER.trace("Initializing tag keys.");
             ModBlockTags.Initialize();
+            ModItemTags.Initialize();
             // Items must be initialized after all the blocks and tags are loaded
             // Hard dependencies will plague this if runs before the block registrations
             LOGGER.trace("Initializing item definitions.");
@@ -94,6 +97,8 @@ public final class MDEXBalmLayer
 
     public static ResourceLocation BlockID(String path) { return id(path); }
 
+    public static ResourceLocation ItemID(String path) { return id(path); }
+
     public static void RunTaskAsync(Runnable runnable)
     {
         if (TASKER == null) {
@@ -108,11 +113,15 @@ public final class MDEXBalmLayer
     // @ApiStatus.Internal
     public static void DestroyModInstanceData()
     {
-        OnServerShutdownInternal();
-        MDEXModAPI.UninitializeMethods();
-        CustomBlockStateProviderRegistrySubsystem.DestroyRegistry();
-        LOGGER = null;
-        MINING_DIM_IDENTIFIER = null;
+        try {
+            OnServerShutdownInternal();
+            MDEXModAPI.UninitializeMethods();
+            CustomBlockStateProviderRegistrySubsystem.DestroyRegistry();
+            LOGGER = null;
+            MINING_DIM_IDENTIFIER = null;
+        } catch (Exception e) {
+            throw new MDEXException(String.format("Mod instance failed to be destroyed. Exception data: %s" , e));
+        }
     }
 
     private static void SetupEvents(BalmEvents events)

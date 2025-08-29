@@ -35,6 +35,25 @@ public final class ConcatenatingHolderSet<T>
         }
     }
 
+    public ConcatenatingHolderSet(Iterable<Holder<T>> elements)
+    {
+        if (elements == null) {
+            listinternal = new ArrayList<>();
+        } else if (elements instanceof HolderSet<T> hs) {
+            listinternal = new ArrayList<>(hs.size());
+            for (var i : hs)
+            {
+                listinternal.add(i);
+            }
+        } else {
+            listinternal = new ArrayList<>();
+            for (var i : elements)
+            {
+                listinternal.add(i);
+            }
+        }
+    }
+
     public ConcatenatingHolderSet(HolderSet<T> other)
     {
         if (other == null || other.size() == 0) {
@@ -84,6 +103,11 @@ public final class ConcatenatingHolderSet<T>
     @Override
     protected List<Holder<T>> contents() {
         return listinternal;
+    }
+
+    @Override
+    public boolean isBound() {
+        return true;
     }
 
     @Override

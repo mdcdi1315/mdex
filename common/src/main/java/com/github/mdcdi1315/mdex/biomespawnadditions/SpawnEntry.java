@@ -1,16 +1,18 @@
 package com.github.mdcdi1315.mdex.biomespawnadditions;
 
-import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.Compilable;
+import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.mdex.util.weight.Weight;
+import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
 import com.github.mdcdi1315.mdex.util.WeightedCountedEntityEntry;
+
 import com.mojang.serialization.Codec;
-import net.minecraft.util.random.Weight;
-import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 
 public final class SpawnEntry
-    implements WeightedEntry , Compilable
+    implements IWeightedEntry, Compilable
 {
     public MobCategory Category;
     public WeightedCountedEntityEntry EntryData;
@@ -48,8 +50,12 @@ public final class SpawnEntry
         return EntryData.IsCompiled();
     }
 
-    public MobSpawnSettings.SpawnerData getData()
+    public Weighted<MobSpawnSettings.SpawnerData> getData()
     {
-        return null;
+        return new Weighted<>(new MobSpawnSettings.SpawnerData(
+                EntryData.Entity,
+                EntryData.Count.getMinValue(),
+                EntryData.Count.getMaxValue()
+        ) , EntryData.getWeight().getValue());
     }
 }

@@ -2,12 +2,12 @@ package com.github.mdcdi1315.mdex.api.teleporter;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
-import com.github.mdcdi1315.mdex.MDEXBalmLayer;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import net.minecraft.server.level.ServerPlayer;
+import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.HashMap;
@@ -19,10 +19,70 @@ public final class TeleporterSpawnData
 {
     public static final String MAGIC = "MDCDI1315_MDEX_SAVEDWORLDDATA";
     public static final byte SPAWN_DATA_VERSION = 0;
+    private byte version;
+    private String magicinternal;
     private Map<UUID, BlockPos> PlayerMap;
+
+    public static Codec<TeleporterSpawnData> GetCodec()
+    {
+        return CodecUtils.CreateCodecDirect(
+                Codec.STRING.fieldOf("magic").flatXmap(TeleporterSpawnData::VerifyMagic , DataResult::success).forGetter((TeleporterSpawnData d) -> d.magicinternal),
+                Codec.BYTE.fieldOf("version").flatXmap(TeleporterSpawnData::VerifyVersion , DataResult::success).forGetter((TeleporterSpawnData d) -> d.version),
+                Codec.unboundedMap(Codec.STRING.flatXmap(TeleporterSpawnData::GetUUIDFromString , TeleporterSpawnData::GetStringFromUUID), BlockPos.CODEC).fieldOf("teleporter_data").forGetter((TeleporterSpawnData d) -> d.PlayerMap),
+                TeleporterSpawnData::new
+        );
+    }
+
+    private static DataResult<Byte> VerifyVersion(byte b)
+    {
+        if (b > SPAWN_DATA_VERSION) {
+            return DataResult.error(() -> String.format("Cannot deserialize the specified spawn data file with version %s." , b));
+        }
+        return DataResult.success(b);
+    }
+
+    private static DataResult<String> VerifyMagic(String mg)
+    {
+        if (mg == null) {
+            return DataResult.error(() -> "Cannot verify magic because the value is null.");
+        } else if (!mg.equals(MAGIC)) {
+            return DataResult.error(() -> String.format("Magic value does not match: %s" , mg));
+        } else {
+            return DataResult.success(mg);
+        }
+    }
+
+    private static DataResult<UUID> GetUUIDFromString(String str)
+    {
+        if (str == null) {
+            return DataResult.error(() -> "Cannot get UUID from string because the string is null reference.");
+        }
+        try {
+            return DataResult.success(UUID.fromString(str));
+        } catch (IllegalArgumentException iae) {
+            return DataResult.error(() -> String.format("Cannot get UUID from string because it is malformed.\nException data: %s" , iae));
+        }
+    }
+
+    private static DataResult<String> GetStringFromUUID(UUID uuid)
+    {
+        if (uuid == null) {
+            return DataResult.error(() -> "Cannot get string from UUID because the string is null reference.");
+        }
+        return DataResult.success(uuid.toString());
+    }
+
+    private TeleporterSpawnData(String magic , byte version , Map<UUID, BlockPos> map)
+    {
+        this.version = version;
+        magicinternal = magic;
+        PlayerMap = new HashMap<>(map);
+    }
 
     public TeleporterSpawnData()
     {
+        version = 0;
+        magicinternal = MAGIC;
         PlayerMap = new HashMap<>();
     }
 
@@ -58,68 +118,5 @@ public final class TeleporterSpawnData
     {
         ArgumentNullException.ThrowIfNull(player , "player");
         return PlayerMap.get(player.getUUID());
-    }
-
-    public void FromDeserialized(CompoundTag ct)
-    {
-        if (ct.contains("version" , Tag.TAG_BYTE))
-        {
-            var version = ct.getByte("version");
-            if (version > SPAWN_DATA_VERSION) {
-                MDEXBalmLayer.LOGGER.error("WORLDDIMSAVEDDATA: Cannot deserialize the specified spawn data file with version {}." ,version);
-            } else {
-                if (ct.contains("magic" , Tag.TAG_STRING)) {
-                    var magic = ct.getString("magic");
-                    if (!magic.equals(MAGIC)) {
-                        MDEXBalmLayer.LOGGER.error("WORLDDIMSAVEDATA: The magic value is not the one expected. Found: {}" , magic);
-                    } else {
-                        if (ct.contains("teleporter_data" , Tag.TAG_COMPOUND)) {
-                            var data = ct.getCompound("teleporter_data");
-                            var keys = data.getAllKeys();
-                            PlayerMap = new HashMap<>(keys.size());
-                            for (var k : keys)
-                            {
-                                try {
-                                    UUID u = UUID.fromString(k);
-                                    int[] d = data.getIntArray(k);
-                                    PlayerMap.put(u, new BlockPos(d[0] , d[1] , d[2]));
-                                } catch (IllegalArgumentException iae) {
-                                    MDEXBalmLayer.LOGGER.warn("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data for the key {} because the key is malformed." , k);
-                                }
-                            }
-                        } else {
-                            MDEXBalmLayer.LOGGER.error("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data file because the 'teleporter_data' field does not exist or is invalid.");
-                        }
-                    }
-                } else {
-                    MDEXBalmLayer.LOGGER.error("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data file because the 'magic' field does not exist or is invalid.");
-                }
-            }
-        } else {
-            MDEXBalmLayer.LOGGER.error("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data file because the 'version' field does not exist or is invalid.");
-        }
-    }
-
-    @Override
-    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider provider)
-    {
-        CompoundTag ct = new CompoundTag();
-        ct.putByte("version" , SPAWN_DATA_VERSION);
-        ct.putString("magic" , MAGIC);
-        CompoundTag td = new CompoundTag();
-        CreateTagData(td);
-        ct.put("teleporter_data" , td);
-        return ct;
-    }
-
-    private void CreateTagData(CompoundTag ct)
-    {
-        for (var g : PlayerMap.entrySet())
-        {
-            var p = g.getValue();
-            if (p != null) {
-                ct.putIntArray(g.getKey().toString() , new int[] { p.getX() , p.getY() , p.getZ() });
-            }
-        }
     }
 }

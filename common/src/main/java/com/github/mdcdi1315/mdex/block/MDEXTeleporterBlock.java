@@ -25,9 +25,9 @@ public class MDEXTeleporterBlock
     extends MDEXBaseBlock
     implements EntityBlock
 {
-    public MDEXTeleporterBlock(Properties properties , String descid)
+    public MDEXTeleporterBlock(Properties properties , String id)
     {
-        super(properties , descid);
+        super(properties , id);
         this.registerDefaultState(this.stateDefinition.any());
     }
 
@@ -39,7 +39,7 @@ public class MDEXTeleporterBlock
     @Override
     public boolean dropFromExplosion(Explosion explosion)
     {
-        if (explosion.interactsWithBlocks() == false)
+        if (!explosion.getBlockInteraction().shouldAffectBlocklikeEntities())
         {
             return false;
         }
@@ -47,8 +47,7 @@ public class MDEXTeleporterBlock
     }
 
     @Override
-    public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, float fallDistance)
-    {
+    public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance) {
         if (level.dimension().location().equals(MDEXBalmLayer.MINING_DIM_IDENTIFIER)) {
             entity.causeFallDamage(fallDistance , 1.062f , entity.damageSources().fall());
         } else {
@@ -93,7 +92,6 @@ public class MDEXTeleporterBlock
         TeleportingManager manager = MDEXModAPI.getMethodImplementation().GetTeleportingManager();
         manager.SetTargetDimension(destination);
         return manager.Teleport(sp , bps);
-        //return MDEXModAPI.getMethodImplementation().ChangeDimension(sp , destination , new MDEXTeleporterImplementation(bps)) != null;
     }
 
     @Override

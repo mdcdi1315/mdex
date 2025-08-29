@@ -7,6 +7,7 @@ import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.features.config.CustomizableMonsterRoomConfiguration;
 import com.github.mdcdi1315.mdex.util.WeightedBlockEntry;
+import com.github.mdcdi1315.mdex.util.weight.WeightedEntryList;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -15,7 +16,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.WorldGenLevel;
@@ -143,7 +143,7 @@ public final class CustomizableMonsterRoomFeature
         if (j2 < 1 || j2 > 5) { return false; }
 
         float probability = fpc.config().RareStonePlacementProbability;
-        WeightedRandomList<WeightedBlockEntry> entries = WeightedRandomList.create(fpc.config().RareStoneBlocks);
+        WeightedEntryList<WeightedBlockEntry> entries = new WeightedEntryList<>(fpc.config().RareStoneBlocks);
 
         for (int k3 = k; k3 <= l; ++k3)
         {
@@ -159,11 +159,11 @@ public final class CustomizableMonsterRoomFeature
                         {
                             FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, air_block, predicate);
                         }
-                    } else if (blockpos3.getY() >= worldgenlevel.getMinBuildHeight() && BlockUtils.ReferentIsAirBlock(worldgenlevel.getBlockState(blockpos3.below()))) {
+                    } else if (blockpos3.getY() >= worldgenlevel.getMinY() && BlockUtils.ReferentIsAirBlock(worldgenlevel.getBlockState(blockpos3.below()))) {
                         worldgenlevel.setBlock(blockpos3, air_block, 2);
                     } else if (BlockUtils.ReferentIsSolidBlock(blockstate) && !blockstate.is(Blocks.CHEST)) {
                         if (randomsource.nextFloat() < probability) {
-                            entries.getRandom(randomsource).ifPresent(weightedBlockEntry -> FeaturePlacementUtils.SafeSetBlock(
+                            entries.GetRandom(randomsource).ifPresent(weightedBlockEntry -> FeaturePlacementUtils.SafeSetBlock(
                                     worldgenlevel, blockpos3, weightedBlockEntry.Block.defaultBlockState(), predicate
                             ));
                         } else {

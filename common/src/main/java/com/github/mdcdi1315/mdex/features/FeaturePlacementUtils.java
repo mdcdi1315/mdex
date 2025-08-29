@@ -2,25 +2,28 @@ package com.github.mdcdi1315.mdex.features;
 
 import com.github.mdcdi1315.DotNetLayer.System.*;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
+
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
-import com.github.mdcdi1315.mdex.features.config.ModdedFeatureConfiguration;
 import com.github.mdcdi1315.mdex.util.RectAreaIterable;
+import com.github.mdcdi1315.mdex.util.weight.WeightUtils;
 import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
+import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
+import com.github.mdcdi1315.mdex.features.config.ModdedFeatureConfiguration;
+
+import net.minecraft.tags.TagKey;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.RandomSource;
-import net.minecraft.util.random.WeightedEntry;
-import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+
 
 import java.lang.Exception;
 import java.util.List;
@@ -235,10 +238,10 @@ public final class FeaturePlacementUtils
      */
     public static <T> T SampleFromRandomSource(List<T> list , @MaybeNull T itemtoexclude , RandomSource source)
     {
-        T item = null;
+        T item;
         int size = list.size() - 1;
         if (size == 0) {
-            return list.get(0);
+            return list.getFirst();
         }
         do {
             item = list.get(source.nextIntBetweenInclusive(0, size));
@@ -246,10 +249,10 @@ public final class FeaturePlacementUtils
         return item;
     }
 
-    public static @MaybeNull <T extends WeightedEntry> T SampleWeightedFromRandomSource(List<T> list , RandomSource rs)
+    public static @MaybeNull <T extends IWeightedEntry> T SampleWeightedFromRandomSource(List<T> list , RandomSource rs)
     {
         // TODO: Optimize weighted calculations at some moment.
-        return WeightedRandom.getRandomItem(rs, list).orElse(null);
+        return WeightUtils.GetRandomItem(rs, list).orElse(null);
     }
 
     public static void TrySpawnEntityAtChunkGenPhase(ServerLevelAccessor level , BlockPos finalpos , EntityType<?> type)
@@ -265,7 +268,7 @@ public final class FeaturePlacementUtils
     {
         Entity ent;
         try {
-            ent = type.create(level.getLevel());
+            ent = type.create(level.getLevel() , EntitySpawnReason.CHUNK_GENERATION);
         } catch (Exception e) {
             MDEXBalmLayer.LOGGER.warn("Failed to create mob instance." , e);
             return;
@@ -274,7 +277,7 @@ public final class FeaturePlacementUtils
             return;
         }
 
-        ent.moveTo(finalpos.getX() , finalpos.getY() , finalpos.getZ());
+        ent.setPos(finalpos.getX() , finalpos.getY() , finalpos.getZ());
 
         if (ent instanceof LivingEntity le)
         {
@@ -301,7 +304,7 @@ public final class FeaturePlacementUtils
      * The entity to be spawned is selected once then it is randomly generated up to maxtimes parameter.
      * <p>
      *     Remarks: <br />
-     *     The entities are placed on the world using the mob spawn type {@link MobSpawnType#CHUNK_GENERATION}.
+     *     The entities are placed on the world using the mob spawn type {@link EntitySpawnReason#CHUNK_GENERATION}.
      * </p>
      * @param level The {@link ServerLevelAccessor} object to apply the entities to.
      * @param basepos The block position where to place the entities to.
@@ -324,8 +327,8 @@ public final class FeaturePlacementUtils
             throw new ArgumentOutOfRangeException("maxtries" , "Maximum tries must not be a negative number!!!");
         }
         if (entityData.isEmpty()) { return; }
-        var et = WeightedRandom.getRandomItem(rs, entityData);
-        if (et.isPresent() == false) { return; }
+        var et = WeightUtils.GetRandomItem(rs, entityData);
+        if (et.isEmpty()) { return; }
         int mt = rs.nextIntBetweenInclusive(0 , maxtries);
         boolean flag = false;
         BlockPos finalpos;

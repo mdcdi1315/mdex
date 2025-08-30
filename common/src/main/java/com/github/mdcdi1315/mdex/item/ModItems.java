@@ -47,7 +47,7 @@ public final class ModItems
                 , MDEXBalmLayer.id("copper_shovel"),
                 ResourceLocation.tryParse(CREATIVE_TOOLS_AND_UTILITIES_CATEGORY));
         items.registerItem(
-                (id) -> COPPER_AXE = new CopperAxe(COPPER_TIER_DEFAULT , 7.8F , -3.0104F)
+                (id) -> COPPER_AXE = new CopperAxe(COPPER_TIER_DEFAULT , 6.5F , -3.0104F)
                 , MDEXBalmLayer.id("copper_axe"),
                 ResourceLocation.tryParse(CREATIVE_COMBAT_TAB_CATEGORY));
         items.registerItem(

@@ -1,9 +1,6 @@
 package com.github.mdcdi1315.mdex.forge.api;
 
-import com.github.mdcdi1315.DotNetLayer.System.ArgumentException;
-import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
-import com.github.mdcdi1315.DotNetLayer.System.ExecutionEngineException;
-import com.github.mdcdi1315.DotNetLayer.System.NotSupportedException;
+import com.github.mdcdi1315.DotNetLayer.System.*;
 import com.github.mdcdi1315.mdex.api.*;
 import com.mojang.serialization.Codec;
 import net.blay09.mods.balm.api.Balm;
@@ -17,7 +14,9 @@ import net.minecraftforge.registries.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 @SuppressWarnings("unused") // This class is invoked by common code, just it cannot be seen that is actually in use
@@ -69,14 +68,12 @@ public class ModLoaderMethodsImplementation
 
     private ForgeTeleportingManager manager;
     private List<RegistryCreationInformationForge<?>> infos;
-    public List<Runnable> registryokmethods;
-    public List<Runnable> executormethods;
+    public Map<ResourceLocation , Action1<IModLoaderRegistry<?>>> registryinvokemap;
 
     public ModLoaderMethodsImplementation()
     {
         infos = new ArrayList<>(4);
-        executormethods = new ArrayList<>(4);
-        registryokmethods = new ArrayList<>(4);
+        registryinvokemap = new HashMap<>(10);
         // This constructor is called from Balm, so doing this is perfectly valid.
         Balm.getEvents().onEvent(ServerStartedEvent.class , (ServerStartedEvent sse) -> manager = new ForgeTeleportingManager(sse.getServer()));
         Balm.getEvents().onEvent(ServerStoppedEvent.class, (ServerStoppedEvent sse) -> {
@@ -107,17 +104,13 @@ public class ModLoaderMethodsImplementation
         infos.add(new DatapackRegistryCreationInformation<>(key , elementcodec , networkcodec));
     }
 
-    public void RunMethodOnWhenRegistriesAreReady(Runnable runnable) throws ArgumentNullException
-    {
-        ArgumentNullException.ThrowIfNull(runnable , "runnable");
-        executormethods.add(runnable);
-    }
-
     @Override
-    public void RunMethodOnWhenAllRegistriesAreRegistered(Runnable runnable) throws ArgumentNullException
+    public <T> void RunMethodOnWhenRegistryIsRegistering(ResourceKey<Registry<T>> key, Action1<IModLoaderRegistry<T>> action)
+            throws ArgumentNullException
     {
-        ArgumentNullException.ThrowIfNull(runnable , "runnable");
-        registryokmethods.add(runnable);
+        ArgumentNullException.ThrowIfNull(key, "key");
+        ArgumentNullException.ThrowIfNull(action , "action");
+        registryinvokemap.put(key.location() , (IModLoaderRegistry<?> md) -> action.action((IModLoaderRegistry<T>) md));
     }
 
     @Override
@@ -203,10 +196,8 @@ public class ModLoaderMethodsImplementation
     {
         infos.clear();
         infos = null;
-        executormethods.clear();
-        executormethods = null;
-        registryokmethods.clear();
-        registryokmethods = null;
+        registryinvokemap.clear();
+        registryinvokemap = null;
     }
 
     // Internal mod support methods -->

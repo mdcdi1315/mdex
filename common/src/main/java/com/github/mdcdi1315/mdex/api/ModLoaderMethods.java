@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.api;
 
+import com.github.mdcdi1315.DotNetLayer.System.Action1;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
@@ -31,9 +32,7 @@ public interface ModLoaderMethods
 
     /**
      * Creates a simple registry, and makes it known to the mod loader. <br />
-     * The registry can be accessed with {@link ModLoaderMethods#GetRegistry(ResourceLocation)} when
-     * a runnable provided by {@link ModLoaderMethods#RunMethodOnWhenRegistriesAreReady(Runnable)} is run, <br />
-     * or by using the field reference {@link RegistryCreationInformation#Registry}.
+     * The registry can be accessed with {@link ModLoaderMethods#GetRegistry(ResourceLocation)} by using the field reference {@link RegistryCreationInformation#Registry}.
      * @param info The registry creation information.
      * @param <T> The type of the elements that the new registry will hold.
      * @throws ArgumentNullException <em>info</em> is null.
@@ -84,21 +83,13 @@ public interface ModLoaderMethods
     }
 
     /**
-     * Provides a method to be executed, when the mod loader asserts that is ready to register registry objects to its registries. <br />
-     * Multiple methods may be also provided to be executed, to ensure that class encapsulation is preserved.
-     * @param runnable The {@link Runnable} to run.
-     * @throws ArgumentNullException <em>runnable</em> was null.
+     * Provides a method to run when the specified registry with its resource key is ready. <br />
+     * You can use this to provide the registry and register your objects.
+     * @param key The resource key of the registry.
+     * @param action The method to execute when the registry is ready.
+     * @param <T> The element type of the objects that the registry holds.
      */
-    void RunMethodOnWhenRegistriesAreReady(Runnable runnable) throws ArgumentNullException;
-
-    /**
-     * Provides a method to be executed after all the simple registries are registered. <br />
-     * You may use this in cases that you need only fast read-only access to it to register codecs and other things. <br />
-     * Unlike {@link ModLoaderMethods#RunMethodOnWhenRegistriesAreReady} which does dispatch all the methods async, this does synchronize with the new registry event instead.
-     * @param runnable The {@link Runnable} to run.
-     * @throws ArgumentNullException <em>runnable</em> was null.
-     */
-    void RunMethodOnWhenAllRegistriesAreRegistered(Runnable runnable) throws ArgumentNullException;
+    <T> void RunMethodOnWhenRegistryIsRegistering(ResourceKey<Registry<T>> key, Action1<IModLoaderRegistry<T>> action) throws ArgumentNullException;
 
     /**
      * Gets a registry at the specified location.

@@ -14,7 +14,7 @@ public final class ModItemTags
 
     public static void Initialize()
     {
-        ResourceLocation loc = ResourceLocation.tryBuild(MDEXBalmLayer.COMPATIBILITY_NAMESPACE , "item/copper_tools_can_be_repaired_with");
+        ResourceLocation loc = ResourceLocation.tryBuild(MDEXBalmLayer.COMPATIBILITY_NAMESPACE , "copper_tools_can_be_repaired_with");
         if (loc != null)
         {
             COPPER_TOOLS_CAN_BE_REPAIRED_WITH = TagKey.create(

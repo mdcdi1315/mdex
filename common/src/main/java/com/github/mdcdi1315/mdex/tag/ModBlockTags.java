@@ -16,7 +16,7 @@ public final class ModBlockTags
 
     public static void Initialize()
     {
-        ResourceLocation loc = ResourceLocation.tryBuild(MDEXBalmLayer.COMPATIBILITY_NAMESPACE , "block/needs_copper_tool");
+        ResourceLocation loc = ResourceLocation.tryBuild(MDEXBalmLayer.COMPATIBILITY_NAMESPACE , "needs_copper_tool");
         if (loc != null)
         {
             NEEDS_COPPER_TOOL = TagKey.create(
@@ -24,7 +24,7 @@ public final class ModBlockTags
                     loc
             );
         }
-        loc = ResourceLocation.tryBuild(MDEXBalmLayer.COMPATIBILITY_NAMESPACE , "block/incorrect_blocks_for_drops_copper_tools");
+        loc = ResourceLocation.tryBuild(MDEXBalmLayer.COMPATIBILITY_NAMESPACE , "incorrect_blocks_for_drops_copper_tools");
         if (loc != null)
         {
             INCORRECT_BLOCKS_FOR_DROPS_COPPER = TagKey.create(

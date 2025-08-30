@@ -1,20 +1,27 @@
 package com.github.mdcdi1315.mdex.forge;
 
+import com.github.mdcdi1315.DotNetLayer.System.Action1;
+
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
+import com.github.mdcdi1315.mdex.api.IModLoaderRegistry;
 import com.github.mdcdi1315.mdex.api.MDEXModAPI;
+import com.github.mdcdi1315.mdex.api.MinecraftWrappedModLoaderRegistry;
 import com.github.mdcdi1315.mdex.api.client.MDEXClientModule;
+import com.github.mdcdi1315.mdex.forge.api.ForgeRegistryWrappedInRegistry;
 import com.github.mdcdi1315.mdex.forge.api.ModLoaderMethodsImplementation;
+
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.balm.api.EmptyLoadContext;
 import net.blay09.mods.balm.api.client.BalmClient;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DataPackRegistryEvent;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.NewRegistryEvent;
+import net.minecraftforge.registries.RegisterEvent;
 
 @Mod(MDEXBalmLayer.MODID)
 public final class MDEXForge
@@ -27,7 +34,7 @@ public final class MDEXForge
             evb.addListener(MDEXForge::NewRegistryEventLoader);
             evb.addListener(MDEXForge::NewDataPackRegistryEventLoader);
             evb.addListener(MDEXForge::CompletedEventHandler);
-            evb.addListener(MDEXForge::RegisterCapabilitiesEventAfterThisSafeToLoadRegistries);
+            evb.addListener(MDEXForge::RegisterEventListener);
         });
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> MDEXForge::RunClient);
     }
@@ -37,22 +44,17 @@ public final class MDEXForge
         BalmClient.initializeMod(MDEXBalmLayer.MODID, EmptyLoadContext.INSTANCE, new MDEXClientModule());
     }
 
-    // TODO: Find the next event after the registries have been registered
-    private static void RegisterCapabilitiesEventAfterThisSafeToLoadRegistries(RegisterCapabilitiesEvent rce)
+    private static void RegisterEventListener(RegisterEvent rev)
     {
-        var m = ((ModLoaderMethodsImplementation)MDEXModAPI.getMethodImplementation());
-        for (var g : m.registryokmethods)
+        Action1<IModLoaderRegistry<?>> m = ((ModLoaderMethodsImplementation)MDEXModAPI.getMethodImplementation()).registryinvokemap.get(rev.getRegistryKey().location());
+        if (m != null)
         {
-            try {
-                g.run();
-            } catch (Exception e) {
-                MDEXBalmLayer.LOGGER.info("Error executing a scheduled task" , e);
+            IForgeRegistry<?> fg = rev.getForgeRegistry();
+            if (fg == null) {
+                m.action(new MinecraftWrappedModLoaderRegistry<>(rev.getVanillaRegistry()));
+            } else {
+                m.action(new ForgeRegistryWrappedInRegistry<>(fg));
             }
-        }
-        // Ensure that the registries will have been correctly initialized
-        for (var r : m.executormethods)
-        {
-            MDEXBalmLayer.RunTaskAsync(r);
         }
     }
 

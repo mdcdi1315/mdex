@@ -7,24 +7,24 @@ import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicateType;
 import java.util.List;
 
 public abstract class AbstractModdedBlockPredicateType
-    <T extends AbstractModdedBlockPredicate>
-    implements BlockPredicateType<T>
+        <T extends AbstractModdedBlockPredicate>
+        implements BlockPredicateType<T>
 {
     public static <T extends AbstractModdedBlockPredicate> com.mojang.serialization.codecs.RecordCodecBuilder<T, java.util.List<String>> GetBaseCodec()
     {
-        return Codec.STRING.listOf().optionalFieldOf("modids" , List.of()).forGetter((T inst) -> inst.ModIds);
+        return Codec.STRING.listOf().optionalFieldOf("modids", List.of()).forGetter((T inst) -> inst.ModIds);
     }
 
-    private final Codec<T> codec;
+    private final MapCodec<T> codec;
 
     protected AbstractModdedBlockPredicateType() {
         codec = GetCodecInstance();
     }
 
-    protected abstract Codec<T> GetCodecInstance();
+    protected abstract MapCodec<T> GetCodecInstance();
 
     @Override
     public final MapCodec<T> codec() {
-        return MapCodec.assumeMapUnsafe(codec);
+        return codec;
     }
 }

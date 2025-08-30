@@ -1,7 +1,10 @@
 package com.github.mdcdi1315.mdex.neoforge;
 
+import com.github.mdcdi1315.DotNetLayer.System.Action1;
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
+import com.github.mdcdi1315.mdex.api.IModLoaderRegistry;
 import com.github.mdcdi1315.mdex.api.MDEXModAPI;
+import com.github.mdcdi1315.mdex.api.MinecraftWrappedModLoaderRegistry;
 import com.github.mdcdi1315.mdex.api.client.MDEXClientModule;
 import com.github.mdcdi1315.mdex.neoforge.api.ModLoaderMethodsImplementation;
 import net.blay09.mods.balm.api.Balm;
@@ -11,9 +14,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 @Mod(MDEXBalmLayer.MODID)
 public final class MDEXNeoForge
@@ -26,7 +29,7 @@ public final class MDEXNeoForge
             FLC.modBus().addListener(MDEXNeoForge::NewRegistryEventLoader);
             FLC.modBus().addListener(MDEXNeoForge::NewDataPackRegistryEventLoader);
             FLC.modBus().addListener(MDEXNeoForge::CompletedEventHandler);
-            FLC.modBus().addListener(MDEXNeoForge::RegisterCapabilitiesEventAfterThisSafeToLoadRegistries);
+            FLC.modBus().addListener(MDEXNeoForge::RegisterEventListener);
         });
         if (FMLEnvironment.dist.isClient())
         {
@@ -34,12 +37,11 @@ public final class MDEXNeoForge
         }
     }
 
-    private static void RegisterCapabilitiesEventAfterThisSafeToLoadRegistries(RegisterCapabilitiesEvent rce)
+    private static void RegisterEventListener(RegisterEvent rev)
     {
-        var m = ((ModLoaderMethodsImplementation)MDEXModAPI.getMethodImplementation());
-        for (var r : m.executormethods)
-        {
-            MDEXBalmLayer.RunTaskAsync(r);
+        Action1<IModLoaderRegistry<?>> m = ((ModLoaderMethodsImplementation)MDEXModAPI.getMethodImplementation()).registryinvokemap.get(rev.getRegistryKey().location());
+        if (m != null) {
+            m.action(new MinecraftWrappedModLoaderRegistry<>(rev.getRegistry()));
         }
     }
 
@@ -54,14 +56,6 @@ public final class MDEXNeoForge
         MDEXBalmLayer.LOGGER.info("Registering custom registries to NeoForge.");
         var mi = ((ModLoaderMethodsImplementation)MDEXModAPI.getMethodImplementation());
         mi.ForEachSimpleRegistryInstance(evt);
-        for (var g : mi.registryokmethods)
-        {
-            try {
-                g.run();
-            } catch (Exception e) {
-                MDEXBalmLayer.LOGGER.info("Error executing a scheduled task" , e);
-            }
-        }
     }
 
     private static void CompletedEventHandler(FMLLoadCompleteEvent evt)

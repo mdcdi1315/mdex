@@ -12,12 +12,12 @@ public final class RandomizedIntStateProviderType
 
     public RandomizedIntStateProviderType()
     {
-        codec = MapCodec.assumeMapUnsafe(CodecUtils.CreateCodecDirect(
+        codec = CodecUtils.CreateMapCodecDirect(
                 AbstractBlockStateProvider.CODEC.fieldOf("source").forGetter((p_161592_) -> p_161592_.source),
                 Codec.STRING.fieldOf("property").forGetter((p_161590_) -> p_161590_.propertyName),
                 IntProvider.CODEC.fieldOf("values").forGetter((p_161578_) -> p_161578_.values),
                 RandomizedIntStateProvider::new
-        ));
+        );
     }
 
     @Override

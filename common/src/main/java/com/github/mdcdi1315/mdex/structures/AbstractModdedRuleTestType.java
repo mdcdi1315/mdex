@@ -5,17 +5,17 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 
 public abstract class AbstractModdedRuleTestType<T extends AbstractModdedRuleTest>
-    implements RuleTestType<T>
+        implements RuleTestType<T>
 {
-    private final Codec<T> cdc;
+    private final MapCodec<T> cdc;
 
     protected AbstractModdedRuleTestType() {
         cdc = GetCodecInstance();
     }
 
-    protected abstract Codec<T> GetCodecInstance();
+    protected abstract MapCodec<T> GetCodecInstance();
 
     public final MapCodec<T> codec() {
-        return MapCodec.assumeMapUnsafe(cdc);
+        return cdc;
     }
 }

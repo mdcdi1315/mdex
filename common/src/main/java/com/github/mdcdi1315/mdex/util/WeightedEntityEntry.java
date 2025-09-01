@@ -12,6 +12,8 @@ import net.minecraft.resources.ResourceLocation;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import net.minecraft.world.entity.EntityType;
 
+import java.util.Optional;
+
 
 public class WeightedEntityEntry
     implements WeightedEntry , Compilable
@@ -31,13 +33,13 @@ public class WeightedEntityEntry
 
     public void Compile()
     {
-        try {
-            Entity = BuiltInRegistries.ENTITY_TYPE.get(EntityID);
-        } catch (Exception e) {
-            MDEXBalmLayer.LOGGER.error("Cannot register an entity entry with ID '{}' because it does not exist.\nException data: {}" , EntityID , e);
-        } finally {
-            EntityID = null;
+        Optional<EntityType<?>> ent = BuiltInRegistries.ENTITY_TYPE.getOptional(EntityID);
+        if (ent.isEmpty()) {
+            MDEXBalmLayer.LOGGER.error("Cannot register an entity entry with ID '{}' because it does not exist." , EntityID);
+        } else {
+            Entity = ent.get();
         }
+        EntityID = null;
     }
 
     public boolean IsCompiled()

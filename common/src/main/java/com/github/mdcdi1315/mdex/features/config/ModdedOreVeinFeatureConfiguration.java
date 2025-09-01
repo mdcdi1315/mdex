@@ -32,7 +32,7 @@ public final class ModdedOreVeinFeatureConfiguration
                 NormalNoise.NoiseParameters.CODEC.fieldOf("noise").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.Parameters),
                 IntProvider.codec(5 , 58).optionalFieldOf("size" , ConstantInt.of(12)).forGetter((f) -> f.Size),
                 IntProvider.codec(4 , 18).optionalFieldOf("y_scale" , ConstantInt.of(2)).forGetter((f) -> f.Y_Scale),
-                Codec.floatRange(0f , 1f).optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((ModdedOreVeinFeatureConfiguration f) -> f.DiscardChanceOnAirExposure),
+                CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((ModdedOreVeinFeatureConfiguration f) -> f.DiscardChanceOnAirExposure),
                 ModdedOreVeinFeatureConfiguration::new
         );
     }

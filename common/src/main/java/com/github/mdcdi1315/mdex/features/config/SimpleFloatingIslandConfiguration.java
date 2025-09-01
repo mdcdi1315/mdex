@@ -3,7 +3,6 @@ package com.github.mdcdi1315.mdex.features.config;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.InvalidFeatureConfigurationException;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.ListCodec;
 import net.minecraft.core.HolderSet;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -32,7 +31,7 @@ public final class SimpleFloatingIslandConfiguration
     {
         return CodecUtils.CreateCodecDirect(
                 GetBaseCodec(),
-                new ListCodec<>(CompilableIslandLayer.GetCodec()).fieldOf("layers").forGetter((p) -> p.Layers),
+                CompilableIslandLayer.GetCodec().listOf().fieldOf("layers").forGetter((p) -> p.Layers),
                 IntProvider.codec(1 , 8).optionalFieldOf("max_distance_from_ground" , ConstantInt.of(4)).forGetter((p) -> p.MaxDistanceFromGround),
                 PlacedFeature.LIST_CODEC.optionalFieldOf("additional_features_on_top" , HolderSet.direct()).forGetter((p) -> p.FeaturesToGenerateOnTop),
                 SimpleFloatingIslandConfiguration::new

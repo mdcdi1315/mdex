@@ -42,21 +42,21 @@ public final class LootTableAppenderProcessor
     {
         BlockPos rbipos = relativeBlockInfo.pos();
         RandomSource rs = settings.getRandom(rbipos);
-        if (rs.nextFloat() < Probability) {
-            // Block remains as is already
-            return relativeBlockInfo;
-        }
-        BlockState bs;
-        if ((bs = level.getBlockState(rbipos)).is(ContainerBlock))
+        if (rs.nextFloat() < Probability)
         {
-            BlockEntity ent = level.getBlockEntity(rbipos);
-            if (ent instanceof RandomizableContainerBlockEntity rdcbe) {
-                rdcbe.setLootTable(LootTable , rs.nextLong());
-                return new StructureTemplate.StructureBlockInfo(rbipos , bs , rdcbe.saveWithFullMetadata());
-            } else {
-                return relativeBlockInfo;
+            BlockState bs;
+            if ((bs = level.getBlockState(rbipos)).is(ContainerBlock))
+            {
+                BlockEntity ent = level.getBlockEntity(rbipos);
+                if (ent instanceof RandomizableContainerBlockEntity rdcbe) {
+                    rdcbe.setLootTable(LootTable , rs.nextLong());
+                    return new StructureTemplate.StructureBlockInfo(rbipos , bs , rdcbe.saveWithFullMetadata());
+                } else {
+                    return relativeBlockInfo;
+                }
             }
         }
+        // Block remains as is already
         return relativeBlockInfo;
     }
 

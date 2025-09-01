@@ -38,31 +38,29 @@ public final class SpecificLootAppenderProcessor
     protected StructureTemplate.StructureBlockInfo processModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings) {
         BlockPos rbipos = relativeBlockInfo.pos();
         RandomSource rs = settings.getRandom(rbipos);
-        if (rs.nextFloat() < Probability) {
-            // Block remains as is already
-            return relativeBlockInfo;
-        }
-        BlockState bs;
-        if ((bs = level.getBlockState(rbipos)).is(ContainerBlock))
+        if (rs.nextFloat() < Probability)
         {
-            BlockEntity ent = level.getBlockEntity(rbipos);
-            if (ent instanceof RandomizableContainerBlockEntity rdcbe) {
-                for (var c : ItemStacks)
-                {
-                    if (c.ShouldBeSelected(rs)) {
-                        var pi = c.GetPlacementIndex();
-                        if (pi < rdcbe.getContainerSize()) {
-                            rdcbe.setItem(pi , c.GetStack());
-                        } else {
-                            MDEXBalmLayer.LOGGER.warn("SpecificLootAppenderProcessor: Cannot apply item stack because it's placement index into the container was invalid. Got index {} while the size of the container is {}." , pi , rdcbe.getContainerSize());
+            BlockState bs;
+            if ((bs = level.getBlockState(rbipos)).is(ContainerBlock)) {
+                BlockEntity ent = level.getBlockEntity(rbipos);
+                if (ent instanceof RandomizableContainerBlockEntity rdcbe) {
+                    for (var c : ItemStacks) {
+                        if (c.ShouldBeSelected(rs)) {
+                            var pi = c.GetPlacementIndex();
+                            if (pi < rdcbe.getContainerSize()) {
+                                rdcbe.setItem(pi, c.GetStack());
+                            } else {
+                                MDEXBalmLayer.LOGGER.warn("SpecificLootAppenderProcessor: Cannot apply item stack because it's placement index into the container was invalid. Got index {} while the size of the container is {}.", pi, rdcbe.getContainerSize());
+                            }
                         }
                     }
+                    return new StructureTemplate.StructureBlockInfo(rbipos, bs, rdcbe.saveWithFullMetadata());
+                } else {
+                    return relativeBlockInfo;
                 }
-                return new StructureTemplate.StructureBlockInfo(rbipos , bs , rdcbe.saveWithFullMetadata());
-            } else {
-                return relativeBlockInfo;
             }
         }
+        // Block remains as is already
         return relativeBlockInfo;
     }
 

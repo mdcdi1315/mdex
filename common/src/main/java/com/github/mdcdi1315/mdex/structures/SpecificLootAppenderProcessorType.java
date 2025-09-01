@@ -18,7 +18,7 @@ public final class SpecificLootAppenderProcessorType
                 GetBaseCodec(),
                 ResourceLocation.CODEC.fieldOf("containerid").forGetter((SpecificLootAppenderProcessor p) -> p.ContainerBlockID),
                 ItemStackChestPlacement.CreateCodec(StableItemStackCodec.INSTANCE).listOf().fieldOf("stacks").forGetter((SpecificLootAppenderProcessor p) -> p.ItemStacks),
-                Codec.floatRange(0f , 1f).optionalFieldOf("probability" , 1f).forGetter((SpecificLootAppenderProcessor p) -> p.Probability),
+                CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("probability" , 1f).forGetter((SpecificLootAppenderProcessor p) -> p.Probability),
                 SpecificLootAppenderProcessor::new
         );
     }

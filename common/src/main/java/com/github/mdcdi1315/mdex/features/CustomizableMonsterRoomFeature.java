@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 
 public final class CustomizableMonsterRoomFeature
     extends ModdedFeature<CustomizableMonsterRoomConfiguration>
@@ -58,7 +57,7 @@ public final class CustomizableMonsterRoomFeature
 
                 if (j3 == 1) {
                     FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos2, StructurePiece.reorient(worldgenlevel, blockpos2, Blocks.CHEST.defaultBlockState()), predicate);
-                    RandomizableContainerBlockEntity.setLootTable(worldgenlevel, randomsource, blockpos2, loottable);
+                    BlockUtils.SetRandomizableContainerLootTable(worldgenlevel, randomsource, blockpos2, loottable);
                     break;
                 }
             }

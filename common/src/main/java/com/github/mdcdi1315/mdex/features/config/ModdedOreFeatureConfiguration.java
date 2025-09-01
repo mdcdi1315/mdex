@@ -29,7 +29,7 @@ public final class ModdedOreFeatureConfiguration
                 GetBaseCodec(),
                 new ListCodec<>(SingleBlockState.GetCodec()).fieldOf("targets").forGetter((ModdedOreFeatureConfiguration f) -> f.TargetStates),
                 Codec.intRange(0 , 64).optionalFieldOf("size" , 12).forGetter((ModdedOreFeatureConfiguration f) -> f.Size),
-                Codec.floatRange(0f , 1f).optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((ModdedOreFeatureConfiguration f) -> f.DiscardChanceOnAirExposure),
+                CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((ModdedOreFeatureConfiguration f) -> f.DiscardChanceOnAirExposure),
                 ModdedOreFeatureConfiguration::new
         );
     }

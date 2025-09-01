@@ -28,6 +28,7 @@ public class MDEXModConfig
                 cfg.saveLocalConfig(schema);
             }
             MDEXBalmLayer.DebugFeatureConfigurations = mlc.DebugFeatureConfigurations;
+            MDEXBalmLayer.LOGGER.info("DebugFeatureConfigurations is {}." , MDEXBalmLayer.DebugFeatureConfigurations);
             Balm.getConfig().updateLocalConfig(MDEXModConfig.class , MDEXModConfig::EmptyUpdater);
         });
     }

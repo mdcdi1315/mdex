@@ -3,8 +3,6 @@ package com.github.mdcdi1315.mdex.block;
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.entity.TeleporterTileEntity;
 
-import net.minecraft.util.valueproviders.UniformInt;
-
 import net.blay09.mods.balm.api.item.BalmItems;
 import net.blay09.mods.balm.api.DeferredObject;
 import net.blay09.mods.balm.api.block.BalmBlocks;
@@ -14,6 +12,7 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;

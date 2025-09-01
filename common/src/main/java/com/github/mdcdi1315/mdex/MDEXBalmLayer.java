@@ -1,9 +1,11 @@
 package com.github.mdcdi1315.mdex;
 
 // Mod interfaces
+import com.github.mdcdi1315.mdex.features.placement.PlacementModifierRegistrySubsystem;
 import com.github.mdcdi1315.mdex.item.ModItems;
 import com.github.mdcdi1315.mdex.api.MDEXModAPI;
 import com.github.mdcdi1315.mdex.block.ModBlocks;
+import com.github.mdcdi1315.mdex.loottable.LootTableRegistrySubsystem;
 import com.github.mdcdi1315.mdex.tag.ModBlockTags;
 import com.github.mdcdi1315.mdex.api.OperationsTasker;
 import com.github.mdcdi1315.mdex.network.ModNetworking;
@@ -80,6 +82,10 @@ public final class MDEXBalmLayer
             StructureProcessorsRegistrySubsystem.RegisterStructureProcessors(regs);
             LOGGER.trace("Initializing world generation rule test type definitions.");
             RuleTestsRegistrySubsystem.RegisterRuleTests(regs);
+            LOGGER.trace("Initializing loot table entry types.");
+            LootTableRegistrySubsystem.Initialize(regs);
+            LOGGER.trace("Initializing world generation feature placement modifier type definitions.");
+            PlacementModifierRegistrySubsystem.RegisterPlacementModifiers(regs);
             LOGGER.trace("Setting up server-side server stopped events.");
             SetupEvents(Balm.getEvents());
         } catch (Exception e) {

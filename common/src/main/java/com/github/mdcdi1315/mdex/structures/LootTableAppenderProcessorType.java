@@ -16,7 +16,7 @@ public final class LootTableAppenderProcessorType
                 GetBaseCodec(),
                 ResourceLocation.CODEC.fieldOf("containerid").forGetter((LootTableAppenderProcessor p) -> p.ContainerBlockID),
                 ResourceLocation.CODEC.fieldOf("loot_table").forGetter((LootTableAppenderProcessor p) -> p.LootTable),
-                Codec.floatRange(0f , 1f).optionalFieldOf("probability" , 1f).forGetter((LootTableAppenderProcessor p) -> p.Probability),
+                CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("probability" , 1f).forGetter((LootTableAppenderProcessor p) -> p.Probability),
                 LootTableAppenderProcessor::new
         );
     }

@@ -1,20 +1,23 @@
 package com.github.mdcdi1315.mdex.features.config;
 
+import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
+
+import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.util.Compilable;
 import com.github.mdcdi1315.mdex.util.MDEXException;
+
 import net.blay09.mods.balm.api.Balm;
+
 import com.mojang.serialization.Codec;
-import com.github.mdcdi1315.mdex.MDEXBalmLayer;
-import com.mojang.serialization.codecs.ListCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
+
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.ArrayList;
 import java.util.stream.Stream;
+import java.lang.reflect.Modifier;
 
 /**
  * Base class for all modded feature configurations.
@@ -58,7 +61,7 @@ public abstract class ModdedFeatureConfiguration
      */
     public static <T extends ModdedFeatureConfiguration> RecordCodecBuilder<T, List<String>> GetBaseCodec()
     {
-        return new ListCodec<>(Codec.STRING).optionalFieldOf("modids" , List.of()).forGetter((T inst) -> inst.ModIds);
+        return Codec.STRING.listOf().optionalFieldOf("modids" , List.of()).forGetter((T inst) -> inst.ModIds);
     }
 
     /**

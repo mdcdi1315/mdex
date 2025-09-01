@@ -10,10 +10,12 @@ import com.github.mdcdi1315.mdex.network.ModNetworking;
 import com.github.mdcdi1315.mdex.util.MDEXInitException;
 
 // Registry subsystems
+import com.github.mdcdi1315.mdex.loottable.LootTableRegistrySubsystem;
 import com.github.mdcdi1315.mdex.structures.RuleTestsRegistrySubsystem;
 import com.github.mdcdi1315.mdex.block.BlockPredicatesRegistrySubsystem;
 import com.github.mdcdi1315.mdex.features.FeatureTypesRegistrySubsystem;
 import com.github.mdcdi1315.mdex.structures.StructureProcessorsRegistrySubsystem;
+import com.github.mdcdi1315.mdex.features.placement.PlacementModifierRegistrySubsystem;
 import com.github.mdcdi1315.mdex.biomespawnadditions.BiomeSpawnAdditionsRegistrySubsystem;
 import com.github.mdcdi1315.mdex.block.blockstateproviders.CustomBlockStateProviderRegistrySubsystem;
 
@@ -80,6 +82,10 @@ public final class MDEXBalmLayer
             StructureProcessorsRegistrySubsystem.RegisterStructureProcessors(regs);
             LOGGER.trace("Initializing world generation rule test type definitions.");
             RuleTestsRegistrySubsystem.RegisterRuleTests(regs);
+            LOGGER.trace("Initializing loot table entry types.");
+            LootTableRegistrySubsystem.Initialize(regs);
+            LOGGER.trace("Initializing world generation feature placement modifier type definitions.");
+            PlacementModifierRegistrySubsystem.RegisterPlacementModifiers(regs);
             LOGGER.trace("Setting up server-side server stopped events.");
             SetupEvents(Balm.getEvents());
         } catch (Exception e) {

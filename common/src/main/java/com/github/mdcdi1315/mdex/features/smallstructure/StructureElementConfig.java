@@ -5,6 +5,7 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.resources.ResourceLocation;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 public final class StructureElementConfig
 {
@@ -17,6 +18,7 @@ public final class StructureElementConfig
         );
     }
 
+    public StructureTemplate Template;
     public ResourceLocation StructureID;
     public StructureElementSettings Settings;
 
@@ -24,11 +26,5 @@ public final class StructureElementConfig
     {
         StructureID = loc;
         Settings = sets;
-    }
-
-    public StructureElementConfig()
-    {
-        StructureID = null;
-        Settings = null;
     }
 }

@@ -2,6 +2,7 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
@@ -19,7 +20,7 @@ public class NoiseThresholdProvider
    public final List<CompilableTargetBlockState> lowStates;
    public final List<CompilableTargetBlockState> highStates;
 
-   public NoiseThresholdProvider(long seed, NormalNoise.NoiseParameters parameters, float scale, float threshold, float highChance, CompilableTargetBlockState defaultState, List<CompilableTargetBlockState> lowStates, List<CompilableTargetBlockState> highStates)
+   public NoiseThresholdProvider(long seed, Holder<NormalNoise.NoiseParameters> parameters, float scale, float threshold, float highChance, CompilableTargetBlockState defaultState, List<CompilableTargetBlockState> lowStates, List<CompilableTargetBlockState> highStates)
    {
       super(seed, parameters, scale);
       this.threshold = threshold;

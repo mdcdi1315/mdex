@@ -2,15 +2,17 @@ package com.github.mdcdi1315.mdex.util;
 
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
-import com.mojang.serialization.Codec;
-import net.minecraft.resources.ResourceLocation;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+
+import com.mojang.serialization.Codec;
+
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
-
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
-import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.Optional;
 
@@ -18,16 +20,14 @@ public final class CompilableTargetBlockState
     implements Compilable
 {
     private static Codec<CompilableTargetBlockState> codec;
-    public ResourceLocation Name;
+    private ResourceLocation Name;
     public BlockState BlockState;
-    public Map<String , String> IProperties;
-    public Map<Property<?> , Comparable<?>> Properties;
+    private Map<String , String> IProperties;
 
     public CompilableTargetBlockState(ResourceLocation id , Map<String , String> props)
     {
         Name = id;
         IProperties = props;
-        Properties = null;
     }
 
     public static Codec<CompilableTargetBlockState> GetCodec()
@@ -46,39 +46,61 @@ public final class CompilableTargetBlockState
     public void Compile()
     {
         this.BlockState = BlockUtils.GetBlockFromID(Name).defaultBlockState();
-        Name = null;
-        Properties = new HashMap<>(IProperties.size() , 0.56f);
+        Method m = null;
+        for (var md : getClass().getDeclaredMethods())
+        {
+            if (md.getName().equals("SetPropValue") && (md.getModifiers() & (Modifier.PRIVATE | Modifier.STATIC)) != 0)
+            {
+                m = md;
+                break;
+            }
+        }
+        if (m == null)
+        {
+            MDEXBalmLayer.LOGGER.error("CompilableTargetBlockState: Cannot compile block state because the method 'SetPropValue' method was not found.");
+            this.BlockState = null;
+            return;
+        }
         for (var k : IProperties.keySet())
         {
-            Property<?> prop;
             String value = IProperties.get(k);
-            for (var f : BlockStateProperties.class.getFields())
+            for (Property<?> prop : BlockState.getProperties())
             {
-                if (Property.class.isAssignableFrom(f.getType()))
-                {
-                    try {
-                        prop = (Property<?>) f.get(null);
-                        if (prop.getName().equals(k))
-                        {
-                            Optional<?> any = prop.getValue(value);
-                            if (any.isPresent()) {
-                                Properties.put(prop , (Comparable<?>) any.get());
-                            } else {
-                                MDEXBalmLayer.LOGGER.warn("Cannot get the value of the block's property '{}' with ID '{}'. The value '{}' may be invalid. Not including it in the final property list." , k , Name.toDebugFileName() , value);
-                            }
+                try {
+                    if (prop.getName().equals(k))
+                    {
+                        Optional<?> any = prop.getValue(value);
+                        if (any.isPresent()) {
+                            BlockState = (BlockState) m.invoke(null , BlockState , prop , any.get());
+                        } else {
+                            MDEXBalmLayer.LOGGER.warn("Cannot get the value of the block's property '{}' with ID '{}'. The value '{}' may be invalid. Not including it in the final property list." , k , Name , value);
                         }
-                    } catch (IllegalAccessException ae) {
-                        MDEXBalmLayer.LOGGER.error("Cannot access the field named as {}. Fetching the next property." , f.getName());
                     }
+                } catch (InvocationTargetException ite) {
+                    if (ite.getTargetException() instanceof IllegalArgumentException iae) {
+                        MDEXBalmLayer.LOGGER.warn("Cannot set the value of the specified block state with ID '{}' to '{}'.", Name, value , iae);
+                    } else {
+                        MDEXBalmLayer.LOGGER.error("Exception occurred during reflective invocation." , ite.getTargetException());
+                    }
+                } catch (IllegalAccessException iae) {
+                    MDEXBalmLayer.LOGGER.error("Exception occurred during reflective invocation." , iae);
                     break;
                 }
             }
         }
+        Name = null;
         IProperties = null;
+    }
+
+    // We need to statically reference the setValue method of BlockState so that the obfuscated method is called.
+    @SuppressWarnings("unused") // Used by reflection
+    private static <T extends Comparable<T>, V extends T> BlockState SetPropValue(BlockState bs, Property<T> p , V c)
+    {
+        return bs.setValue(p , c);
     }
 
     public boolean IsCompiled()
     {
-        return Properties != null && BlockState != null;
+        return BlockState != null;
     }
 }

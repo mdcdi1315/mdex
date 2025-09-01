@@ -1,8 +1,8 @@
 package com.github.mdcdi1315.mdex.structures;
 
+import net.minecraft.tags.TagKey;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.tags.TagKey;
 
 public final class AnyMatchingTagRuleTestType
     extends AbstractModdedRuleTestType<AnyMatchingTagRuleTest>

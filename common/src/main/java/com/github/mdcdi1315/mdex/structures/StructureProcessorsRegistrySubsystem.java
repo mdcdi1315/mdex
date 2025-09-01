@@ -14,6 +14,7 @@ public final class StructureProcessorsRegistrySubsystem
 
     public static void RegisterStructureProcessors(BalmRegistries registries)
     {
+        RegisterCustomStructureProcessor(registries , "increment_block_phase" , BlockPhasesStructureProcessorType.class);
         RegisterCustomStructureProcessor(registries , "specific_loot_appender" , SpecificLootAppenderProcessorType.class);
         RegisterCustomStructureProcessor(registries , "loot_table_appender" , LootTableAppenderProcessorType.class);
         RegisterCustomStructureProcessor(registries , "protected_blocks" , ModdedProtectedBlocksProcessorType.class);

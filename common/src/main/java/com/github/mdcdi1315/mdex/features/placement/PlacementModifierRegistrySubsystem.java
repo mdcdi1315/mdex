@@ -14,7 +14,8 @@ public final class PlacementModifierRegistrySubsystem
 
     public static void RegisterPlacementModifiers(BalmRegistries registries)
     {
-        RegisterPlacementModifierType(registries , "is_valid_surface_placement" , IsValidSurfacePlacementModifierType.class);
+        RegisterPlacementModifierType(registries , "ensure_valid_ceiling_placement" , IsValidCeilingPlacementModifierType.class);
+        RegisterPlacementModifierType(registries , "ensure_valid_surface_placement" , IsValidSurfacePlacementModifierType.class);
         RegisterPlacementModifierType(registries , "randomize_input_position" , RandomizeInputPositionPlacementModifierType.class);
     }
 

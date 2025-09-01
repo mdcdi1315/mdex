@@ -23,7 +23,8 @@ public class RotatedBlockProvider
 
    public BlockState getState(RandomSource random, BlockPos pos) {
       Direction.Axis axis = Direction.Axis.getRandom(random);
-      return this.block.BlockState.getBlock().defaultBlockState().setValue(RotatedPillarBlock.AXIS, axis);
+      // Use the desired block state that the user wants to, but set the axis property right after all the properties are defined in the provider itself
+      return this.block.BlockState.setValue(RotatedPillarBlock.AXIS, axis);
    }
 
    @Override

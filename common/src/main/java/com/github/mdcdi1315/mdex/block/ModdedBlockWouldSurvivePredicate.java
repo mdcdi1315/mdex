@@ -1,11 +1,12 @@
 package com.github.mdcdi1315.mdex.block;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
-import net.minecraft.core.BlockPos;
+
 import net.minecraft.core.Vec3i;
-import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.blockpredicates.BlockPredicateType;
 
 import java.util.List;
@@ -28,11 +29,8 @@ public class ModdedBlockWouldSurvivePredicate
     }
 
     @Override
-    public boolean test(WorldGenLevel worldGenLevel, BlockPos blockPos)
+    public boolean Test(WorldGenLevel worldGenLevel, BlockPos blockPos)
     {
-        if (!getModIdListIsValid()) {
-            return false;
-        }
         var bs = worldGenLevel.getBlockState(blockPos.offset(Offset).offset(0 , -1 , 0));
         for (var b : new Block[] {
                 Blocks.GRASS_BLOCK,

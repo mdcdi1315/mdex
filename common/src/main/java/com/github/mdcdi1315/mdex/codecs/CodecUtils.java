@@ -15,6 +15,16 @@ public final class CodecUtils
 {
     private CodecUtils() {}
 
+    /**
+     * Gets a singleton of the 'probability' codec, that is a codec that can only take a floating range of values from 0 to 1, all inclusive.
+     */
+    public static Codec<Float> FLOAT_PROBABILITY = Codec.floatRange(0f , 1f);
+
+    /**
+     * Gets a singleton of the 'probability' codec, that is a codec that can only take a double-precision floating range of values from 0 to 1, all inclusive.
+     */
+    public static Codec<Double> DOUBLE_PROBABILITY = Codec.doubleRange(0d , 1d);
+
     public static <TCODEC , C1T> Codec<TCODEC> CreateCodecDirect(
             com.mojang.datafixers.kinds.App<RecordCodecBuilder.Mu<TCODEC> , C1T> codecfield1,
             Function<C1T, TCODEC> instancecreatefunction

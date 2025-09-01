@@ -8,9 +8,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import java.util.List;
 
 public abstract class AbstractModdedStructureProcessorType<T extends AbstractModdedStructureProcessor>
-        implements StructureProcessorType<T>
+    implements StructureProcessorType<T>
 {
-    public static <T extends AbstractModdedStructureProcessor> RecordCodecBuilder<T, java.util.List<String>> GetBaseCodec()
+    public static <T extends AbstractModdedStructureProcessor> RecordCodecBuilder<T, List<String>> GetBaseCodec()
     {
         return Codec.STRING.listOf().optionalFieldOf("modids" , List.of()).forGetter((T inst) -> inst.ModIds);
     }

@@ -10,12 +10,18 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 import java.util.function.ToIntFunction;
 
@@ -51,6 +57,56 @@ public final class BlockUtils
         return !level.getBlockState(position).isAir() && level.getBlockState(position.above()).isAir();
     }
 
+    /**
+     * Gets a value whether the block at the specified position is solid and the block above one is air block. <br />
+     * Can be used for features that want to enforce that the feature should be placed at a ceiling or roof. <br />
+     * This is the exact opposite condition of {@link BlockUtils#BlockIsSolidAndAboveIsAir(BlockGetter, BlockPos)}, which does check first for a solid block and then for an air block.
+     * @param level The read-only level to read block positions from.
+     * @param position The position where you want to test. Specifying null passes the first block in the first chunk (that is, 0 , 0 , 0).
+     * @return The test result.
+     */
+    public static boolean BlockIsAirAndAboveSolid(BlockGetter level , BlockPos position)
+    {
+        ArgumentNullException.ThrowIfNull(level , "level");
+        if (position == null) {
+            position = new BlockPos(0 , 0 , 0);
+        }
+        return level.getBlockState(position).isAir() && !level.getBlockState(position.above()).isAir();
+    }
+
+    /**
+     * Assigns a loot table to a randomizable container block entity at the specified position. <br />
+     * This operation requires the block at <code>pos</code> to be a {@link RandomizableContainerBlockEntity} object or a derivant class.
+     * @param level The read-only level to read the container block entity from.
+     * @param random The random source to use when the loot table will be assigned. Required for setting the seed to the loot table.
+     * @param pos The absolute position of the randomizable container.
+     * @param lootTable The loot table to assign to the container at <code>pos</code>.
+     * @return A value whether the loot table was appended to the container or not. Use this value only when you want to be ensured about that the outcome is good.
+     */
+    public static boolean SetRandomizableContainerLootTable(BlockGetter level, RandomSource random, BlockPos pos, ResourceLocation lootTable)
+    {
+        return SetRandomizableContainerLootTable(level , random , pos , ResourceKey.create(Registries.LOOT_TABLE , lootTable));
+    }
+
+    /**
+     * Assigns a loot table to a randomizable container block entity at the specified position. <br />
+     * This operation requires the block at <code>pos</code> to be a {@link RandomizableContainerBlockEntity} object or a derivant class.
+     * @param level The read-only level to read the container block entity from.
+     * @param random The random source to use when the loot table will be assigned. Required for setting the seed to the loot table.
+     * @param pos The absolute position of the randomizable container.
+     * @param lootTable The loot table to assign to the container at <code>pos</code>.
+     * @return A value whether the loot table was appended to the container or not. Use this value only when you want to be ensured about that the outcome is good.
+     */
+    public static boolean SetRandomizableContainerLootTable(BlockGetter level, RandomSource random, BlockPos pos, ResourceKey<LootTable> lootTable)
+    {
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof RandomizableContainerBlockEntity e) {
+            e.setLootTable(lootTable, random.nextLong());
+            return true;
+        }
+        return false;
+    }
+
     public static boolean ReferentIsSolidBlock(BlockState bs)
     {
         if (bs == null) { return false; }
@@ -81,10 +137,16 @@ public final class BlockUtils
         return Util.makeDescriptionId("block" , ResourceLocation.tryBuild("" , pathonly));
     }
 
-    private static boolean NotEqualToCompareToWithReflection(Comparable<?> v1 , Object v2)
+    private static boolean NotEqualToCompareToWithReflection(Comparable<?> v1 , Comparable<?> v2)
     {
         try {
-            return (Integer) v1.getClass().getMethod("compareTo").invoke(v1 , v2) != 0;
+            for (var m : v1.getClass().getMethods())
+            {
+                if (m.getName().equals("compareTo") && m.getParameterCount() == 1) {
+                    return (Integer) m.invoke(v1 , v2) != 0;
+                }
+            }
+            return false;
         } catch (java.lang.Exception e) {
             return true;
         }

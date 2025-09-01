@@ -1,9 +1,11 @@
 package com.github.mdcdi1315.mdex.features.config;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
-import com.github.mdcdi1315.mdex.features.orevein.RareBlockPlacementSettings;
 import com.github.mdcdi1315.mdex.util.SingleBlockState;
+import com.github.mdcdi1315.mdex.features.orevein.RareBlockPlacementSettings;
+
 import com.mojang.serialization.Codec;
+
 import net.minecraft.core.Holder;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -30,7 +32,7 @@ public final class ModdedOreVeinFeatureConfiguration
                 NormalNoise.NoiseParameters.CODEC.fieldOf("noise").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.Parameters),
                 IntProvider.codec(5 , 58).optionalFieldOf("size" , ConstantInt.of(12)).forGetter((f) -> f.Size),
                 IntProvider.codec(4 , 18).optionalFieldOf("y_scale" , ConstantInt.of(2)).forGetter((f) -> f.Y_Scale),
-                Codec.floatRange(0f , 1f).optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((ModdedOreVeinFeatureConfiguration f) -> f.DiscardChanceOnAirExposure),
+                CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((ModdedOreVeinFeatureConfiguration f) -> f.DiscardChanceOnAirExposure),
                 ModdedOreVeinFeatureConfiguration::new
         );
     }

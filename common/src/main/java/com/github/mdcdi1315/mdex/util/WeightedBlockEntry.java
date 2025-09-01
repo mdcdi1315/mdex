@@ -10,6 +10,8 @@ import net.minecraft.util.random.Weight;
 import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.world.level.block.Block;
 
+import java.util.Optional;
+
 public class WeightedBlockEntry
         implements WeightedEntry , Compilable
 {
@@ -26,11 +28,13 @@ public class WeightedBlockEntry
 
     public void Compile()
     {
-        try {
-            this.Block = BuiltInRegistries.BLOCK.get(BlockID);
-        } catch (Exception e) {
-            MDEXBalmLayer.LOGGER.error("Cannot load weighted block entry because the block with ID '{}' does not exist.\nException data: {}" , BlockID , e.getMessage());
+        Optional<Block> g = BuiltInRegistries.BLOCK.getOptional(BlockID);
+        if (g.isEmpty()) {
+            MDEXBalmLayer.LOGGER.warn("Cannot load weighted block entry because the block with ID '{}' does not exist." , BlockID);
+        } else {
+            this.Block = g.get();
         }
+        BlockID = null;
     }
 
     public boolean IsCompiled()

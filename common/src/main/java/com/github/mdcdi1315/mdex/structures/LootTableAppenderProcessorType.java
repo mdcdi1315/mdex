@@ -1,8 +1,9 @@
 package com.github.mdcdi1315.mdex.structures;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
-import com.mojang.serialization.Codec;
+
 import com.mojang.serialization.MapCodec;
+
 import net.minecraft.resources.ResourceLocation;
 
 public final class LootTableAppenderProcessorType
@@ -17,7 +18,7 @@ public final class LootTableAppenderProcessorType
                 GetBaseCodec(),
                 ResourceLocation.CODEC.fieldOf("containerid").forGetter((LootTableAppenderProcessor p) -> p.ContainerBlockID),
                 ResourceLocation.CODEC.fieldOf("loot_table").forGetter((LootTableAppenderProcessor p) -> p.LootTable),
-                Codec.floatRange(0f , 1f).optionalFieldOf("probability" , 1f).forGetter((LootTableAppenderProcessor p) -> p.Probability),
+                CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("probability" , 1f).forGetter((LootTableAppenderProcessor p) -> p.Probability),
                 LootTableAppenderProcessor::new
         );
     }

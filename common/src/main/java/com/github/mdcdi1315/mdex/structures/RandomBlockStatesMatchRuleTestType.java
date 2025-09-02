@@ -1,6 +1,5 @@
 package com.github.mdcdi1315.mdex.structures;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
@@ -15,7 +14,7 @@ public final class RandomBlockStatesMatchRuleTestType
     {
         return CodecUtils.CreateMapCodecDirect(
                 CompilableTargetBlockState.GetCodec().codec().listOf().fieldOf("random_states").forGetter((RandomBlockStatesMatchRuleTest r) -> r.RandomStates),
-                Codec.floatRange(0f , 1f).fieldOf("probability").forGetter((RandomBlockStatesMatchRuleTest r) -> r.probability),
+                CodecUtils.FLOAT_PROBABILITY.fieldOf("probability").forGetter((RandomBlockStatesMatchRuleTest r) -> r.probability),
                 RandomBlockStatesMatchRuleTest::new
         );
     }

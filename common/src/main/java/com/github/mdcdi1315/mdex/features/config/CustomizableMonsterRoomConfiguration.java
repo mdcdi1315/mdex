@@ -6,7 +6,9 @@ import com.github.mdcdi1315.mdex.features.customizablemonsterroom.ChestPlacement
 import com.github.mdcdi1315.mdex.util.WeightedBlockEntry;
 import com.github.mdcdi1315.mdex.util.WeightedCountedEntityEntry;
 import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
+
 import com.mojang.serialization.Codec;
+
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,7 +26,7 @@ public final class CustomizableMonsterRoomConfiguration
                 GetBaseCodec(),
                 ResourceLocation.CODEC.fieldOf("spawner_block").forGetter((CustomizableMonsterRoomConfiguration cfg) -> cfg.SpawnerBlock_I),
                 ResourceLocation.CODEC.fieldOf("base_stone_block").forGetter((CustomizableMonsterRoomConfiguration cfg) -> cfg.BaseStoneBlock_I),
-                Codec.floatRange(0f , 1f).optionalFieldOf("rare_stone_placement_probability" , 0.5f).forGetter((CustomizableMonsterRoomConfiguration cfg) -> cfg.RareStonePlacementProbability),
+                CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("rare_stone_placement_probability" , 0.5f).forGetter((CustomizableMonsterRoomConfiguration cfg) -> cfg.RareStonePlacementProbability),
                 ChestPlacementConfig.GetCodec().optionalFieldOf("reward_chest_placement", new ChestPlacementConfig(BuiltInLootTables.SIMPLE_DUNGEON.location() , ConstantInt.of(6))).forGetter((CustomizableMonsterRoomConfiguration cfg) -> cfg.ChestConfiguration),
                 WeightedBlockEntry.GetCodec().listOf().fieldOf("rare_stone_blocks").forGetter((CustomizableMonsterRoomConfiguration cfg) -> cfg.RareStoneBlocks),
                 WeightedEntityEntry.GetCodec().listOf().fieldOf("additional_spawns").forGetter((CustomizableMonsterRoomConfiguration cfg) -> cfg.AdditionalEntities),

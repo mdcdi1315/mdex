@@ -2,30 +2,27 @@ package com.github.mdcdi1315.mdex.features;
 
 // Portions of code has been copied from Minecraft's 1.20.1 monster room feature.
 
-import com.github.mdcdi1315.DotNetLayer.System.Predicate;
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
-import com.github.mdcdi1315.mdex.features.config.CustomizableMonsterRoomConfiguration;
+import com.github.mdcdi1315.DotNetLayer.System.Predicate;
 import com.github.mdcdi1315.mdex.util.WeightedBlockEntry;
 import com.github.mdcdi1315.mdex.util.weight.WeightedEntryList;
-import com.mojang.serialization.Codec;
+import com.github.mdcdi1315.mdex.features.config.CustomizableMonsterRoomConfiguration;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
+import com.mojang.serialization.Codec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
 public final class CustomizableMonsterRoomFeature
     extends ModdedFeature<CustomizableMonsterRoomConfiguration>
@@ -60,19 +57,11 @@ public final class CustomizableMonsterRoomFeature
 
                 if (j3 == 1) {
                     FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos2, StructurePiece.reorient(worldgenlevel, blockpos2, Blocks.CHEST.defaultBlockState()), predicate);
-                    SetLootTable(worldgenlevel, randomsource, blockpos2, loottable);
+                    BlockUtils.SetRandomizableContainerLootTable(worldgenlevel, randomsource, blockpos2, loottable);
                     break;
                 }
             }
         }
-    }
-
-    private static void SetLootTable(BlockGetter level, RandomSource random, BlockPos pos, ResourceLocation lootTable) {
-        BlockEntity blockentity = level.getBlockEntity(pos);
-        if (blockentity instanceof RandomizableContainerBlockEntity) {
-            ((RandomizableContainerBlockEntity)blockentity).setLootTable(ResourceKey.create(Registries.LOOT_TABLE , lootTable), random.nextLong());
-        }
-
     }
 
     private void createSpawner(FeaturePlaceContext<CustomizableMonsterRoomConfiguration> fpc , BlockPos blockpos , Predicate<BlockState> predicate)

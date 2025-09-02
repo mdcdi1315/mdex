@@ -5,7 +5,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.levelgen.placement.PlacementContext;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 public final class RandomizeInputPositionPlacementModifier
@@ -32,16 +31,18 @@ public final class RandomizeInputPositionPlacementModifier
     @Override
     protected Stream<BlockPos> GetPositions(PlacementContext cxt, RandomSource rs, BlockPos origin)
     {
-        BlockPos[] newpositions = new BlockPos[PositionsToReturn.sample(rs)];
-        for (int I = 0; I < newpositions.length; I++)
+        // Using this is much more efficient than creating an array on the fly.
+        Stream.Builder<BlockPos> build = Stream.builder();
+        int p = PositionsToReturn.sample(rs);
+        for (int I = 0; I < p; I++)
         {
-            newpositions[I] = origin.offset(
+            build.add(origin.offset(
                     X_Offset.sample(rs),
                     Y_Offset.sample(rs),
                     Z_Offset.sample(rs)
-            );
+            ));
         }
-        return Arrays.stream(newpositions);
+        return build.build();
     }
 
     @Override

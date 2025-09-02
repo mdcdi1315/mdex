@@ -1,11 +1,13 @@
 package com.github.mdcdi1315.mdex.features;
 
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
-import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureConfiguration;
-import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureType;
+import com.github.mdcdi1315.mdex.api.teleporter.*;
 import com.github.mdcdi1315.mdex.features.config.*;
+
 import com.mojang.serialization.Codec;
+
 import net.blay09.mods.balm.api.world.BalmWorldGen;
+
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
@@ -24,6 +26,7 @@ public final class FeatureTypesRegistrySubsystem
 
     public static void RegisterFeatureTypes(BalmWorldGen wg)
     {
+        Codec<ModdedVegetationPatchConfiguration> vegpconfig = ModdedVegetationPatchConfiguration.GetCodec();
         Codec<ModdedOreFeatureConfiguration> mc = ModdedOreFeatureConfiguration.GetCodec();
         RegisterCustomFeatureType(wg,"fallen_tree" , () -> new FallenTreeFeature(FallenTreeConfiguration.GetCodec()));
         RegisterCustomFeatureType(wg,"small_structure" , () -> new SmallStructureFeature(SmallStructureConfiguration.GetCodec()));
@@ -38,5 +41,8 @@ public final class FeatureTypesRegistrySubsystem
         RegisterCustomFeatureType(wg,"modded_ore_vein" , () -> new ModdedOreVeinFeature(ModdedOreVeinFeatureConfiguration.GetCodec()));
         RegisterCustomFeatureType(wg,"modded_legacy_ore" , () -> new ModdedLegacyOreFeature(mc));
         RegisterCustomFeatureType(wg,"base_teleporter_placement", () -> new BaseTeleporterPlacementFeatureType(BaseTeleporterPlacementFeatureConfiguration.GetCodec()));
+        RegisterCustomFeatureType(wg,"modded_vegetation_patch" , () -> new ModdedVegetationPatchFeature(vegpconfig));
+        RegisterCustomFeatureType(wg,"modded_waterlogged_vegetation_patch" , () -> new ModdedWaterloggedVegetationPatchFeature(vegpconfig));
+        RegisterCustomFeatureType(wg,"modded_simple_block" , () -> new ModdedSimpleBlockFeature(ModdedSimpleBlockFeatureConfiguration.GetCodec()));
     }
 }

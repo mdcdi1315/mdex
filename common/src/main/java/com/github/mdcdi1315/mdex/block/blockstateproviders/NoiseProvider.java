@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
+import net.minecraft.core.Holder;
 import net.minecraft.util.Mth;
 import net.minecraft.core.BlockPos;
 import com.mojang.datafixers.Products;
@@ -17,11 +18,11 @@ public class NoiseProvider extends NoiseBasedStateProvider {
     protected final List<CompilableTargetBlockState> states;
     private boolean compiled;
 
-    protected static <P extends NoiseProvider> Products.P4<RecordCodecBuilder.Mu<P>, Long, NormalNoise.NoiseParameters, Float, List<CompilableTargetBlockState>> noiseProviderCodec(RecordCodecBuilder.Instance<P> instance) {
-        return noiseCodec(instance).and(Codec.list(CompilableTargetBlockState.GetCodec().codec()).fieldOf("states").forGetter((p_191448_) -> p_191448_.states));
+    protected static <P extends NoiseProvider> Products.P4<RecordCodecBuilder.Mu<P>, Long, Holder<NormalNoise.NoiseParameters>, Float, List<CompilableTargetBlockState>> noiseProviderCodec(RecordCodecBuilder.Instance<P> instance) {
+        return noiseCodec(instance).and(Codec.list(CompilableTargetBlockState.GetCodec().codec()).fieldOf("states").forGetter((n) -> n.states));
     }
 
-    public NoiseProvider(long seed, NormalNoise.NoiseParameters parameters, float scale, List<CompilableTargetBlockState> states) {
+    public NoiseProvider(long seed, Holder<NormalNoise.NoiseParameters> parameters, float scale, List<CompilableTargetBlockState> states) {
         super(seed, parameters, scale);
         this.states = states;
     }

@@ -17,7 +17,7 @@ public final class WindOffsetter {
     public WindOffsetter(int originY, RandomSource random, FloatProvider magnitude) {
         this.originY = originY;
         float mag = magnitude.sample(random);
-        float f1 = Mth.randomBetween(random, 0.0F, (float)Math.PI);
+        float f1 = Mth.randomBetween(random, 0.0F, Mth.PI);
         this.windSpeed = new Vec3((Mth.cos(f1) * mag),0.0D, (Mth.sin(f1) * mag));
     }
 

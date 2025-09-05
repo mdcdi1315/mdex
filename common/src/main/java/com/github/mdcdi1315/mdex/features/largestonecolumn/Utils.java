@@ -31,7 +31,7 @@ public final class Utils
         } else {
             float f1 = 6.0F / (float)radius;
 
-            for (float f2 = 0.0F; f2 < ((float)Math.PI * 2F); f2 += f1)
+            for (float f2 = 0.0F; f2 < Mth.TWO_PI; f2 += f1)
             {
                 if (isEmptyOrWaterOrLava(level,
                         pos.offset(

@@ -79,8 +79,8 @@ public final class SmallStructureFeature
         // Static settings defined directly through data
         sets.setRotation(settings.PlacementRotation);
         sets.setMirror(settings.PlacementMirror);
-        sets.setIgnoreEntities(settings.ShouldIgnoreEntities);
-        sets.setKeepLiquids(settings.ShouldKeepFluids);
+        sets.setIgnoreEntities(settings.GetShouldIgnoreEntities());
+        sets.setKeepLiquids(settings.GetShouldKeepFluids());
         // Apply all the found processors
         for (var proc : fpc.config().StructuresProcessors.value().list())
         {

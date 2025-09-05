@@ -74,6 +74,10 @@ public final class MobSpawnsModifier
         ApplySpawnerChanges((Biome_MobSpawnSettingsAccessor) spawnsettings);
     }
 
+    public MobCategory GetCategory() {
+        return category;
+    }
+
     private void ApplySpawnerChanges(Biome_MobSpawnSettingsAccessor accessor)
     {
         var spawners = accessor.GetSpawners();

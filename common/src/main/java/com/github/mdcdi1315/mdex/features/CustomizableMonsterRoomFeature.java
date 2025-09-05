@@ -5,7 +5,6 @@ package com.github.mdcdi1315.mdex.features;
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.DotNetLayer.System.Predicate;
-import com.github.mdcdi1315.mdex.util.WeightedBlockEntry;
 import com.github.mdcdi1315.mdex.features.config.CustomizableMonsterRoomConfiguration;
 
 import net.minecraft.core.BlockPos;
@@ -17,7 +16,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
@@ -31,7 +29,7 @@ public final class CustomizableMonsterRoomFeature
         super(cfg);
     }
 
-    private void placeRewardChests(FeaturePlaceContext<CustomizableMonsterRoomConfiguration> fpc , BlockPos blockpos , Predicate<BlockState> predicate , int j , int k1)
+    private static void PlaceRewardChests(FeaturePlaceContext<CustomizableMonsterRoomConfiguration> fpc , BlockPos blockpos , Predicate<BlockState> predicate , int j , int k1)
     {
         WorldGenLevel worldgenlevel = fpc.level();
         RandomSource randomsource = fpc.random();
@@ -64,7 +62,7 @@ public final class CustomizableMonsterRoomFeature
         }
     }
 
-    private void createSpawner(FeaturePlaceContext<CustomizableMonsterRoomConfiguration> fpc , BlockPos blockpos , Predicate<BlockState> predicate)
+    private static void CreateSpawner(FeaturePlaceContext<CustomizableMonsterRoomConfiguration> fpc , BlockPos blockpos , Predicate<BlockState> predicate)
     {
         WorldGenLevel wgl = fpc.level();
         RandomSource rs = fpc.random();
@@ -131,9 +129,6 @@ public final class CustomizableMonsterRoomFeature
 
         if (j2 < 1 || j2 > 5) { return false; }
 
-        float probability = fpc.config().RareStonePlacementProbability;
-        WeightedRandomList<WeightedBlockEntry> entries = WeightedRandomList.create(fpc.config().RareStoneBlocks);
-
         for (int k3 = k; k3 <= l; ++k3)
         {
             for (int i4 = 3; i4 >= -1; --i4)
@@ -151,21 +146,15 @@ public final class CustomizableMonsterRoomFeature
                     } else if (blockpos3.getY() >= worldgenlevel.getMinBuildHeight() && BlockUtils.ReferentIsAirBlock(worldgenlevel.getBlockState(blockpos3.below()))) {
                         worldgenlevel.setBlock(blockpos3, air_block, 2);
                     } else if (BlockUtils.ReferentIsSolidBlock(blockstate) && !blockstate.is(Blocks.CHEST)) {
-                        if (randomsource.nextFloat() < probability) {
-                            entries.getRandom(randomsource).ifPresent(weightedBlockEntry -> FeaturePlacementUtils.SafeSetBlock(
-                                    worldgenlevel, blockpos3, weightedBlockEntry.Block.defaultBlockState(), predicate
-                            ));
-                        } else {
-                            FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, fpc.config().BaseStoneBlock, predicate);
-                        }
+                        FeaturePlacementUtils.SafeSetBlock(worldgenlevel , blockpos3 , fpc.config().StoneBlockProvider.getState(randomsource , blockpos3) , predicate);
                     }
                 }
             }
         }
 
-        placeRewardChests(fpc , blockpos , predicate , j , k1);
+        PlaceRewardChests(fpc , blockpos , predicate , j , k1);
 
-        createSpawner(fpc , blockpos , predicate);
+        CreateSpawner(fpc , blockpos , predicate);
 
         return true;
     }

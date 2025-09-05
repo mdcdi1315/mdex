@@ -86,7 +86,7 @@ public class MDEXTeleporterBlock
             destination = MDEXBalmLayer.MINING_DIM_IDENTIFIER;
         }
         if (destination == null) {
-            sp.displayClientMessage(Component.translatable("errormessage.wrong_travelling_dimension"), true);
+            sp.displayClientMessage(Component.translatable("mdex.errormsg.wrong_travelling_dimension"), true);
             return false;
         }
         TeleportingManager manager = MDEXModAPI.getMethodImplementation().GetTeleportingManager();

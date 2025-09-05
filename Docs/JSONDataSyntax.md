@@ -42,7 +42,7 @@ Supported types defined by the syntax and supported:
 | object(ClassType)           | Another serialized JSON object of the specified class type defined in the `ClassType` parameter. The object's fields can be defined by using {} below the field declaration if deemed necessary by the implementer. |
 | &lt;AlreadyDefinedType&gt;  | Specifies another serialized JSON object type. This is like an 'external reference'.                                                                                                                                |
 
-Supported constraints for each field type. Multiple constraints must be delimited with commas.
+Supported constraints for each field. Multiple constraints must be delimited with commas.
 
 | Constraint Name | Usage                                                                                                                                                                                                                    |
 |-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|

@@ -1,25 +1,41 @@
 package com.github.mdcdi1315.mdex;
 
 import net.blay09.mods.balm.api.Balm;
-import net.minecraft.resources.ResourceLocation;
+import net.blay09.mods.balm.api.config.BalmConfig;
 import net.blay09.mods.balm.api.config.reflection.*;
+
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 
 @Config(value = MDEXBalmLayer.MODID)
 public class MDEXModConfig
 {
-    @Comment("Enables additional debug messages to resolve common errors involving invalid feature configs. For this change to take effect, you must restart the game.")
+    @Comment(
+            "Enables additional debug messages to resolve common errors involving invalid feature configs.\n" +
+            "For this change to take effect, you must restart the game."
+    )
     public boolean DebugFeatureConfigurations = false;
 
-    @Comment("The dimension where the player should return when he clicks on any Teleporter block in the Mining Dimension. By default it is set to the overworld.")
+    @Comment(
+            "The dimension where the player should return when he clicks on any Teleporter block in the Mining Dimension.\n" +
+            "By default it is set to Minecraft's overworld dimension."
+    )
     public ResourceLocation HomeDimension = BuiltinDimensionTypes.OVERWORLD.location();
 
-    @Comment("Whether the portal when placed on the Mining Dimension should be placed in lower Y levels.")
+    @Comment(
+            "Enabling this value restricts the portal placement in lower height levels.\n" +
+            "It is highly recommended enabling this value when you want the players to be spawned in lower height levels."
+    )
     public boolean ShouldSpawnPortalInDeep = false;
 
-    public static void Initialize()
+    @Comment(
+            "Whether the starter's chest should be placed after all when going to the Mining Dimension for the first time.\n" +
+            "Useful for cases where the datapack has defined a starter chest to be placed, but server admins do not need it."
+    )
+    public boolean ShouldPlaceStarterChestAtFirstTime = true;
+
+    public static void Initialize(BalmConfig cfg)
     {
-        var cfg = Balm.getConfig();
         var schema = cfg.registerConfig(MDEXModConfig.class);
         cfg.onConfigAvailable(MDEXModConfig.class , (MDEXModConfig mlc) -> {
             if (!cfg.getConfigFile(schema).exists())
@@ -28,8 +44,7 @@ public class MDEXModConfig
                 cfg.saveLocalConfig(schema);
             }
             MDEXBalmLayer.DebugFeatureConfigurations = mlc.DebugFeatureConfigurations;
-            MDEXBalmLayer.LOGGER.info("DebugFeatureConfigurations is {}." , MDEXBalmLayer.DebugFeatureConfigurations);
-            Balm.getConfig().updateLocalConfig(MDEXModConfig.class , MDEXModConfig::EmptyUpdater);
+            cfg.updateLocalConfig(MDEXModConfig.class , MDEXModConfig::EmptyUpdater);
         });
     }
 

@@ -47,8 +47,8 @@
               "type": "minecraft:y_clamped_gradient",
               "from_value": 8.0,
               "from_y": -64,
-              "to_value": -30.5,
-              "to_y": 176
+              "to_value": -16.3211,
+              "to_y": 111
             }
           }
         },

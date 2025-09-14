@@ -4,6 +4,7 @@ import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.DotNetLayer.System.Runtime.CompilerServices.Extension;
 
+import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.util.BlockNotFoundException;
 import com.github.mdcdi1315.mdex.util.BlockPropertyNotFoundException;
 
@@ -14,9 +15,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -24,7 +25,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 
-import java.util.Optional;
 import java.util.function.ToIntFunction;
 
 @Extension
@@ -87,7 +87,12 @@ public final class BlockUtils
      */
     public static boolean SetRandomizableContainerLootTable(BlockGetter level, RandomSource random, BlockPos pos, ResourceLocation lootTable)
     {
-        return SetRandomizableContainerLootTable(level , random , pos , ResourceKey.create(Registries.LOOT_TABLE , lootTable));
+        BlockEntity blockentity = level.getBlockEntity(pos);
+        if (blockentity instanceof RandomizableContainerBlockEntity e) {
+            e.setLootTable(ResourceKey.create(Registries.LOOT_TABLE , lootTable), random.nextLong());
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -109,18 +114,21 @@ public final class BlockUtils
         return false;
     }
 
+    @Extension
     public static boolean ReferentIsSolidBlock(BlockState bs)
     {
         if (bs == null) { return false; }
         return !bs.isAir();
     }
 
+    @Extension
     public static boolean ReferentIsAirBlock(BlockState bs)
     {
         if (bs == null) { return false; }
         return ReferentIsAirBlockUnsafe(bs);
     }
 
+    @Extension
     public static boolean ReferentIsAirBlockUnsafe(BlockState bs)
     {
         return bs.isAir();
@@ -141,23 +149,27 @@ public final class BlockUtils
 
     private static boolean NotEqualToCompareToWithReflection(Comparable<?> v1 , Comparable<?> v2)
     {
+        Class<?> cls = v1.getClass();
         try {
-            for (var m : v1.getClass().getMethods())
+            for (var m : cls.getMethods())
             {
-                if (m.getName().equals("compareTo") && m.getParameterCount() == 1) {
+                if (m.getName().equals("compareTo") && m.getParameterCount() == 1)
+                {
                     return (Integer) m.invoke(v1 , v2) != 0;
                 }
             }
-            return false;
-        } catch (java.lang.Exception e) {
-            return true;
+        } catch (Exception e) {
+            MDEXBalmLayer.LOGGER.info("Cannot compare block state properties" , e);
         }
+        return true;
     }
 
     public static boolean BlockStatesMatch(BlockState s1 , BlockState s2)
+            throws ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(s1);
         ArgumentNullException.ThrowIfNull(s2);
+        // TODO: See whether the s1.equals(s2) check would work
         if (s1.getBlock() == s2.getBlock())
         {
             for (var p1 : s1.getProperties())
@@ -179,16 +191,11 @@ public final class BlockUtils
     /**
      * Gets the {@link Block} corresponding to the specified ID, or fails with {@link BlockNotFoundException}.
      */
-    @SuppressWarnings("all")
     public static @NotNull Block GetBlockFromID(ResourceLocation location)
         throws BlockNotFoundException , ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(location , "location");
-        Optional<Block> b = BuiltInRegistries.BLOCK.getOptional(location);
-        if (b.isEmpty()) {
-            throw new BlockNotFoundException(location);
-        }
-        return b.get();
+        return BuiltInRegistries.BLOCK.getOptional(location).orElseThrow(() -> new BlockNotFoundException(location));
     }
 
     /**

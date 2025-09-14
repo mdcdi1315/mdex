@@ -105,6 +105,12 @@ tasks.named("processResources") {
     doFirst {
         logger.debug("FORGE: Copying refmap to resources directory\n")
         try {
+            Files.createDirectories(project(":forge").file("src/generated/resources").toPath())
+        } catch (IOException ioex) {
+            logger.error("ERR: Cannot create generated directory for copying the refmap." , ioex)
+            return
+        }
+        try {
             Files.copy(file("build/tmp/compileJava/${mod_id}.refmap.json").toPath(), project(":forge").file("src/generated/resources/${mod_id}.refmap.json").toPath(), StandardCopyOption.REPLACE_EXISTING)
         } catch (IOException ioex) {
             logger.error("ERR: Cannot copy refmap to specified directory because of an I/O exception." , ioex)

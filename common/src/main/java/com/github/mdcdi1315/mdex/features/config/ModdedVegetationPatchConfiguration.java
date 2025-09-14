@@ -24,7 +24,7 @@ public final class ModdedVegetationPatchConfiguration
     public CaveSurface surface;
     public final IntProvider depth;
     public final float extraBottomBlockChance;
-    public final int verticalRange;
+    public final short verticalRange;
     public final float vegetationChance;
     public final IntProvider xzRadius;
     public final float extraEdgeColumnChance;
@@ -39,7 +39,7 @@ public final class ModdedVegetationPatchConfiguration
                 CaveSurface.CODEC.fieldOf("surface").forGetter((p) -> p.surface),
                 IntProvider.codec(1, 128).fieldOf("depth").forGetter((p) -> p.depth),
                 CodecUtils.FLOAT_PROBABILITY.fieldOf("extra_bottom_block_chance").forGetter((p) -> p.extraBottomBlockChance),
-                Codec.intRange(1, 256).fieldOf("vertical_range").forGetter((p) -> p.verticalRange),
+                CodecUtils.ShortRange(1, 256).fieldOf("vertical_range").forGetter((p) -> p.verticalRange),
                 CodecUtils.FLOAT_PROBABILITY.fieldOf("vegetation_chance").forGetter((p) -> p.vegetationChance),
                 IntProvider.CODEC.fieldOf("xz_radius").forGetter((p) -> p.xzRadius),
                 CodecUtils.FLOAT_PROBABILITY.fieldOf("extra_edge_column_chance").forGetter((p) -> p.extraEdgeColumnChance),
@@ -47,7 +47,7 @@ public final class ModdedVegetationPatchConfiguration
         );
     }
 
-    public ModdedVegetationPatchConfiguration(List<String> modids, TagKey<Block> replaceable, AbstractBlockStateProvider groundState, Holder<PlacedFeature> vegetationFeature, CaveSurface surface, IntProvider depth, float extraBottomBlockChance, int verticalRange, float vegetationChance, IntProvider xzRadius, float extraEdgeColumnChance)
+    public ModdedVegetationPatchConfiguration(List<String> modids, TagKey<Block> replaceable, AbstractBlockStateProvider groundState, Holder<PlacedFeature> vegetationFeature, CaveSurface surface, IntProvider depth, float extraBottomBlockChance, short verticalRange, float vegetationChance, IntProvider xzRadius, float extraEdgeColumnChance)
     {
         super(modids);
         this.replaceable = replaceable;

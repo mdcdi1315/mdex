@@ -10,8 +10,8 @@ import com.github.mdcdi1315.mdex.util.EntityTypeNotFoundException;
 import com.github.mdcdi1315.mdex.mixin.Biome_MobSpawnSettingsAccessor;
 
 import net.minecraft.util.random.Weighted;
-import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.entity.MobCategory;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.world.level.biome.MobSpawnSettings;
@@ -73,6 +73,10 @@ public final class MobSpawnsModifier
         // Do not modify anything related with the spawners if it seems that there is no reason to.
         if (entities == null || entities.isEmpty()) { return; }
         ApplySpawnerChanges((Biome_MobSpawnSettingsAccessor) spawnsettings);
+    }
+
+    public MobCategory GetCategory() {
+        return category;
     }
 
     private void ApplySpawnerChanges(Biome_MobSpawnSettingsAccessor accessor)

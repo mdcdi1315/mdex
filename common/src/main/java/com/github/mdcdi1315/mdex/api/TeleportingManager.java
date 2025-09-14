@@ -2,19 +2,19 @@ package com.github.mdcdi1315.mdex.api;
 
 import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
-import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
-
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
 
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.MDEXModConfig;
-
-import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureConfiguration;
-import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureType;
-import com.github.mdcdi1315.mdex.api.teleporter.TeleporterSpawnData;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.util.MDEXException;
 import com.github.mdcdi1315.mdex.util.RectAreaIterable;
+import com.github.mdcdi1315.mdex.api.teleporter.TeleporterSpawnData;
+import com.github.mdcdi1315.mdex.api.teleporter.StarterChestPlacementInfo;
+import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureType;
+import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureConfiguration;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
@@ -60,6 +60,7 @@ public abstract class TeleportingManager
      * @param server The server where this teleporting manager was created on.
      * @throws ArgumentNullException <em>server</em> was null.
      */
+    @SuppressWarnings("unchecked")
     protected TeleportingManager(MinecraftServer server)
         throws ArgumentNullException
     {
@@ -138,10 +139,13 @@ public abstract class TeleportingManager
         ServerLevel lvl = ComputeTargetLevel();
         if (lvl == null) { return false; }
         ((ServerLevel)sp.level()).getDataStorage().computeIfAbsent(factory).AddEntry(sp , teleporterposcurrentworld.above());
-        var lvldat = lvl.getDataStorage().computeIfAbsent(factory);
-        BlockPos bp = FindTeleporterArea(sp , lvl , teleporterposcurrentworld , lvldat);
+        var tlvldat = lvl.getDataStorage().computeIfAbsent(factory);
+        if (!TargetDim.location().equals(MDEXBalmLayer.MINING_DIM_IDENTIFIER)) {
+            tlvldat.SetChestPlacementAsIrrelevant();
+        }
+        BlockPos bp = FindTeleporterArea(sp , lvl , teleporterposcurrentworld , tlvldat);
         if (!TeleporterIsExisting(lvl.getBlockState(bp.below()))) {
-            bp = PlaceTeleporterFeature(lvl , bp);
+            bp = PlaceTeleporterFeature(lvl , bp , tlvldat);
         }
         if (bp == null) {
             sp.displayClientMessage(Component.literal("Cannot teleport. This is an implementation bug. Please report to mdcdi1315.") , true);
@@ -150,9 +154,9 @@ public abstract class TeleportingManager
         }
         // Set the block position by one block above
         // That is the point where the player will be placed to
-        if (TeleportImpl(sp , lvl , bp , true))
+        if (TeleportImpl(sp , lvl , bp , sp.level() != lvl))
         {
-            lvldat.AddEntry(sp , bp);
+            tlvldat.AddEntry(sp , bp);
             MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Player with UUID '{}' was successfully teleported to dimension with ID '{}' through Mining Dimension TeleportingManager mechanism." , sp.getUUID() , sp.level().dimension().location());
             return true;
         }
@@ -173,33 +177,41 @@ public abstract class TeleportingManager
     }
 
     @MaybeNull
-    private BlockPos PlaceTeleporterFeature(ServerLevel target , BlockPos basepos)
+    private BlockPos PlaceTeleporterFeature(ServerLevel target , BlockPos basepos, TeleporterSpawnData targetleveldata)
     {
         BlockPos temp , possible;
-        if (target.dimension().location().equals(MDEXBalmLayer.MINING_DIM_IDENTIFIER)) {
+        if (TargetDim.location().equals(MDEXBalmLayer.MINING_DIM_IDENTIFIER)) {
+            var mc = MDEXModConfig.getActive();
             possible = FindEmptyPlace(
                     target.getChunk(basepos) ,
-                    MDEXModConfig.getActive().ShouldSpawnPortalInDeep ?
+                    mc.ShouldSpawnPortalInDeep ?
                             target.getMinY() + 40 :
                             target.getMaxY() - 40 ,
                     basepos
             );
+            genfeature.config().PlaceStarterChest = mc.ShouldPlaceStarterChestAtFirstTime && targetleveldata.GetPlacementInfo() == StarterChestPlacementInfo.NOT_PLACED;
         } else {
             temp = FindSurface(target , basepos);
             possible = Objects.requireNonNullElse(temp, basepos);
         }
         if (possible == null) {
             return null;
+        }
+        if (!target.getFluidState(possible).is(Fluids.EMPTY))
+        {
+            // We are into a fluid region???!!
+            // We need to remediate this since the player cannot be spawned there, he will die by lava or drown by the water.
+            possible = AvoidFluidRegion(target , possible);
+            if (possible == null) { return null; }
+            MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Attempting to place the teleporter at a higher because it ended up into a fluid region.");
+        }
+        boolean test = genfeature.place(target , target.getChunkSource().getGenerator(), target.random , possible);
+        genfeature.config().PlaceStarterChest = false;
+        if (test) {
+            targetleveldata.SetChestPlacementAsPlaced();
+            return possible;
         } else {
-            if (!target.getFluidState(possible).is(Fluids.EMPTY))
-            {
-                // We are into a fluid region???!!
-                // We need to remediate this since the player cannot be spawned there, he will die by lava or drown by the water.
-                possible = AvoidFluidRegion(target , possible);
-                if (possible == null) { return null; }
-                MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Attempting to place the teleporter at a higher level because it ended up into a fluid region.");
-            }
-            return genfeature.place(target , target.getChunkSource().getGenerator(), target.random , possible) ? possible : null;
+            return null;
         }
     }
 
@@ -280,6 +292,11 @@ public abstract class TeleportingManager
 
         // We cannot leave from the fluid region
         return null;
+    }
+
+    @NotNull
+    public SavedDataType<TeleporterSpawnData> GetSavedTeleporterDataFactory() {
+        return factory;
     }
 
     /**

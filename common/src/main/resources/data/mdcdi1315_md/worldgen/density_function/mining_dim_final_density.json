@@ -1,42 +1,38 @@
 {
-	"type": "minecraft:min",
-	"argument1": "mdcdi1315_md:caves/noodle",
+	"type": "minecraft:mul",
+	"argument1": {
+		"type": "minecraft:y_clamped_gradient",
+		"from_value": 1,
+		"from_y": 108,
+		"to_value": 0,
+		"to_y": 112
+	},
 	"argument2": {
-		"type": "minecraft:squeeze",
-		"argument": {
-			"type": "minecraft:mul",
-			"argument1": 0.64,
-			"argument2": {
-				"type": "minecraft:interpolated",
-				"argument": {
-					"type": "minecraft:add",
-					"argument1": 0.1171875,
-					"argument2": {
-						"type": "minecraft:mul",
-						"argument1": {
-							"type": "minecraft:y_clamped_gradient",
-							"from_value": 0,
-							"from_y": -64,
-							"to_value": 1,
-							"to_y": -56
-						},
+		"type": "minecraft:min",
+		"argument1": "mdcdi1315_md:caves/noodle",
+		"argument2": {
+			"type": "minecraft:squeeze",
+			"argument": {
+				"type": "minecraft:mul",
+				"argument1": 0.64,
+				"argument2": {
+					"type": "minecraft:interpolated",
+					"argument": {
+						"type": "minecraft:add",
+						"argument1": 0.1171875,
 						"argument2": {
-							"type": "minecraft:add",
-							"argument1": -0.1953125,
+							"type": "minecraft:mul",
+							"argument1": {
+								"type": "minecraft:y_clamped_gradient",
+								"from_value": 0,
+								"from_y": -64,
+								"to_value": 1,
+								"to_y": -56
+							},
 							"argument2": {
-								"type": "minecraft:mul",
-								"argument1": {
-									"type": "minecraft:y_clamped_gradient",
-									"from_value": 1,
-									"from_y": 158,
-									"to_value": 0,
-									"to_y": 176
-								},
-								"argument2": {
-									"type": "minecraft:add",
-									"argument1": 0.078125,
-									"argument2": "mdcdi1315_md:mining_dim_cave_gen"
-								}
+								"type": "minecraft:add",
+								"argument1": -0.1171875,
+								"argument2": "mdcdi1315_md:mining_dim_cave_gen"
 							}
 						}
 					}

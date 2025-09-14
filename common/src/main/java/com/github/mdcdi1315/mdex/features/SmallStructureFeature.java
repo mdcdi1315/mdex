@@ -80,8 +80,8 @@ public final class SmallStructureFeature
         // Static settings defined directly through data
         sets.setRotation(settings.PlacementRotation);
         sets.setMirror(settings.PlacementMirror);
-        sets.setIgnoreEntities(settings.ShouldIgnoreEntities);
-        sets.setLiquidSettings(settings.ShouldKeepFluids ? LiquidSettings.APPLY_WATERLOGGING : LiquidSettings.IGNORE_WATERLOGGING);
+        sets.setIgnoreEntities(settings.GetShouldIgnoreEntities());
+        sets.setLiquidSettings(settings.GetShouldKeepFluids() ? LiquidSettings.APPLY_WATERLOGGING : LiquidSettings.IGNORE_WATERLOGGING);
         // Apply all the found processors
         for (var proc : fpc.config().StructuresProcessors.value().list())
         {

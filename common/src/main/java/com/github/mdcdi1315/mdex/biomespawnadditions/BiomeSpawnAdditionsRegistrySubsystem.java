@@ -14,11 +14,11 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public final class BiomeSpawnAdditionsRegistrySubsystem
 {
@@ -50,9 +50,9 @@ public final class BiomeSpawnAdditionsRegistrySubsystem
 
     private static void ApplyAdditionsInternal(Registry<Biome> biomes, Registry<BiomeSpawnAdditions> spawnadditions)
     {
-        int applied = 0;
         Optional<Biome> spec;
         MDEXBalmLayer.LOGGER.info("BiomeSpawnAdditions: Applying {} biome spawn addition objects" , spawnadditions.size());
+        Map<ResourceLocation , List<MobSpawnsModifier>> m = new HashMap<>(spawnadditions.size() / 6);
         for (var i : spawnadditions)
         {
             boolean allloaded = true;
@@ -64,27 +64,54 @@ public final class BiomeSpawnAdditionsRegistrySubsystem
                     break;
                 }
             }
-            if (allloaded)
-            {
-                if ((spec = biomes.getOptional(i.BiomeID)).isPresent()) {
-                    MobSpawnsModifier mod = new MobSpawnsModifier(spec.get(), i.Category);
-                    try {
-                        mod.AddEntities(i.Entries);
-                    } catch (AggregateException e) {
-                        MDEXBalmLayer.LOGGER.warn("BiomeSpawnAdditions: Certain entities could not be applied." , e);
+            try {
+                if (allloaded) {
+                    if ((spec = biomes.getOptional(i.BiomeID)).isPresent()) {
+                        MobSpawnsModifier mod = ReturnOrPushCategoryIfNotExisting(m.computeIfAbsent(i.BiomeID , (R) -> new ArrayList<>()) , spec.get() , i.Category);
+                        try {
+                            mod.AddEntities(i.Entries);
+                        } catch (AggregateException e) {
+                            MDEXBalmLayer.LOGGER.warn("BiomeSpawnAdditions: Certain entities could not be applied.", e);
+                        }
+                    } else {
+                        MDEXBalmLayer.LOGGER.warn("BiomeSpawnAdditions: Cannot find the biome with ID {}, effectively skipping this entry.", i.BiomeID);
                     }
-                    try {
-                        mod.ApplyChanges();
-                    } catch (MDEXException mde) {
-                        MDEXBalmLayer.LOGGER.error("BiomeSpawnAdditions: Cannot apply new entities due to a runtime error. This error will be logged only once." , mde);
-                        break;
-                    }
-                    applied++;
-                } else {
-                    MDEXBalmLayer.LOGGER.warn("BiomeSpawnAdditions: Cannot find the biome with ID {}, effectively skipping this entry." ,i.BiomeID);
                 }
+            } finally {
+                i.Destroy();
             }
         }
-        MDEXBalmLayer.LOGGER.info("BiomeSpawnAdditions: Applied {} biome spawn addition objects" , applied);
+        int applied = 0 , ab = 0;
+        for (var g : m.entrySet())
+        {
+            var l = g.getValue();
+            for (var modifier : l)
+            {
+                try {
+                    modifier.ApplyChanges();
+                } catch (MDEXException mde) {
+                    MDEXBalmLayer.LOGGER.error("BiomeSpawnAdditions: Cannot apply new entities due to a runtime error. This error will be logged only once.", mde);
+                    break;
+                }
+                applied++;
+            }
+            l.clear(); // Aggressive cleaning of modifiers
+            ab++;
+        }
+        MDEXBalmLayer.LOGGER.info("BiomeSpawnAdditions: Applied {} biome spawn addition modifications to {} biomes" , applied , ab);
+    }
+
+    private static MobSpawnsModifier ReturnOrPushCategoryIfNotExisting(List<MobSpawnsModifier> m, Biome b, MobCategory c)
+    {
+        var name = c.getName();
+        for (var i : m)
+        {
+            if (name.equals(i.GetCategory().getName())) {
+                return i;
+            }
+        }
+        var g = new MobSpawnsModifier(b , c);
+        m.add(g);
+        return g;
     }
 }

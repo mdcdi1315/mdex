@@ -41,18 +41,43 @@ public final class ModdedOreFeature
                 new KeyValuePair<>(Direction.WEST , Direction.SOUTH)
         ) , randomsource);
 
-        int sampledsize = randomsource.nextInt(oreconfiguration.Size);
+        byte sampledsize = (byte) randomsource.nextInt(oreconfiguration.Size);
 
         if (sampledsize < 9) {
             return PlaceOreLessThan8Blocks(worldgenlevel , blockpos , randomsource , oreconfiguration.TargetStates , selecteddir , sampledsize , oreconfiguration.DiscardChanceOnAirExposure);
-        } else {
+        } else if (sampledsize < 16) {
             return PlaceOreMoreThan8Blocks(worldgenlevel , blockpos , randomsource , oreconfiguration.TargetStates , selecteddir , sampledsize , oreconfiguration.DiscardChanceOnAirExposure);
+        } else {
+            return PlaceOreMoreThan16Blocks(worldgenlevel , blockpos , randomsource , oreconfiguration.TargetStates , sampledsize , oreconfiguration.DiscardChanceOnAirExposure);
         }
     }
 
-    private static boolean PlaceOreMoreThan8Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleBlockState> states , KeyValuePair<Direction , Direction> selected , int numberoforestoplace , float discardchanceonairexposure)
+    private static boolean PlaceOreMoreThan16Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleBlockState> states , byte numberoforestoplace , float discardchanceonairexposure)
     {
-        int remaining = numberoforestoplace;
+        short nplaced = 0;
+        int sidesize = numberoforestoplace / 4;
+
+        for (BlockPos temp : FeaturePlacementUtils.GetRectangularArea(origin.offset(-sidesize , 0 , -sidesize) , new BlockPos(sidesize , rs.nextIntBetweenInclusive(1 , 3) , sidesize)))
+        {
+            if (rs.nextIntBetweenInclusive(0 , 131070) < 32767)
+            {
+                for (var s : states)
+                {
+                    if (CanPlaceOre(wgl , rs , discardchanceonairexposure , s , temp))
+                    {
+                        nplaced++;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return nplaced >= numberoforestoplace;
+    }
+
+    private static boolean PlaceOreMoreThan8Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleBlockState> states , KeyValuePair<Direction , Direction> selected , byte numberoforestoplace , float discardchanceonairexposure)
+    {
+        byte remaining = numberoforestoplace;
 
         BlockPos[] positions = new BlockPos[numberoforestoplace / 8];
         BlockPos temp = origin;
@@ -102,9 +127,9 @@ public final class ModdedOreFeature
         return remaining < numberoforestoplace;
     }
 
-    private static boolean PlaceOreLessThan8Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleBlockState> states , KeyValuePair<Direction , Direction> selected , int numberoforestoplace , float discardchanceonairexposure)
+    private static boolean PlaceOreLessThan8Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleBlockState> states , KeyValuePair<Direction , Direction> selected , byte numberoforestoplace , float discardchanceonairexposure)
     {
-        int placed = 0;
+        byte placed = 0;
 
         for (BlockPos ps : new BlockPos[] { origin , origin.above() })
         {

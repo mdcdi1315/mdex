@@ -9,9 +9,9 @@ public class CompilableIslandLayer
     implements Compilable
 {
     public CompilableTargetBlockState State;
-    public int Size;
+    public byte Size;
 
-    public CompilableIslandLayer(CompilableTargetBlockState state , int size)
+    public CompilableIslandLayer(CompilableTargetBlockState state , byte size)
     {
         State = state;
         Size = size;
@@ -21,7 +21,7 @@ public class CompilableIslandLayer
     {
         return CodecUtils.CreateCodecDirect(
                 CompilableTargetBlockState.GetCodec().fieldOf("state").forGetter((p) -> p.State),
-                Codec.intRange(1 , 32).fieldOf("size").forGetter((p) -> p.Size),
+                CodecUtils.ByteRange(1 , 32).fieldOf("size").forGetter((p) -> p.Size),
                 CompilableIslandLayer::new
         );
     }

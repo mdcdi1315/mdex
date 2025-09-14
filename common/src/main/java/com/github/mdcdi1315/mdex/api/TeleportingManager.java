@@ -1,39 +1,40 @@
 package com.github.mdcdi1315.mdex.api;
 
-import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
-import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
-import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
+import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
+
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.MDEXModConfig;
-import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureConfiguration;
-import com.github.mdcdi1315.mdex.api.teleporter.BaseTeleporterPlacementFeatureType;
-import com.github.mdcdi1315.mdex.api.teleporter.TeleporterSpawnData;
+import com.github.mdcdi1315.mdex.api.teleporter.*;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.util.MDEXException;
 import com.github.mdcdi1315.mdex.util.RectAreaIterable;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.SectionPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.world.level.Level;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.saveddata.SavedData;
 
 import java.util.Objects;
 
@@ -58,6 +59,7 @@ public abstract class TeleportingManager
      * @param server The server where this teleporting manager was created on.
      * @throws ArgumentNullException <em>server</em> was null.
      */
+    @SuppressWarnings("unchecked")
     protected TeleportingManager(MinecraftServer server)
         throws ArgumentNullException
     {
@@ -128,10 +130,13 @@ public abstract class TeleportingManager
         ServerLevel lvl = ComputeTargetLevel();
         if (lvl == null) { return false; }
         ((ServerLevel)sp.level()).getDataStorage().computeIfAbsent(factory , TELEPORTER_DATA_DIMFILE_NAME).AddEntry(sp , teleporterposcurrentworld.above());
-        var lvldat = lvl.getDataStorage().computeIfAbsent(factory , TELEPORTER_DATA_DIMFILE_NAME);
-        BlockPos bp = FindTeleporterArea(sp , lvl , teleporterposcurrentworld , lvldat);
+        var tlvldat = lvl.getDataStorage().computeIfAbsent(factory , TELEPORTER_DATA_DIMFILE_NAME);
+        if (!TargetDim.location().equals(MDEXBalmLayer.MINING_DIM_IDENTIFIER)) {
+            tlvldat.SetChestPlacementAsIrrelevant();
+        }
+        BlockPos bp = FindTeleporterArea(sp , lvl , teleporterposcurrentworld , tlvldat);
         if (!TeleporterIsExisting(lvl.getBlockState(bp.below()))) {
-            bp = PlaceTeleporterFeature(lvl , bp);
+            bp = PlaceTeleporterFeature(lvl , bp , tlvldat);
         }
         if (bp == null) {
             sp.displayClientMessage(Component.literal("Cannot teleport. This is an implementation bug. Please report to mdcdi1315.") , true);
@@ -142,7 +147,7 @@ public abstract class TeleportingManager
         // That is the point where the player will be placed to
         if (TeleportImpl(sp , lvl , bp , true))
         {
-            lvldat.AddEntry(sp , bp);
+            tlvldat.AddEntry(sp , bp);
             MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Player with UUID '{}' was successfully teleported to dimension with ID '{}' through Mining Dimension TeleportingManager mechanism." , sp.getUUID() , sp.level().dimension().location());
             return true;
         }
@@ -170,22 +175,27 @@ public abstract class TeleportingManager
     }
 
     @MaybeNull
-    private BlockPos PlaceTeleporterFeature(ServerLevel target , BlockPos basepos)
+    private BlockPos PlaceTeleporterFeature(ServerLevel target , BlockPos basepos , TeleporterSpawnData targetleveldata)
     {
         BlockPos temp , possible;
-        if (target.dimension().location().equals(MDEXBalmLayer.MINING_DIM_IDENTIFIER)) {
+        if (TargetDim.location().equals(MDEXBalmLayer.MINING_DIM_IDENTIFIER)) {
+            var mc = MDEXModConfig.getActive();
             possible = FindEmptyPlace(
                     target.getChunk(basepos) ,
-                    MDEXModConfig.getActive().ShouldSpawnPortalInDeep ?
+                    mc.ShouldSpawnPortalInDeep ?
                             target.getMinBuildHeight() + 40 :
                             target.getMaxBuildHeight() - 40 ,
                     basepos
             );
+            genfeature.config().PlaceStarterChest = mc.ShouldPlaceStarterChestAtFirstTime && targetleveldata.GetPlacementInfo() == StarterChestPlacementInfo.NOT_PLACED;
         } else {
             temp = FindSurface(target , basepos);
             possible = Objects.requireNonNullElse(temp, basepos);
         }
-        if (possible != null && !target.getFluidState(possible).is(Fluids.EMPTY))
+        if (possible == null) {
+            return null;
+        }
+        if (!target.getFluidState(possible).is(Fluids.EMPTY))
         {
             // We are into a fluid region???!!
             // We need to remediate this since the player cannot be spawned there, he will die by lava or drown by the water.
@@ -194,7 +204,13 @@ public abstract class TeleportingManager
             MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Attempting to place the teleporter at a higher because it ended up into a fluid region.");
         }
         boolean test = genfeature.place(target , target.getChunkSource().getGenerator(), target.random , possible);
-        return test ? possible : null;
+        genfeature.config().PlaceStarterChest = false;
+        if (test) {
+            targetleveldata.SetChestPlacementAsPlaced();
+            return possible;
+        } else {
+            return null;
+        }
     }
 
     private static BlockPos FindSurface(ServerLevel level , BlockPos basepos)
@@ -274,6 +290,11 @@ public abstract class TeleportingManager
 
         // We cannot leave from the fluid region
         return null;
+    }
+
+    @NotNull
+    public SavedData.Factory<TeleporterSpawnData> GetSavedTeleporterDataFactory() {
+        return factory;
     }
 
     /**

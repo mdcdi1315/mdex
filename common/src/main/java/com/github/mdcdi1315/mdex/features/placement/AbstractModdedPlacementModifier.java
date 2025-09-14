@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.features.placement;
 
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.mdex.util.Compilable;
 
 import net.minecraft.core.BlockPos;
@@ -21,6 +22,7 @@ public abstract class AbstractModdedPlacementModifier
 
     protected abstract boolean CompilePlacementModifierData();
 
+    @NotNull
     protected abstract Stream<BlockPos> GetPositions(PlacementContext cxt , RandomSource rs , BlockPos origin);
 
     public final void Compile()

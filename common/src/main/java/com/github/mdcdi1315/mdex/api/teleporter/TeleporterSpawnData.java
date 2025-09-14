@@ -1,29 +1,85 @@
 package com.github.mdcdi1315.mdex.api.teleporter;
 
+import com.github.mdcdi1315.DotNetLayer.System.ArgumentException;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
+import com.github.mdcdi1315.DotNetLayer.System.Collections.Generic.KeyValuePair;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
+
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
-import net.minecraft.core.BlockPos;
+
 import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.saveddata.SavedData;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import com.google.common.collect.ImmutableList;
+
+import java.util.*;
 
 public final class TeleporterSpawnData
     extends SavedData
 {
     public static final String MAGIC = "MDCDI1315_MDEX_SAVEDWORLDDATA";
-    public static final byte SPAWN_DATA_VERSION = 0;
+    public static final byte SPAWN_DATA_VERSION = 1;
     private Map<UUID, BlockPos> PlayerMap;
+    private StarterChestPlacementInfo placementinfo;
 
     public TeleporterSpawnData()
     {
         PlayerMap = new HashMap<>();
+        // Initially consider that no starter chest is placed.
+        placementinfo = StarterChestPlacementInfo.NOT_PLACED;
+    }
+
+    /**
+     * Sets the chest placement as irrelevant to the dimension that this teleporter spawn data file is bound to.
+     */
+    public void SetChestPlacementAsIrrelevant() {
+        placementinfo = StarterChestPlacementInfo.IRRELEVANT;
+    }
+
+    /**
+     * Sets the chest placement as placed. <br />
+     * That means that the starter chest has been now placed. <br />
+     * Does not do anything if the chest placement is invalid for this dimension.
+     */
+    public void SetChestPlacementAsPlaced() {
+        if (placementinfo != StarterChestPlacementInfo.IRRELEVANT) {
+            placementinfo = StarterChestPlacementInfo.PLACED;
+        }
+    }
+
+    /**
+     * Sets the chest placement to a specific value. <br />
+     * You cannot set, however, from here the irrelevant value as this is dimension-specific.
+     * @param inf The new placement information to apply.
+     * @throws ArgumentException Passed placement information is invalid.
+     */
+    public void SetChestPlacementToValue(@DisallowNull StarterChestPlacementInfo inf)
+            throws ArgumentException
+    {
+        switch (inf)
+        {
+            case PLACED:
+            case NOT_PLACED:
+                placementinfo = inf;
+                break;
+            default:
+                throw new ArgumentException(String.format("Value not allowed or invalid: %s" , inf));
+        }
+    }
+
+    /**
+     * Gets starter chest placement information about the current dimension. <br />
+     * May also return irrelevance if this dimension is not the mining dimension
+     * @return The starter chest placement information.
+     */
+    public StarterChestPlacementInfo GetPlacementInfo() {
+        return placementinfo;
     }
 
     /**
@@ -60,6 +116,25 @@ public final class TeleporterSpawnData
         return PlayerMap.get(player.getUUID());
     }
 
+    /**
+     * Retrieves a list of key-value pairs, specifying the spawn positions for all the players for this dimension.
+     * @return A list of key-value pairs.
+     */
+    @NotNull
+    public List<KeyValuePair<UUID , BlockPos>> GetSpawnPositionsForAllPlayers()
+    {
+        ArrayList<KeyValuePair<UUID , BlockPos>> list = new ArrayList<>(PlayerMap.size());
+        BlockPos v;
+        for (var g : PlayerMap.entrySet())
+        {
+            v = g.getValue();
+            if (v != null) {
+                list.add(new KeyValuePair<>(g.getKey() , v));
+            }
+        }
+        return ImmutableList.copyOf(list);
+    }
+
     public void FromDeserialized(CompoundTag ct)
     {
         if (ct.contains("version" , Tag.TAG_BYTE))
@@ -94,6 +169,16 @@ public final class TeleporterSpawnData
                 } else {
                     MDEXBalmLayer.LOGGER.error("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data file because the 'magic' field does not exist or is invalid.");
                 }
+                if (version == 1) {
+                    if (ct.contains("starter_chest_placement_info" , Tag.TAG_BYTE)) {
+                        placementinfo = StarterChestPlacementInfo.FromValue(ct.getByte("starter_chest_placement_info"));
+                    } else {
+                        MDEXBalmLayer.LOGGER.error("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data file because the 'starter_chest_placement_info' field does not exist or is invalid.");
+                    }
+                } else {
+                    // If reading the older version, always consider the placement as irrelevant
+                    placementinfo = StarterChestPlacementInfo.IRRELEVANT;
+                }
             }
         } else {
             MDEXBalmLayer.LOGGER.error("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data file because the 'version' field does not exist or is invalid.");
@@ -106,6 +191,7 @@ public final class TeleporterSpawnData
         CompoundTag ct = new CompoundTag();
         ct.putByte("version" , SPAWN_DATA_VERSION);
         ct.putString("magic" , MAGIC);
+        ct.putByte("starter_chest_placement_info" , placementinfo.GetValue());
         CompoundTag td = new CompoundTag();
         CreateTagData(td);
         ct.put("teleporter_data" , td);

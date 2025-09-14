@@ -12,6 +12,10 @@
 			"state": {
 				"Name": "minecraft:torch"
 			}
+		},
+		"size": {
+			"type": "minecraft:constant",
+			"value": 1
 		}
 	}
 }

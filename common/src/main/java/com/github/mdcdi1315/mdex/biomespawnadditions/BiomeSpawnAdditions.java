@@ -1,9 +1,11 @@
 package com.github.mdcdi1315.mdex.biomespawnadditions;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+
 import com.mojang.serialization.Codec;
-import net.minecraft.resources.ResourceLocation;
+
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -31,5 +33,13 @@ public final class BiomeSpawnAdditions
         Category = c;
         BiomeID = biomeid;
         Entries = entries;
+    }
+
+    public void Destroy()
+    {
+        ModIds = null;
+        BiomeID = null;
+        Category = null;
+        Entries = null;
     }
 }

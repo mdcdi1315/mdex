@@ -17,9 +17,9 @@
     },
 	"carvers": {
       "air": [
-        "minecraft:cave",
-        "minecraft:cave_extra_underground",
-        "minecraft:canyon"
+        "mdcdi1315_md:cave",
+        "mdcdi1315_md:cave_extra_underground",
+        "mdcdi1315_md:canyon"
       ]
     },
 	"spawn_costs": {},

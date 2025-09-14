@@ -5,25 +5,25 @@ import com.github.mdcdi1315.mdex.MDEXModConfig;
 import com.github.mdcdi1315.mdex.api.MDEXModAPI;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.block.entity.TeleporterTileEntity;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class MDEXTeleporterBlock
-    extends MDEXBaseBlock
-    implements EntityBlock
+        extends MDEXBaseBlock
+        implements EntityBlock
 {
     public MDEXTeleporterBlock(Properties properties , String descid)
     {
@@ -87,13 +87,12 @@ public class MDEXTeleporterBlock
             destination = MDEXBalmLayer.MINING_DIM_IDENTIFIER;
         }
         if (destination == null) {
-            sp.displayClientMessage(Component.translatable("errormessage.wrong_travelling_dimension"), true);
+            sp.displayClientMessage(Component.translatable("mdex.errormsg.wrong_travelling_dimension"), true);
             return false;
         }
         TeleportingManager manager = MDEXModAPI.getMethodImplementation().GetTeleportingManager();
         manager.SetTargetDimension(destination);
         return manager.Teleport(sp , bps);
-        //return MDEXModAPI.getMethodImplementation().ChangeDimension(sp , destination , new MDEXTeleporterImplementation(bps)) != null;
     }
 
     @Override

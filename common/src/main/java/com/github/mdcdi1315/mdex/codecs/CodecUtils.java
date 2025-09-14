@@ -18,12 +18,40 @@ public final class CodecUtils
     /**
      * Gets a singleton of the 'probability' codec, that is a codec that can only take a floating range of values from 0 to 1, all inclusive.
      */
-    public static Codec<Float> FLOAT_PROBABILITY = Codec.floatRange(0f , 1f);
+    public static final Codec<Float> FLOAT_PROBABILITY = Codec.floatRange(0f , 1f);
 
     /**
      * Gets a singleton of the 'probability' codec, that is a codec that can only take a double-precision floating range of values from 0 to 1, all inclusive.
      */
-    public static Codec<Double> DOUBLE_PROBABILITY = Codec.doubleRange(0d , 1d);
+    public static final Codec<Double> DOUBLE_PROBABILITY = Codec.doubleRange(0d , 1d);
+
+    /**
+     * Defines a codec for defining a short type field with the specified range.
+     * @param min_inclusive The inclusive lower bound of the values that the new field accepts.
+     * @param max_inclusive The inclusive upper bound of the values that the new field accepts.
+     * @return A codec, also checking whether the number is in the bounds specified.
+     * @implNote The parameters are perpetually declared as of type of integer so that the constant values are passed directly.
+     * Do not be confused, however, because the method finally converts the bounds to short values.
+     */
+    public static Codec<Short> ShortRange(int min_inclusive , int max_inclusive)
+    {
+        var c = new ShortRangeChecker((short) min_inclusive , (short) max_inclusive);
+        return Codec.SHORT.flatXmap(c, c);
+    }
+
+    /**
+     * Defines a codec for defining a byte type field with the specified range.
+     * @param min_inclusive The inclusive lower bound of the values that the new field accepts.
+     * @param max_inclusive The inclusive upper bound of the values that the new field accepts.
+     * @return A codec, also checking whether the number is in the bounds specified.
+     * @implNote The parameters are perpetually declared as of type of integer so that the constant values are passed directly.
+     * Do not be confused, however, because the method finally converts the bounds to byte values.
+     */
+    public static Codec<Byte> ByteRange(int min_inclusive, int max_inclusive)
+    {
+        var c = new ByteRangeChecker((byte) min_inclusive , (byte) max_inclusive);
+        return Codec.BYTE.flatXmap(c , c);
+    }
 
     public static <TCODEC , C1T> Codec<TCODEC> CreateCodecDirect(
             com.mojang.datafixers.kinds.App<RecordCodecBuilder.Mu<TCODEC> , C1T> codecfield1,

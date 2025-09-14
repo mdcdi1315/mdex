@@ -73,7 +73,6 @@ public final class CustomizableMonsterRoomConfiguration
             setConfigAsInvalid();
             return;
         }
-        // TODO: Patch this and for 1.20.1
         for (var e : AdditionalEntities)
         {
             e.Compile();

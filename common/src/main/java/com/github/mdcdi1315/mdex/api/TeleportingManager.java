@@ -145,7 +145,7 @@ public abstract class TeleportingManager
         }
         // Set the block position by one block above
         // That is the point where the player will be placed to
-        if (TeleportImpl(sp , lvl , bp , true))
+        if (TeleportImpl(sp , lvl , bp , sp.level() != lvl))
         {
             tlvldat.AddEntry(sp , bp);
             MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Player with UUID '{}' was successfully teleported to dimension with ID '{}' through Mining Dimension TeleportingManager mechanism." , sp.getUUID() , sp.level().dimension().location());

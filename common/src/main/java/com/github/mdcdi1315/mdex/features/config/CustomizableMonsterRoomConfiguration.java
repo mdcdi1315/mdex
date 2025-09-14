@@ -73,17 +73,17 @@ public final class CustomizableMonsterRoomConfiguration
             setConfigAsInvalid();
             return;
         }
+        for (var e : AdditionalEntities)
+        {
+            e.Compile();
+            if (e.IsCompiled() == false) {
+                setConfigAsInvalid();
+                return;
+            }
+        }
         if (SpawnerEntityCandidates.isEmpty()) {
             SpawnerEntityCandidates = new ArrayList<>(AdditionalEntities);
         } else {
-            for (var e : AdditionalEntities)
-            {
-                e.Compile();
-                if (e.IsCompiled() == false) {
-                    setConfigAsInvalid();
-                    return;
-                }
-            }
             for (var e : SpawnerEntityCandidates)
             {
                 e.Compile();

@@ -13,6 +13,7 @@ import com.github.mdcdi1315.mdex.forge.api.ModLoaderMethodsImplementation;
 import net.blay09.mods.balm.api.Balm;
 import net.blay09.mods.balm.api.EmptyLoadContext;
 import net.blay09.mods.balm.api.client.BalmClient;
+import net.blay09.mods.balm.forge.ForgeLoadContext;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -29,7 +30,8 @@ public final class MDEXForge
     public MDEXForge()
     {
         var evb = FMLJavaModLoadingContext.get().getModEventBus();
-        Balm.initializeMod(MDEXBalmLayer.MODID, EmptyLoadContext.INSTANCE, () -> {
+        ForgeLoadContext FLC = new ForgeLoadContext(evb);
+        Balm.initializeMod(MDEXBalmLayer.MODID, FLC, () -> {
             MDEXBalmLayer.Initialize();
             evb.addListener(MDEXForge::NewRegistryEventLoader);
             evb.addListener(MDEXForge::NewDataPackRegistryEventLoader);

@@ -75,6 +75,7 @@ public abstract class BaseSingletonLootPoolEntryContainer
         super.validate(validationContext);
 
         int I = 0;
+        if (functions == null) { return; }
         for (var f : functions)
         {
             f.validate(validationContext.forChild(String.format(".functions[%d]" , I)));

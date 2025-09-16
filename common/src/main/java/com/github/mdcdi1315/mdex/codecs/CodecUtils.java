@@ -62,7 +62,7 @@ public final class CodecUtils
                 (RecordCodecBuilder.Instance<TCODEC> instance) -> instance.group(
                         codecfield1
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T> Codec<TCODEC> CreateCodecDirect(
@@ -76,7 +76,7 @@ public final class CodecUtils
                         codecfield1,
                         codecfield2
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T> Codec<TCODEC> CreateCodecDirect(
@@ -92,7 +92,7 @@ public final class CodecUtils
                         codecfield2,
                         codecfield3
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T> Codec<TCODEC> CreateCodecDirect(
@@ -110,7 +110,7 @@ public final class CodecUtils
                         codecfield3,
                         codecfield4
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T , C5T> Codec<TCODEC> CreateCodecDirect(
@@ -130,7 +130,7 @@ public final class CodecUtils
                         codecfield4,
                         codecfield5
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T , C5T , C6T> Codec<TCODEC> CreateCodecDirect(
@@ -152,7 +152,7 @@ public final class CodecUtils
                         codecfield5,
                         codecfield6
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T , C5T , C6T , C7T> Codec<TCODEC> CreateCodecDirect(
@@ -176,7 +176,7 @@ public final class CodecUtils
                         codecfield6,
                         codecfield7
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T , C5T , C6T , C7T , C8T> Codec<TCODEC> CreateCodecDirect(
@@ -202,7 +202,7 @@ public final class CodecUtils
                         codecfield7,
                         codecfield8
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T , C5T , C6T , C7T , C8T , C9T> Codec<TCODEC> CreateCodecDirect(
@@ -230,7 +230,7 @@ public final class CodecUtils
                         codecfield8,
                         codecfield9
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T , C5T , C6T , C7T , C8T , C9T , C10T> Codec<TCODEC> CreateCodecDirect(
@@ -260,7 +260,7 @@ public final class CodecUtils
                         codecfield9,
                         codecfield10
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T , C5T , C6T , C7T , C8T , C9T , C10T , C11T> Codec<TCODEC> CreateCodecDirect(
@@ -292,7 +292,7 @@ public final class CodecUtils
                         codecfield10,
                         codecfield11
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T , C5T , C6T , C7T , C8T , C9T , C10T , C11T , C12T> Codec<TCODEC> CreateCodecDirect(
@@ -326,7 +326,7 @@ public final class CodecUtils
                         codecfield11,
                         codecfield12
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T , C5T , C6T , C7T , C8T , C9T , C10T , C11T , C12T , C13T> Codec<TCODEC> CreateCodecDirect(
@@ -362,7 +362,7 @@ public final class CodecUtils
                         codecfield12,
                         codecfield13
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T , C2T , C3T , C4T , C5T , C6T , C7T , C8T , C9T , C10T , C11T , C12T , C13T , C14T> Codec<TCODEC> CreateCodecDirect(
@@ -400,7 +400,7 @@ public final class CodecUtils
                         codecfield13,
                         codecfield14
                 ).apply(instance , instancecreatefunction)
-        ).stable();
+        );
     }
 
     public static <TCODEC , C1T> MapCodec<TCODEC> CreateMapCodecDirect(

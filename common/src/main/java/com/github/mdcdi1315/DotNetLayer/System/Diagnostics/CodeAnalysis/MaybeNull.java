@@ -3,8 +3,9 @@ package com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis;
 import com.github.mdcdi1315.DotNetLayer.System.*;
 
 import javax.annotation.Nullable;
-import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
+import java.lang.annotation.Documented;
+import javax.annotation.meta.TypeQualifier;
 import java.lang.annotation.RetentionPolicy;
 
 /**
@@ -13,6 +14,7 @@ import java.lang.annotation.RetentionPolicy;
 @Nullable // For Java compatibility and argument/field nullness recognition
 @Attribute
 @Documented
-@Retention(RetentionPolicy.RUNTIME)
+@TypeQualifier
+@Retention(RetentionPolicy.CLASS)
 @AttributeUsage(value = { AttributeTargets.Parameter , AttributeTargets.ReturnValue }, AllowMultiple = false)
 public @interface MaybeNull {}

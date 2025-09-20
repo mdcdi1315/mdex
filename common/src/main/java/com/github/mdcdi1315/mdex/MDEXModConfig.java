@@ -17,6 +17,12 @@ public class MDEXModConfig
     public boolean DebugFeatureConfigurations = false;
 
     @Comment(
+            "Enables additional debug messages to resolve common errors involving invalid structure configs.\n" +
+            "For this change to take effect, you must restart the game."
+    )
+    public boolean DebugStructureConfigurations = false;
+
+    @Comment(
             "The dimension where the player should return when he clicks on any Teleporter block in the Mining Dimension.\n" +
             "By default it is set to Minecraft's overworld dimension."
     )
@@ -44,6 +50,7 @@ public class MDEXModConfig
                 cfg.saveLocalConfig(schema);
             }
             MDEXBalmLayer.DebugFeatureConfigurations = mlc.DebugFeatureConfigurations;
+            MDEXBalmLayer.DebugStructureConfigurations = mlc.DebugStructureConfigurations;
             cfg.updateLocalConfig(MDEXModConfig.class , MDEXModConfig::EmptyUpdater);
         });
     }

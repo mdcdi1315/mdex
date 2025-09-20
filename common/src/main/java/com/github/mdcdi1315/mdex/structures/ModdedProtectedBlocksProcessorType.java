@@ -8,7 +8,7 @@ import com.mojang.serialization.Codec;
 public final class ModdedProtectedBlocksProcessorType
     extends AbstractModdedStructureProcessorType<ModdedProtectedBlocksProcessor>
 {
-    public static ModdedProtectedBlocksProcessorType INSTANCE = new ModdedProtectedBlocksProcessorType();
+    public static final ModdedProtectedBlocksProcessorType INSTANCE = new ModdedProtectedBlocksProcessorType();
 
     @Override
     protected Codec<ModdedProtectedBlocksProcessor> GetCodecInstance() {

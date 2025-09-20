@@ -9,7 +9,6 @@ import com.github.mdcdi1315.mdex.util.BlockIdOrBlockTagEntry;
 import com.github.mdcdi1315.mdex.util.ConcatenatingHolderSet;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public final class ModdedProtectedBlocksProcessor
     }
 
     @Override
-    protected void compileData() {
+    protected void CompileData() {
         compiled = new ConcatenatingHolderSet<>();
         for (var i : entries)
         {
@@ -40,7 +39,7 @@ public final class ModdedProtectedBlocksProcessor
     }
 
     @Override
-    protected @MaybeNull StructureTemplate.StructureBlockInfo processModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
+    protected @MaybeNull StructureTemplate.StructureBlockInfo ProcessModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
     {
         var bs = level.getBlockState(relativeBlockInfo.pos());
         for (var b : compiled)
@@ -54,7 +53,7 @@ public final class ModdedProtectedBlocksProcessor
     }
 
     @Override
-    protected StructureProcessorType<?> getType() {
+    protected AbstractModdedStructureProcessorType<?> GetType() {
         return ModdedProtectedBlocksProcessorType.INSTANCE;
     }
 }

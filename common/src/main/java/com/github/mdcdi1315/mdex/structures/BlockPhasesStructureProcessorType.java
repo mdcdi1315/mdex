@@ -14,7 +14,7 @@ public final class BlockPhasesStructureProcessorType
         return CodecUtils.CreateCodecDirect(
                 GetBaseCodec(),
                 AbstractBlockStateProvider.CODEC.listOf().fieldOf("phases").forGetter((BlockPhasesStructureProcessor p) -> p.States),
-                Codec.floatRange(0f , 1f).fieldOf("probability").forGetter((BlockPhasesStructureProcessor p) -> p.probability),
+                CodecUtils.FLOAT_PROBABILITY.fieldOf("probability").forGetter((BlockPhasesStructureProcessor p) -> p.probability),
                 BlockPhasesStructureProcessor::new
         );
     }

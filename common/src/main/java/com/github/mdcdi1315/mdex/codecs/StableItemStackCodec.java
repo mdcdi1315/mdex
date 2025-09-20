@@ -19,7 +19,7 @@ public final class StableItemStackCodec
     public static Codec<ItemStack> INSTANCE =
             CodecUtils.CreateCodecDirect(
                     BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(ItemStack::getItem),
-                    Codec.INT.fieldOf("count").forGetter(ItemStack::getCount),
+                    CodecUtils.ZERO_OR_POSITIVE_INTEGER.fieldOf("count").forGetter(ItemStack::getCount),
                     CompoundTag.CODEC.optionalFieldOf("tag" , new CompoundTag()).forGetter(ItemStack::getTag),
                     StableItemStackCodec::CreateItemStack
             );

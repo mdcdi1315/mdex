@@ -1,24 +1,24 @@
 package com.github.mdcdi1315.mdex.features.largestonecolumn;
 
+import com.github.mdcdi1315.mdex.util.Extensions;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.FloatProvider;
-import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
-
-public final class WindOffsetter {
+public final class WindOffsetter
+{
     private final int originY;
-    @Nullable
+    @MaybeNull
     private final Vec3 windSpeed;
 
     public WindOffsetter(int originY, RandomSource random, FloatProvider magnitude) {
         this.originY = originY;
         float mag = magnitude.sample(random);
-        float f1 = Mth.randomBetween(random, 0.0F, Mth.PI);
-        this.windSpeed = new Vec3((Mth.cos(f1) * mag),0.0D, (Mth.sin(f1) * mag));
+        float variance = Extensions.RandomBetweenUnsafe(random, 0.0F, Extensions.PI);
+        this.windSpeed = new Vec3(Extensions.Cos(variance) * mag,0.0D, Extensions.Sin(variance) * mag);
     }
 
     private WindOffsetter() {
@@ -34,9 +34,8 @@ public final class WindOffsetter {
         if (this.windSpeed == null) {
             return pos;
         } else {
-            int i = this.originY - pos.getY();
-            Vec3 vec3 = this.windSpeed.scale(i);
-            return pos.offset(Mth.floor(vec3.x), 0, Mth.floor(vec3.z));
+            Vec3 vec3 = this.windSpeed.scale(this.originY - pos.getY());
+            return pos.offset(Extensions.Floor(vec3.x), 0, Extensions.Floor(vec3.z));
         }
     }
 }

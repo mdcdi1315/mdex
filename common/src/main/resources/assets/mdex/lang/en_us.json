@@ -1,5 +1,6 @@
 {
 	"mdex.errormsg.wrong_travelling_dimension": "You cannot go to the Mining Dimension from this dimension.\nGo back to your home dimension and try accessing it from there.",
+    "mdex.teleportmanager.msg.teleport_scheduled": "Your teleportation request has been submitted. You can do other stuff until you will be actually teleported.",
 	"mdex.commands.errormsg.no_teleporting_spawn_data": "No teleporting spawn data were found for the dimension of ID '%s'.\nThe dimension is possibly not tracked by the mod, or the data were not created yet.",
 	"mdex.commands.errormsg.getspdatacmdp.nodataforplayer": "Player '%s' does not have teleporting data for dimension '%s'.\nPossible causes:\n-> The player does not have used the Mining Teleporter mechanism yet.\n-> The data are misconstructed or malformed.",
 	"mdex.commands.msg.getspdatacmdp.success": "Exact spawn position for player '%s' for dimension '%s' is X = %d , Y = %d and Z = %d.\nCommand completed successfully.",
@@ -18,6 +19,14 @@
 	"mdex.commands.msg.getstarterchestplacement.success.not_placed": "Starter chest for dimension '%s' is not placed yet.",
 	"mdex.commands.msg.getstarterchestplacement.success.placed": "A starter chest for the dimension '%s' has been placed.",
 	"mdex.commands.errormsg.getstarterchestplacement.irrelevant": "Mining Dimension Starter chests do not apply to the specified dimension.",
+
+    "mdex.configuration.title": "Mining Dimension: EX Mod Settings",
+    "mdex.configuration.HomeDimension": "Home Dimension",
+    "mdex.configuration.DebugFeatureConfigurations": "Debug Modded Feature Configurations",
+    "mdex.configuration.DebugStructureConfigurations": "Debug Modded Structure Configurations",
+    "mdex.configuration.ShouldSpawnPortalInDeep": "Should the mod create the portal deeper (in lower Y levels)?",
+    "mdex.configuration.ShouldPlaceStarterChestAtFirstTime": "Should the mod place the starter chest if defined?",
+
 	"block.mdex.teleporter": "Mining Dimension Teleporter",
 	"block.mdex.hardstone": "Hard Stone",
 	"block.mdex.hardstone_bricks": "Hard Stone Bricks",

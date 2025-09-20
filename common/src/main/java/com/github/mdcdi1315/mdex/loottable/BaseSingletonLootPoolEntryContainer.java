@@ -1,14 +1,15 @@
 package com.github.mdcdi1315.mdex.loottable;
 
+import com.github.mdcdi1315.mdex.util.Extensions;
+import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+
 import com.mojang.datafixers.Products;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.minecraft.core.registries.BuiltInRegistries;
 import com.mojang.serialization.codecs.KeyDispatchCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
@@ -123,7 +124,7 @@ public abstract class BaseSingletonLootPoolEntryContainer
 
         @Override
         public int getWeight(float luck) {
-            return Math.max(Mth.floor((float)b.weight + (float)b.quality * luck), 0);
+            return Math.max(Extensions.Floor((float)b.weight + (float)b.quality * luck), 0);
         }
 
         @Override
@@ -135,8 +136,8 @@ public abstract class BaseSingletonLootPoolEntryContainer
     public static <TB extends BaseSingletonLootPoolEntryContainer> Products.P3<RecordCodecBuilder.Mu<TB>, Integer , Integer , List<LootItemFunction>> GetBaseCodec(RecordCodecBuilder.Instance<TB> instance)
     {
         return instance.group(
-                Codec.INT.optionalFieldOf("weight" , DEFAULT_WEIGHT).forGetter((TB b) -> b.weight),
-                Codec.INT.optionalFieldOf("quality" , DEFAULT_QUALITY).forGetter((TB b) -> b.quality),
+                CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("weight" , DEFAULT_WEIGHT).forGetter((TB b) -> b.weight),
+                CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("quality" , DEFAULT_QUALITY).forGetter((TB b) -> b.quality),
                 KeyDispatchCodec.unsafe("function" , // Using this hacky unsafe context allows us to magically pass the JsonElement to read directly , and thus read the function object on the fly.
                         BuiltInRegistries.LOOT_FUNCTION_TYPE.byNameCodec() ,
                         (LootItemFunction f) -> DataResult.success(f.getType()),

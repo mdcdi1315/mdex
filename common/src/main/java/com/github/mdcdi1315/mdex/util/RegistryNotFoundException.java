@@ -3,7 +3,7 @@ package com.github.mdcdi1315.mdex.util;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Base exception class for cases where registries are not found.
+ * Base exception class for cases where a registry was requested, but that registry not found.
  */
 public class RegistryNotFoundException
         extends MDEXException

@@ -33,10 +33,10 @@ public final class CustomizableMonsterRoomFeature
     {
         WorldGenLevel worldgenlevel = fpc.level();
         RandomSource randomsource = fpc.random();
-        int chestplacercount = fpc.config().ChestConfiguration.Count.sample(randomsource);
-        ResourceLocation loottable = fpc.config().ChestConfiguration.LootTable;
+        byte attempts = (byte) fpc.config().ChestConfiguration.Count().sample(randomsource); // This value will be up to 32 , so we can safely cast to a byte value
+        ResourceLocation loottable = fpc.config().ChestConfiguration.LootTable();
 
-        for (int l3 = 0; l3 < chestplacercount; ++l3)
+        for (byte attempt = 0; attempt < attempts; ++attempt)
         {
             BlockPos blockpos2 = new BlockPos(
                     blockpos.getX() + randomsource.nextInt(j * 2 + 1) - j,
@@ -45,11 +45,11 @@ public final class CustomizableMonsterRoomFeature
             );
             if (worldgenlevel.isEmptyBlock(blockpos2))
             {
-                int j3 = 0;
+                byte j3 = 0;
 
                 for (Direction direction : Direction.Plane.HORIZONTAL) {
                     if (BlockUtils.ReferentIsSolidBlock(worldgenlevel.getBlockState(blockpos2.relative(direction)))) {
-                        ++j3;
+                        j3++;
                     }
                 }
 
@@ -102,36 +102,42 @@ public final class CustomizableMonsterRoomFeature
         int k1 = randomsource.nextInt(2) + 2;
         int l1 = -k1 - 1;
         int i2 = k1 + 1;
-        int j2 = 0;
 
-        for (int k2 = k; k2 <= l; ++k2)
+        byte size = 0;
+
+        for (int xofs = k; xofs <= l; ++xofs)
         {
-            for (int l2 = -1; l2 < 5; ++l2)
+            for (short yofs = -1; yofs < 5; ++yofs)
             {
-                for (int i3 = l1; i3 <= i2; ++i3)
+                for (int zofs = l1; zofs <= i2; ++zofs)
                 {
-                    BlockPos blockpos1 = blockpos.offset(k2, l2, i3);
-                    boolean flag = worldgenlevel.getBlockState(blockpos1).isAir();
-                    if (l2 == -1 && flag) {
-                        return false;
-                    }
+                    BlockPos blockpos1 = blockpos.offset(xofs, yofs, zofs);
 
-                    if (l2 == 4 && flag) {
-                        return false;
-                    }
-
-                    if ((k2 == k || k2 == l || i3 == l1 || i3 == i2) && l2 == 0 && flag && worldgenlevel.getBlockState(blockpos1.above()).isAir()) {
-                        ++j2;
+                    if (worldgenlevel.getBlockState(blockpos1).isAir())
+                    {
+                        switch (yofs)
+                        {
+                            case 4:
+                            case -1:
+                                return false;
+                            case 0:
+                                if ((xofs == k || xofs == l || zofs == l1 || zofs == i2) && worldgenlevel.getBlockState(blockpos1.above()).isAir()) {
+                                    if (++size > 5) {
+                                        return false;
+                                    }
+                                }
+                                break;
+                        }
                     }
                 }
             }
         }
 
-        if (j2 < 1 || j2 > 5) { return false; }
+        if (size < 1) { return false; }
 
         for (int k3 = k; k3 <= l; ++k3)
         {
-            for (int i4 = 3; i4 >= -1; --i4)
+            for (short i4 = 3; i4 > -2; --i4)
             {
                 for (int k4 = l1; k4 <= i2; ++k4)
                 {

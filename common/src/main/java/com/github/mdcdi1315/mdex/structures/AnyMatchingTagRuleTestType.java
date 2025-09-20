@@ -8,10 +8,10 @@ import net.minecraft.core.registries.Registries;
 public final class AnyMatchingTagRuleTestType
     extends AbstractModdedRuleTestType<AnyMatchingTagRuleTest>
 {
-    public static AnyMatchingTagRuleTestType INSTANCE = new AnyMatchingTagRuleTestType();
+    public static final AnyMatchingTagRuleTestType INSTANCE = new AnyMatchingTagRuleTestType();
 
     @Override
     protected Codec<AnyMatchingTagRuleTest> GetCodecInstance() {
-        return TagKey.codec(Registries.BLOCK).listOf().fieldOf("tags").xmap(AnyMatchingTagRuleTest::new , (any) -> any.ListOfTags).codec();
+        return TagKey.codec(Registries.BLOCK).listOf().fieldOf("tags").xmap(AnyMatchingTagRuleTest::new , any -> any.ListOfTags).codec();
     }
 }

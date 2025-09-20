@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 public final class LootTableAppenderProcessorType
     extends AbstractModdedStructureProcessorType<LootTableAppenderProcessor>
 {
-    public static LootTableAppenderProcessorType INSTANCE = new LootTableAppenderProcessorType();
+    public static final LootTableAppenderProcessorType INSTANCE = new LootTableAppenderProcessorType();
 
     @Override
     protected Codec<LootTableAppenderProcessor> GetCodecInstance()

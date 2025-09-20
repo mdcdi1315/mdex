@@ -21,8 +21,8 @@ public final class ItemStackChestPlacement
         ArgumentNullException.ThrowIfNull(stackcodec , "stackcodec");
         return CodecUtils.CreateCodecDirect(
                 stackcodec.fieldOf("stack").forGetter((ItemStackChestPlacement cp) -> cp.itemstack),
-                Codec.INT.fieldOf("index").forGetter((ItemStackChestPlacement cp) -> cp.index),
-                Codec.floatRange(0f , 1f).optionalFieldOf("probability" , 1f).forGetter((ItemStackChestPlacement cp) -> cp.probability),
+                CodecUtils.ZERO_OR_POSITIVE_INTEGER.fieldOf("index").forGetter((ItemStackChestPlacement cp) -> cp.index),
+                CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("probability" , 1f).forGetter((ItemStackChestPlacement cp) -> cp.probability),
                 ItemStackChestPlacement::new
         );
     }

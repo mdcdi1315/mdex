@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 public final class SpecificLootAppenderProcessorType
     extends AbstractModdedStructureProcessorType<SpecificLootAppenderProcessor>
 {
-    public static SpecificLootAppenderProcessorType INSTANCE = new SpecificLootAppenderProcessorType();
+    public static final SpecificLootAppenderProcessorType INSTANCE = new SpecificLootAppenderProcessorType();
 
     @Override
     protected Codec<SpecificLootAppenderProcessor> GetCodecInstance() {

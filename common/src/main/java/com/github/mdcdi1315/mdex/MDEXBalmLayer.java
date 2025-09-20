@@ -4,6 +4,7 @@ package com.github.mdcdi1315.mdex;
 import com.github.mdcdi1315.mdex.item.ModItems;
 import com.github.mdcdi1315.mdex.api.MDEXModAPI;
 import com.github.mdcdi1315.mdex.block.ModBlocks;
+import com.github.mdcdi1315.mdex.structures.StructuresRegistrySubsystem;
 import com.github.mdcdi1315.mdex.tag.ModBlockTags;
 import com.github.mdcdi1315.mdex.api.OperationsTasker;
 import com.github.mdcdi1315.mdex.network.ModNetworking;
@@ -49,6 +50,8 @@ public final class MDEXBalmLayer
 
     public static boolean DebugFeatureConfigurations;
 
+    public static boolean DebugStructureConfigurations;
+
     private static OperationsTasker TASKER;
 
     public static void Initialize()
@@ -83,6 +86,8 @@ public final class MDEXBalmLayer
             BiomeSpawnAdditionsRegistrySubsystem.InitializeRegistry();
             LOGGER.trace("Initializing world generation feature type definitions.");
             FeatureTypesRegistrySubsystem.RegisterFeatureTypes(Balm.getWorldGen());
+            LOGGER.trace("Initializing world generation structure type definitions.");
+            StructuresRegistrySubsystem.RegisterEntries(regs);
             LOGGER.trace("Initializing world generation structure processor type definitions.");
             StructureProcessorsRegistrySubsystem.RegisterStructureProcessors(regs);
             LOGGER.trace("Initializing world generation rule test type definitions.");

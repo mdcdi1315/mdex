@@ -26,7 +26,7 @@ public final class SmallStructureFeature
 
     private void GetCompiledTemplates(WorldGenLevel level , List<StructureElementConfig> configs)
     {
-        StructureTemplateManager stm = level.getLevel().getServer().getStructureManager();
+        StructureTemplateManager stm = level.getLevel().getStructureManager();
         for (int I = 0; I < configs.size(); I++)
         {
             var cfg = configs.get(I);

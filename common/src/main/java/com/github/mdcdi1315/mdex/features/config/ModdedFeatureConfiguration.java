@@ -160,7 +160,7 @@ public abstract class ModdedFeatureConfiguration
      *     This method signature provides the actual compilation algorithm to run.
      * </p>
      * <p>
-     *     This method should throw exceptions if something incorrect occurred.
+     *     This method should throw exceptions derived from {@link MDEXException} if something incorrect occurred.
      * </p>
      */
     protected abstract void compileConfigData();

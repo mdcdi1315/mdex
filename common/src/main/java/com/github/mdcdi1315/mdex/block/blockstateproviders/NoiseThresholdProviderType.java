@@ -1,7 +1,7 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
-import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -14,7 +14,7 @@ public class NoiseThresholdProviderType
     public NoiseThresholdProviderType()
     {
         codec = RecordCodecBuilder.create((p_191486_) -> {
-            Codec<CompilableTargetBlockState> codec = CompilableTargetBlockState.GetCodec();
+            Codec<CompilableBlockState> codec = CompilableBlockState.GetCodec();
             return NoiseThresholdProvider.noiseCodec(p_191486_).and(p_191486_.group(
                             Codec.floatRange(-1.0F, 1.0F).fieldOf("threshold").forGetter((p) -> p.threshold),
                             CodecUtils.FLOAT_PROBABILITY.fieldOf("high_chance").forGetter((p) -> p.highChance),

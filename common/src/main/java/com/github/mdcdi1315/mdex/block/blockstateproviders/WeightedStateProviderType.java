@@ -2,7 +2,7 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.random.SimpleWeightedRandomList;
-import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
 public final class WeightedStateProviderType
     extends AbstractBlockStateProviderType<WeightedStateProvider>
@@ -11,7 +11,7 @@ public final class WeightedStateProviderType
 
     public WeightedStateProviderType()
     {
-        codec = SimpleWeightedRandomList.wrappedCodec(CompilableTargetBlockState.GetCodec())
+        codec = SimpleWeightedRandomList.wrappedCodec(CompilableBlockState.GetCodec())
                 .comapFlatMap(WeightedStateProvider::create, (p) -> p.weightedList)
                 .fieldOf("entries").codec();
     }

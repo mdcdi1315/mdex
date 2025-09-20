@@ -5,14 +5,15 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.RotatedPillarBlock;
-import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
+
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
 public class RotatedBlockProvider
         extends AbstractBlockStateProvider
 {
-   public final CompilableTargetBlockState block;
+   public final CompilableBlockState block;
 
-   public RotatedBlockProvider(CompilableTargetBlockState block) {
+   public RotatedBlockProvider(CompilableBlockState block) {
       this.block = block;
    }
 

@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
-import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
+
 import com.mojang.serialization.Codec;
 
 public final class RotatedBlockProviderType
@@ -10,7 +11,7 @@ public final class RotatedBlockProviderType
 
     public RotatedBlockProviderType()
     {
-        codec = CompilableTargetBlockState.GetCodec().fieldOf("state").xmap(RotatedBlockProvider::new, (p) -> p.block).codec();
+        codec = CompilableBlockState.GetCodec().fieldOf("state").xmap(RotatedBlockProvider::new, (p) -> p.block).codec();
     }
 
     @Override

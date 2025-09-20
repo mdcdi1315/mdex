@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 
 import java.util.List;
 
@@ -32,13 +31,13 @@ public final class LootTableAppenderProcessor
     }
 
     @Override
-    protected void compileData() {
+    protected void CompileData() {
         ContainerBlock = BlockUtils.GetBlockFromID(ContainerBlockID);
         ContainerBlockID = null;
     }
 
     @Override
-    protected StructureTemplate.StructureBlockInfo processModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
+    protected StructureTemplate.StructureBlockInfo ProcessModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
     {
         BlockPos rbipos = relativeBlockInfo.pos();
         RandomSource rs = settings.getRandom(rbipos);
@@ -61,7 +60,7 @@ public final class LootTableAppenderProcessor
     }
 
     @Override
-    protected StructureProcessorType<?> getType() {
+    protected AbstractModdedStructureProcessorType<?> GetType() {
         return LootTableAppenderProcessorType.INSTANCE;
     }
 }

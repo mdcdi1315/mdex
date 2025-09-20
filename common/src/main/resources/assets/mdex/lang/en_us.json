@@ -22,10 +22,15 @@
 
 	"mdex.configuration.title": "Mining Dimension: EX Mod Settings",
 	"mdex.configuration.section.mdex.common.toml.title": "Mining Dimension: EX Mod Settings",
+	"mdex.configuration.HomeDimension": "Home Dimension",
 	"config.mdex.HomeDimension": "Home Dimension",
+	"mdex.configuration.DebugFeatureConfigurations": "Debug Modded Feature Configurations",
 	"config.mdex.DebugFeatureConfigurations": "Debug Modded Feature Configurations",
+	"mdex.configuration.DebugStructureConfigurations": "Debug Modded Feature Configurations",
 	"config.mdex.DebugStructureConfigurations": "Debug Modded Structure Configurations",
+	"mdex.configuration.ShouldSpawnPortalInDeep": "Should the mod create the portal deeper (in lower Y levels)?",
 	"config.mdex.ShouldSpawnPortalInDeep": "Should the mod create the portal deeper (in lower Y levels)?",
+	"mdex.configuration.ShouldPlaceStarterChestAtFirstTime": "Should the mod place the starter chest if defined?",
 	"config.mdex.ShouldPlaceStarterChestAtFirstTime": "Should the mod place the starter chest if defined?",
 
 	"block.mdex.teleporter": "Mining Dimension Teleporter",

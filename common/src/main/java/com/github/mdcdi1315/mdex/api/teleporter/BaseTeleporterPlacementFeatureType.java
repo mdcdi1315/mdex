@@ -4,8 +4,8 @@ import com.github.mdcdi1315.DotNetLayer.System.Predicate;
 
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.ModBlocks;
+import com.github.mdcdi1315.mdex.util.Extensions;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
-import com.github.mdcdi1315.mdex.util.DirectionExtensions;
 import com.github.mdcdi1315.mdex.features.FeaturePlacementUtils;
 
 import com.mojang.serialization.Codec;
@@ -96,7 +96,7 @@ public final class BaseTeleporterPlacementFeatureType
         {
             var si = fpc.config().ChestPlacement;
             if (si.Probability > 0f && rs.nextFloat() < si.Probability) {
-                BlockPos chestpos = pos.relative(DirectionExtensions.GetRandomDirectionExcludingUpDown(rs) , size == 1 ? 1 : size / 2);
+                BlockPos chestpos = pos.relative(Extensions.GetRandomDirectionExcludingUpDown(rs) , size == 1 ? 1 : size / 2);
                 if (!wgl.setBlock(chestpos , si.ContainerState.getState(rs , chestpos) , 2)) {
                     MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Failed to place the starter chest for this dimension.");
                 }

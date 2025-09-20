@@ -67,7 +67,11 @@ public abstract class TeleportingManager
         @Override
         public void run() {
             try {
-                manager.requests.incrementAndGet();
+                // Already incremented by the teleport method , we need only to decrement it when done with teleporting
+                // manager.requests.incrementAndGet();
+                try {
+                    while (manager.IsMainRequestPending) { Thread.sleep(10); }
+                } catch (InterruptedException ie) {}
                 manager.TeleportInternal(player , teleporterposition);
             } finally {
                 manager.requests.decrementAndGet();
@@ -75,6 +79,7 @@ public abstract class TeleportingManager
         }
     }
 
+    private volatile boolean IsMainRequestPending;
     private AtomicInteger requests;
     @MaybeNull
     private MinecraftServer Server;
@@ -150,10 +155,14 @@ public abstract class TeleportingManager
                 sp.displayClientMessage(Component.literal("Unsupported operation.") , true);
                 return TeleportRequestState.FAILED;
             }
-            if (requests.incrementAndGet() == 1) {
-                boolean v = TeleportInternal(sp , teleporterposcurrentworld);
-                requests.decrementAndGet();
-                return v ? TeleportRequestState.COMPLETED : TeleportRequestState.FAILED;
+            if (!IsMainRequestPending && requests.incrementAndGet() == 1) {
+                try {
+                    IsMainRequestPending = true;
+                    return TeleportInternal(sp, teleporterposcurrentworld) ? TeleportRequestState.COMPLETED : TeleportRequestState.FAILED;
+                } finally {
+                    requests.decrementAndGet();
+                    IsMainRequestPending = false;
+                }
             } else {
                 // We must schedule the request.
                 MDEXBalmLayer.RunTaskAsync(new TeleportingScheduler(sp , teleporterposcurrentworld , this));

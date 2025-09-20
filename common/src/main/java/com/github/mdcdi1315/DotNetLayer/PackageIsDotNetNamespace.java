@@ -7,7 +7,7 @@ import java.lang.annotation.*;
  */
 @Documented
 @Target(value = ElementType.PACKAGE)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface PackageIsDotNetNamespace {
 
 }

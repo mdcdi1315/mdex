@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.structures;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentException;
+
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.block.blockstateproviders.AbstractBlockStateProvider;
 
@@ -8,7 +9,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public final class BlockPhasesStructureProcessor
     }
 
     @Override
-    protected StructureTemplate.StructureBlockInfo processModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
+    protected StructureTemplate.StructureBlockInfo ProcessModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
     {
         BlockPos rbipos = relativeBlockInfo.pos();
         var rs = settings.getRandom(rbipos);
@@ -46,7 +46,7 @@ public final class BlockPhasesStructureProcessor
     }
 
     @Override
-    protected void compileData() {
+    protected void CompileData() {
         if (States.size() < 2) {
             throw new ArgumentException("States provided must be at least two.");
         }
@@ -54,14 +54,14 @@ public final class BlockPhasesStructureProcessor
         {
             i.Compile();
             if (!i.IsCompiled()) {
-                this.markAsInvalid();
+                this.MarkAsInvalid();
                 break;
             }
         }
     }
 
     @Override
-    protected StructureProcessorType<?> getType() {
+    protected AbstractModdedStructureProcessorType<?> GetType() {
         return BlockPhasesStructureProcessorType.INSTANCE;
     }
 }

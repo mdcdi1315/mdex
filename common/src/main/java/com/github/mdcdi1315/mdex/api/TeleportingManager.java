@@ -37,6 +37,7 @@ import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Defines the base class for the Mining Dimension teleporting mechanism. <br />
@@ -48,6 +49,33 @@ public abstract class TeleportingManager
 {
     public static final String TELEPORTER_DATA_DIMFILE_NAME = "MDCDI1315_MDEX_TELEPORTERSPAWNDATA";
     public static final String FEATURE_RESOURCE_LOCATION = MDEXBalmLayer.COMPATIBILITY_NAMESPACE + ":teleporter_placement_feature";
+
+    private static class TeleportingScheduler
+        implements Runnable
+    {
+        private final ServerPlayer player;
+        private final TeleportingManager manager;
+        private final BlockPos teleporterposition;
+
+        public TeleportingScheduler(ServerPlayer sp , BlockPos p , TeleportingManager mgr)
+        {
+            player = sp;
+            teleporterposition = p;
+            manager = mgr;
+        }
+
+        @Override
+        public void run() {
+            try {
+                manager.requests.incrementAndGet();
+                manager.TeleportInternal(player , teleporterposition);
+            } finally {
+                manager.requests.decrementAndGet();
+            }
+        }
+    }
+
+    private AtomicInteger requests;
     @MaybeNull
     private MinecraftServer Server;
     private ResourceKey<Level> TargetDim;
@@ -84,6 +112,8 @@ public abstract class TeleportingManager
             Server = null;
             MDEXBalmLayer.LOGGER.warn("The mining_dim dimension does not exist in the server. Disabling teleporter implementation for this instance.");
         }
+        requests = new AtomicInteger();
+        requests.set(0);
     }
 
     /**
@@ -91,7 +121,9 @@ public abstract class TeleportingManager
      * Required, if a new request is performed later.
      * @param id The resource location of the dimension to get to.
      */
-    public void SetTargetDimension(ResourceLocation id) {
+    public void SetTargetDimension(ResourceLocation id)
+        throws ArgumentNullException
+    {
         ArgumentNullException.ThrowIfNull(id , "id");
         TargetDim = ResourceKey.create(Registries.DIMENSION , id);
     }
@@ -109,24 +141,31 @@ public abstract class TeleportingManager
         return TargetDim;
     }
 
-    public boolean Teleport(Player player , BlockPos teleporterposcurrentworld)
+    public TeleportRequestState Teleport(Player player , BlockPos teleporterposcurrentworld)
     {
         if (player instanceof ServerPlayer sp) {
-            return TeleportInternal(sp , teleporterposcurrentworld);
+            ArgumentNullException.ThrowIfNull(teleporterposcurrentworld , "teleporterpos");
+            if (Server == null) {
+                // Teleporting features are disabled. This text is not to be translated.
+                sp.displayClientMessage(Component.literal("Unsupported operation.") , true);
+                return TeleportRequestState.FAILED;
+            }
+            if (requests.incrementAndGet() == 1) {
+                boolean v = TeleportInternal(sp , teleporterposcurrentworld);
+                requests.decrementAndGet();
+                return v ? TeleportRequestState.COMPLETED : TeleportRequestState.FAILED;
+            } else {
+                // We must schedule the request.
+                MDEXBalmLayer.RunTaskAsync(new TeleportingScheduler(sp , teleporterposcurrentworld , this));
+                return TeleportRequestState.SCHEDULED;
+            }
         } else {
-            return false;
+            return TeleportRequestState.FAILED;
         }
     }
 
     private boolean TeleportInternal(ServerPlayer sp , BlockPos teleporterposcurrentworld)
     {
-        ArgumentNullException.ThrowIfNull(sp , "sp");
-        ArgumentNullException.ThrowIfNull(teleporterposcurrentworld , "teleporterpos");
-        if (Server == null) {
-            // Teleporting features are disabled. This text is not to be translated.
-            sp.displayClientMessage(Component.literal("Unsupported operation.") , true);
-            return false;
-        }
         ServerLevel lvl = ComputeTargetLevel();
         if (lvl == null) { return false; }
         ((ServerLevel)sp.level()).getDataStorage().computeIfAbsent(factory , TELEPORTER_DATA_DIMFILE_NAME).AddEntry(sp , teleporterposcurrentworld.above());
@@ -145,7 +184,9 @@ public abstract class TeleportingManager
         }
         // Set the block position by one block above
         // That is the point where the player will be placed to
-        if (TeleportImpl(sp , lvl , bp , sp.level() != lvl))
+        // Teleport Sound Parameter: Play the teleport sound only when actually changing dimensions
+        // Ref equality can be used here since these objects are single and unique for the server
+        if (TeleportImpl(sp , lvl , bp.above() ,sp.level() != lvl))
         {
             tlvldat.AddEntry(sp , bp);
             MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Player with UUID '{}' was successfully teleported to dimension with ID '{}' through Mining Dimension TeleportingManager mechanism." , sp.getUUID() , sp.level().dimension().location());
@@ -279,9 +320,9 @@ public abstract class TeleportingManager
         for (int I = current.getY(); I < ymax; I++)
         {
             temp = current.atY(I);
-            if (target.getFluidState(temp).is(Fluids.EMPTY) &&
-                    target.getFluidState(temp.above()).is(Fluids.EMPTY) &&
-                    target.getFluidState(temp.above(2)).is(Fluids.EMPTY)
+            if (BlockUtils.IsEmptyFluid(target , temp) &&
+                BlockUtils.IsEmptyFluid(target , temp.above()) &&
+                BlockUtils.IsEmptyFluid(target , temp.above(2))
             ) {
                 // Nice, we have left the fluid region
                 return temp.above(2);
@@ -323,6 +364,12 @@ public abstract class TeleportingManager
     {
         Server = null;
         factory = null;
+        if (requests != null && requests.get() > 0)
+        {
+            MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Waiting for all teleporting requests to finish first.");
+            while (requests.get() > 0) { try { Thread.sleep(10); } catch (InterruptedException e) { break; } }
+        }
+        requests = null;
         TargetDim = null;
         genfeature = null;
     }

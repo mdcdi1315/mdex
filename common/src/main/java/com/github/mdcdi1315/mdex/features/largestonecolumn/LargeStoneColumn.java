@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.features.largestonecolumn;
 
-import net.minecraft.util.Mth;
+import com.github.mdcdi1315.mdex.util.Extensions;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
@@ -38,12 +39,12 @@ public final class LargeStoneColumn
         }
 
         public int getMaxY() {
-            return !this.pointingUp ? this.root.getY() : this.root.getY() + this.getHeight();
+            return this.pointingUp ? this.root.getY() + this.getHeight() : this.root.getY();
         }
 
         public boolean moveBackUntilBaseIsInsideStoneAndShrinkRadiusIfNecessary(WorldGenLevel level, WindOffsetter windOffsetter)
         {
-            while (this.radius > 1)
+            for (; this.radius > 1; this.radius /= 2)
             {
                 BlockPos.MutableBlockPos blockpos$mutableblockpos = this.root.mutable();
                 int i = Math.min(10, this.getHeight());
@@ -61,8 +62,6 @@ public final class LargeStoneColumn
 
                     blockpos$mutableblockpos.move(this.pointingUp ? Direction.DOWN : Direction.UP);
                 }
-
-                this.radius /= 2;
             }
 
             return false;
@@ -78,12 +77,12 @@ public final class LargeStoneColumn
             {
                 for (int j = -this.radius; j <= this.radius; ++j)
                 {
-                    float f = Mth.sqrt((float)(i * i + j * j));
+                    float f = Extensions.SquareRoot((float)(Extensions.Square(i) + Extensions.Square(j)));
                     if (f <= (float)this.radius) {
                         int k = this.getHeightAtRadius(f);
                         if (k > 0) {
                             if (random.nextFloat() < 0.2f) {
-                                k = (int)((float)k * Mth.randomBetween(random, 0.8F, 1.0F));
+                                k = (int)((float)k * Extensions.RandomBetweenUnsafe(random, 0.8F, 1.0F));
                             }
 
                             BlockPos.MutableBlockPos blockpos$mutableblockpos = this.root.offset(i, 0, j).mutable();

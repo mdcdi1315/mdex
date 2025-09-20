@@ -1,10 +1,11 @@
 package com.github.mdcdi1315.mdex.loottable;
 
+import com.github.mdcdi1315.mdex.util.Extensions;
+import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+
 import com.mojang.datafixers.Products;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.ValidationContext;
@@ -49,20 +50,20 @@ public abstract class BaseSingletonLootPoolEntryContainer
         entry = new SingletonPoolEntry(this);
     }
 
-    private static BiFunction<ItemStack, LootContext, ItemStack> composefunctions(List<LootItemFunction> functions) {
+    private static BiFunction<ItemStack, LootContext, ItemStack> composefunctions(List<? extends BiFunction<ItemStack, LootContext, ItemStack>> functions) {
         switch (functions.size()) {
             case 0:
                 return IDENTITY;
             case 1:
-                return functions.getFirst();
+                return functions.get(0);
             case 2:
                 BiFunction<ItemStack, LootContext, ItemStack> bifunction = functions.get(0);
                 BiFunction<ItemStack, LootContext, ItemStack> bifunction1 = functions.get(1);
                 return (p_80768_, p_80769_) -> (ItemStack)bifunction1.apply(bifunction.apply(p_80768_, p_80769_), p_80769_);
             default:
                 return (p_80774_, p_80775_) -> {
-                    for (LootItemFunction f : functions) {
-                        p_80774_ = f.apply(p_80774_, p_80775_);
+                    for (BiFunction<ItemStack, LootContext, ItemStack> bifunction2 : functions) {
+                        p_80774_ = bifunction2.apply(p_80774_, p_80775_);
                     }
 
                     return p_80774_;
@@ -122,7 +123,7 @@ public abstract class BaseSingletonLootPoolEntryContainer
 
         @Override
         public int getWeight(float luck) {
-            return Math.max(Mth.floor((float)b.weight + (float)b.quality * luck), 0);
+            return Math.max(Extensions.Floor((float)b.weight + (float)b.quality * luck), 0);
         }
 
         @Override
@@ -134,8 +135,8 @@ public abstract class BaseSingletonLootPoolEntryContainer
     public static <TB extends BaseSingletonLootPoolEntryContainer> Products.P4<RecordCodecBuilder.Mu<TB>,  Integer ,  Integer , List<LootItemCondition> , List<LootItemFunction>> GetBaseCodec(RecordCodecBuilder.Instance<TB> instance)
     {
         return instance.group(
-                Codec.INT.optionalFieldOf("weight" , DEFAULT_WEIGHT).forGetter((TB b) -> b.weight),
-                Codec.INT.optionalFieldOf("quality" , DEFAULT_QUALITY).forGetter((TB b) -> b.quality)
+                CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("weight" , DEFAULT_WEIGHT).forGetter((TB b) -> b.weight),
+                CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("quality" , DEFAULT_QUALITY).forGetter((TB b) -> b.quality)
         ).and(CommonFields(instance).t1()).and(
                 LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter((TB b) -> b.functions)
         );

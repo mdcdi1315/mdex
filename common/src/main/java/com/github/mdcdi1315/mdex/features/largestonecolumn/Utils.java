@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.features.largestonecolumn;
 
-import net.minecraft.util.Mth;
+import com.github.mdcdi1315.mdex.util.Extensions;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -18,10 +19,14 @@ public final class Utils
         }
 
         double d1 = radius / maxRadius * D0;
-        double d2 = 0.75 * Math.pow(d1, 1.3333333333333333);
-        double d3 = Math.pow(d1, 0.6666666666666666);
-        double d4 = 0.3333333333333333 * Math.log(d1);
-        return Math.max(scale * (d2 - d3 - d4), 0.0) / D0 * maxRadius;
+        return Math.max(
+                scale * (
+                            (0.75d * Math.pow(d1, 1.3333333333333333)) -
+                            Math.pow(d1, 0.6666666666666666) -
+                            (0.3333333333333333 * Math.log(d1))
+                        )
+                , 0.0d
+        ) / D0 * maxRadius;
     }
 
     public static boolean isCircleMostlyEmbeddedInStone(LevelAccessor level, BlockPos pos, int radius)
@@ -31,13 +36,13 @@ public final class Utils
         } else {
             float f1 = 6.0F / (float)radius;
 
-            for (float f2 = 0.0F; f2 < Mth.TWO_PI; f2 += f1)
+            for (float f2 = 0.0F; f2 < Extensions.TWO_PI; f2 += f1)
             {
                 if (isEmptyOrWaterOrLava(level,
                         pos.offset(
-                                (int)(Mth.cos(f2) * (float)radius),
+                                (int)(Extensions.Cos(f2) * (float)radius),
                                 0,
-                                (int)(Mth.sin(f2) * (float)radius)
+                                (int)(Extensions.Sin(f2) * (float)radius)
                         )
                 )) {
                     return false;

@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.commands;
 
 import com.github.mdcdi1315.mdex.api.MDEXModAPI;
+import com.github.mdcdi1315.mdex.api.TeleportRequestState;
 import com.github.mdcdi1315.mdex.api.commands.AbstractCommand;
 
 import com.mojang.brigadier.context.CommandContext;
@@ -91,6 +92,6 @@ public final class TeleportUsingTeleportingManagerCommand
         }
         var t = MDEXModAPI.getMethodImplementation().GetTeleportingManager();
         t.SetTargetDimension(targetlevel.dimension().location());
-        return t.Teleport(sp , sp.getOnPos()) ? 0 : -2;
+        return t.Teleport(sp , sp.getOnPos()) != TeleportRequestState.FAILED  ? 0 : -2;
     }
 }

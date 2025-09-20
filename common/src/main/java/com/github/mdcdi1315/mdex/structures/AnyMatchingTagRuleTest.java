@@ -4,7 +4,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 
 import java.util.List;
 
@@ -37,7 +36,7 @@ public final class AnyMatchingTagRuleTest
     }
 
     @Override
-    protected RuleTestType<?> getType() {
+    protected AnyMatchingTagRuleTestType GetType() {
         return AnyMatchingTagRuleTestType.INSTANCE;
     }
 }

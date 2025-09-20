@@ -1,8 +1,9 @@
 package com.github.mdcdi1315.mdex.features.orevein;
 
-import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.Compilable;
-import com.github.mdcdi1315.mdex.util.SingleBlockState;
+import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
+
 import com.mojang.serialization.Codec;
 
 import java.util.List;
@@ -10,11 +11,11 @@ import java.util.List;
 public final class RareBlockPlacementSettings
     implements Compilable
 {
-    public List<SingleBlockState> RareTargetStates;
+    public List<SingleTargetBlockState> RareTargetStates;
     public float NoiseDensityThreshold;
     private boolean compiled;
 
-    public RareBlockPlacementSettings(List<SingleBlockState> rare , float noiseDensityThreshold)
+    public RareBlockPlacementSettings(List<SingleTargetBlockState> rare , float noiseDensityThreshold)
     {
         compiled = false;
         RareTargetStates = rare;
@@ -24,7 +25,7 @@ public final class RareBlockPlacementSettings
     public static Codec<RareBlockPlacementSettings> GetCodec()
     {
         return CodecUtils.CreateCodecDirect(
-                SingleBlockState.GetCodec().listOf().fieldOf("targets").forGetter((RareBlockPlacementSettings r) -> r.RareTargetStates),
+                SingleTargetBlockState.GetCodec().listOf().fieldOf("targets").forGetter((RareBlockPlacementSettings r) -> r.RareTargetStates),
                 Codec.floatRange(0f , 6f).fieldOf("noise_density_threshold").forGetter((RareBlockPlacementSettings r) -> r.NoiseDensityThreshold),
                 RareBlockPlacementSettings::new
         );

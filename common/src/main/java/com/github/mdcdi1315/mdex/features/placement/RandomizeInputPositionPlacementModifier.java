@@ -36,7 +36,7 @@ public final class RandomizeInputPositionPlacementModifier
         int p = PositionsToReturn.sample(rs);
         for (int I = 0; I < p; I++)
         {
-            build.add(origin.offset(
+            build.accept(origin.offset(
                     X_Offset.sample(rs),
                     Y_Offset.sample(rs),
                     Z_Offset.sample(rs)

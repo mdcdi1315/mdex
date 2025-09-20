@@ -1,7 +1,7 @@
 package com.github.mdcdi1315.mdex.features.config;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
-import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -16,7 +16,7 @@ import java.util.List;
 public final class LargeStoneColumnFeatureConfiguration
     extends ModdedFeatureConfiguration
 {
-    public final CompilableTargetBlockState BlockState;
+    public final CompilableBlockState BlockState;
     public final short floorToCeilingSearchRange;
     public final IntProvider columnRadius;
     public final FloatProvider heightScale;
@@ -29,15 +29,16 @@ public final class LargeStoneColumnFeatureConfiguration
 
     public static Codec<LargeStoneColumnFeatureConfiguration> GetCodec()
     {
+        Codec<FloatProvider> FP_FROMZEROPOINTONE_TOTEN = FloatProvider.codec(0.1F, 10.0F);
         return CodecUtils.CreateCodecDirect(
                 GetBaseCodec(),
-                CompilableTargetBlockState.GetCodec().fieldOf("block_state").forGetter((LargeStoneColumnFeatureConfiguration p) -> p.BlockState),
+                CompilableBlockState.GetCodec().fieldOf("block_state").forGetter((LargeStoneColumnFeatureConfiguration p) -> p.BlockState),
                 CodecUtils.ShortRange(1, 512).optionalFieldOf("floor_to_ceiling_search_range" , (short)30).forGetter((LargeStoneColumnFeatureConfiguration c) -> c.floorToCeilingSearchRange),
                 IntProvider.codec(1, 60).fieldOf("column_radius").forGetter((LargeStoneColumnFeatureConfiguration c) -> c.columnRadius),
                 FloatProvider.codec(0.0F, 20.0F).fieldOf("height_scale").forGetter((LargeStoneColumnFeatureConfiguration c) -> c.heightScale),
                 Codec.floatRange(0.1F, 1.0F).fieldOf("max_column_radius_to_cave_height_ratio").forGetter((LargeStoneColumnFeatureConfiguration c) -> c.maxColumnRadiusToCaveHeightRatio),
-                FloatProvider.codec(0.1F, 10.0F).fieldOf("stalactite_bluntness").forGetter((LargeStoneColumnFeatureConfiguration c) -> c.stalactiteBluntness),
-                FloatProvider.codec(0.1F, 10.0F).fieldOf("stalagmite_bluntness").forGetter((LargeStoneColumnFeatureConfiguration c) -> c.stalagmiteBluntness),
+                FP_FROMZEROPOINTONE_TOTEN.fieldOf("stalactite_bluntness").forGetter((LargeStoneColumnFeatureConfiguration c) -> c.stalactiteBluntness),
+                FP_FROMZEROPOINTONE_TOTEN.fieldOf("stalagmite_bluntness").forGetter((LargeStoneColumnFeatureConfiguration c) -> c.stalagmiteBluntness),
                 FloatProvider.codec(0.0F, 2.0F).fieldOf("wind_speed").forGetter((LargeStoneColumnFeatureConfiguration c) -> c.windSpeed),
                 CodecUtils.ByteRange(0, 100).fieldOf("min_radius_for_wind").forGetter((LargeStoneColumnFeatureConfiguration c) -> c.minRadiusForWind),
                 Codec.floatRange(0.0F, 5.0F).fieldOf("min_bluntness_for_wind").forGetter((LargeStoneColumnFeatureConfiguration c) -> c.minBluntnessForWind),
@@ -46,7 +47,7 @@ public final class LargeStoneColumnFeatureConfiguration
     }
 
     public LargeStoneColumnFeatureConfiguration(List<String> modids ,
-                                                CompilableTargetBlockState bs ,
+                                                CompilableBlockState bs ,
                                                 short ftcsr ,
                                                 IntProvider radius ,
                                                 FloatProvider hs,

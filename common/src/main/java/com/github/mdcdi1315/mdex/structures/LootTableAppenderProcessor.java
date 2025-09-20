@@ -1,5 +1,7 @@
 package com.github.mdcdi1315.mdex.structures;
 
+import com.github.mdcdi1315.mdex.block.BlockUtils;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.resources.ResourceKey;
@@ -7,13 +9,11 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.Registries;
-import com.github.mdcdi1315.mdex.block.BlockUtils;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 
 import java.util.List;
 
@@ -34,13 +34,13 @@ public final class LootTableAppenderProcessor
     }
 
     @Override
-    protected void compileData() {
+    protected void CompileData() {
         ContainerBlock = BlockUtils.GetBlockFromID(ContainerBlockID);
         ContainerBlockID = null;
     }
 
     @Override
-    protected StructureTemplate.StructureBlockInfo processModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
+    protected StructureTemplate.StructureBlockInfo ProcessModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
     {
         BlockPos rbipos = relativeBlockInfo.pos();
         RandomSource rs = settings.getRandom(rbipos);
@@ -63,7 +63,7 @@ public final class LootTableAppenderProcessor
     }
 
     @Override
-    protected StructureProcessorType<?> getType() {
+    protected AbstractModdedStructureProcessorType<?> GetType() {
         return LootTableAppenderProcessorType.INSTANCE;
     }
 }

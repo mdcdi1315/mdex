@@ -2,25 +2,28 @@ package com.github.mdcdi1315.mdex.features;
 
 import com.github.mdcdi1315.DotNetLayer.System.*;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
+
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
-import com.github.mdcdi1315.mdex.features.config.ModdedFeatureConfiguration;
 import com.github.mdcdi1315.mdex.util.RectAreaIterable;
-import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
+import com.github.mdcdi1315.mdex.features.config.ModdedFeatureConfiguration;
+
+import net.minecraft.tags.TagKey;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
-import net.minecraft.tags.TagKey;
-import net.minecraft.util.RandomSource;
-import net.minecraft.util.random.WeightedEntry;
-import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.WorldGenLevel;
+import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.util.random.WeightedRandom;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
+
 
 import java.lang.Exception;
 import java.util.List;
@@ -216,7 +219,9 @@ public final class FeaturePlacementUtils
      * @param source The random source to use for getting the random item.
      * @return The random item.
      * @param <T> The type of the items to select from. An item of such type is returned.
+     * @deprecated Use {@link com.github.mdcdi1315.mdex.util.Extensions#SelectRandomFromListUnsafe(List, RandomSource)} instead.
      */
+    @Deprecated(since = "1.3.0" , forRemoval = true)
     public static <T> T SampleFromRandomSource(List<T> list , RandomSource source)
     {
         return list.get(
@@ -232,10 +237,12 @@ public final class FeaturePlacementUtils
      * @param source The random source to use for getting the random item.
      * @return The random item, ensuring that is not the instance specified in {@code itemtoexclude}.
      * @param <T> The type of the items to select from. An item of such type is returned.
+     * @deprecated Use {@link com.github.mdcdi1315.mdex.util.Extensions#SelectRandomFromListWithExclusion(List, Object, RandomSource)} instead.
      */
+    @Deprecated(since = "1.3.0" , forRemoval = true)
     public static <T> T SampleFromRandomSource(List<T> list , @MaybeNull T itemtoexclude , RandomSource source)
     {
-        T item = null;
+        T item;
         int size = list.size() - 1;
         if (size == 0) {
             return list.get(0);

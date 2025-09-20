@@ -1,15 +1,20 @@
 package com.github.mdcdi1315.mdex.structures;
 
-
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
+
 import net.blay09.mods.balm.api.Balm;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessor;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,15 +34,15 @@ public abstract class AbstractModdedStructureProcessor
         state = STATE_IS_VALID;
     }
 
-    public boolean getModIdListIsValid()
+    public final boolean GetModIdListIsValid()
     {
         if ((state & STATE_MODLIST_DETERMINED) != 0) {
             return ((state & STATE_MODLIST_ISVALID)) != 0;
         }
-        return internalDetermineIfModListIsValid();
+        return InternalDetermineIfModListIsValid();
     }
 
-    private boolean internalDetermineIfModListIsValid()
+    private boolean InternalDetermineIfModListIsValid()
     {
         for (var mod : ModIds)
         {
@@ -52,7 +57,7 @@ public abstract class AbstractModdedStructureProcessor
         return true;
     }
 
-    protected abstract StructureTemplate.StructureBlockInfo processModdedBlock(
+    protected abstract StructureTemplate.StructureBlockInfo ProcessModdedBlock(
             LevelReader level,
             BlockPos offset,
             BlockPos pos,
@@ -61,27 +66,51 @@ public abstract class AbstractModdedStructureProcessor
             StructurePlaceSettings settings
     );
 
-    protected abstract void compileData();
+    protected void CompileData() {}
 
-    @Nullable
+    protected List<StructureTemplate.StructureBlockInfo> FinalizeModdedBlocksProcessing(
+            @DisallowNull ServerLevelAccessor sla ,
+            @DisallowNull BlockPos ofs ,
+            @DisallowNull BlockPos pos ,
+            @DisallowNull List<StructureTemplate.StructureBlockInfo> original ,
+            @DisallowNull List<StructureTemplate.StructureBlockInfo> processed ,
+            @DisallowNull StructurePlaceSettings settings)
+    {
+        return processed;
+    }
+
+    protected abstract AbstractModdedStructureProcessorType<?> GetType();
+
+    public final StructureProcessorType<?> getType() { return GetType(); }
+
+    @NotNull
+    @Override
+    public final List<StructureTemplate.StructureBlockInfo> finalizeProcessing(ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, List<StructureTemplate.StructureBlockInfo> originalBlockInfos, List<StructureTemplate.StructureBlockInfo> processedBlockInfos, StructurePlaceSettings settings) {
+        if (IsValid()) {
+            return FinalizeModdedBlocksProcessing(serverLevel , offset , pos , originalBlockInfos , processedBlockInfos , settings);
+        }
+        return processedBlockInfos;
+    }
+
+    @MaybeNull
     public final StructureTemplate.StructureBlockInfo processBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
     {
-        if (isValid()) {
-            return processModdedBlock(level ,offset , pos , blockInfo , relativeBlockInfo , settings);
+        if (IsValid()) {
+            return ProcessModdedBlock(level ,offset , pos , blockInfo , relativeBlockInfo , settings);
         }
         // This means just to 'passthrough the block data', actually.
         return relativeBlockInfo;
     }
 
-    public final boolean isValid()
+    public final boolean IsValid()
     {
-        if ((state & STATE_MODLIST_DETERMINED) == 0 && internalDetermineIfModListIsValid())
+        if ((state & STATE_MODLIST_DETERMINED) == 0 && InternalDetermineIfModListIsValid())
         {
             try {
-                compileData();
+                CompileData();
             } catch (Exception e) {
                 MDEXBalmLayer.LOGGER.warn("Reporting exception during COMPILE stage for modded structure processor of type {}: \n{}" , getClass().getName() , e);
-                markAsInvalid();
+                MarkAsInvalid();
                 return false;
             }
             return true;
@@ -89,9 +118,8 @@ public abstract class AbstractModdedStructureProcessor
         return (state & IS_VALID_AND_NOT_INVALID) == IS_VALID_AND_NOT_INVALID;
     }
 
-    public final void markAsInvalid()
+    public final void MarkAsInvalid()
     {
         state &= ~STATE_IS_VALID;
     }
-
 }

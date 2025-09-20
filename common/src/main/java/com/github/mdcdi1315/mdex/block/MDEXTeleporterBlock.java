@@ -4,6 +4,7 @@ import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.MDEXModConfig;
 import com.github.mdcdi1315.mdex.api.MDEXModAPI;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
+import com.github.mdcdi1315.mdex.api.TeleportRequestState;
 import com.github.mdcdi1315.mdex.block.entity.TeleporterTileEntity;
 
 import net.minecraft.core.BlockPos;
@@ -92,7 +93,12 @@ public class MDEXTeleporterBlock
         }
         TeleportingManager manager = MDEXModAPI.getMethodImplementation().GetTeleportingManager();
         manager.SetTargetDimension(destination);
-        return manager.Teleport(sp , bps);
+        TeleportRequestState state = manager.Teleport(sp , bps);
+        if (state == TeleportRequestState.SCHEDULED) {
+            sp.displayClientMessage(Component.translatable("mdex.teleportmanager.msg.teleport_scheduled") , true);
+        }
+        return state != TeleportRequestState.FAILED;
+        //return MDEXModAPI.getMethodImplementation().ChangeDimension(sp , destination , new MDEXTeleporterImplementation(bps)) != null;
     }
 
     @Override

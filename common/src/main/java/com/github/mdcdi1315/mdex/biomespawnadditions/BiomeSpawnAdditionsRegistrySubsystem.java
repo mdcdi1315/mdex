@@ -78,7 +78,7 @@ public final class BiomeSpawnAdditionsRegistrySubsystem
                     }
                 }
             } finally {
-                i.Destroy();
+                i.Dispose();
             }
         }
         int applied = 0 , ab = 0;

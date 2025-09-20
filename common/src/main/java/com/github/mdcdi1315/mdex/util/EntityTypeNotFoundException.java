@@ -1,10 +1,9 @@
 package com.github.mdcdi1315.mdex.util;
 
-import com.github.mdcdi1315.DotNetLayer.System.ApplicationException;
 import net.minecraft.resources.ResourceLocation;
 
 public class EntityTypeNotFoundException
-        extends ApplicationException
+        extends MDEXException
 {
     private final ResourceLocation location;
 

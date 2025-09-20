@@ -18,6 +18,7 @@ import com.github.mdcdi1315.mdex.loottable.LootTableRegistrySubsystem;
 import com.github.mdcdi1315.mdex.structures.RuleTestsRegistrySubsystem;
 import com.github.mdcdi1315.mdex.block.BlockPredicatesRegistrySubsystem;
 import com.github.mdcdi1315.mdex.features.FeatureTypesRegistrySubsystem;
+import com.github.mdcdi1315.mdex.structures.StructuresRegistrySubsystem;
 import com.github.mdcdi1315.mdex.structures.StructureProcessorsRegistrySubsystem;
 import com.github.mdcdi1315.mdex.features.placement.PlacementModifierRegistrySubsystem;
 import com.github.mdcdi1315.mdex.biomespawnadditions.BiomeSpawnAdditionsRegistrySubsystem;
@@ -48,6 +49,8 @@ public final class MDEXBalmLayer
     public static ResourceLocation MINING_DIM_IDENTIFIER;
 
     public static boolean DebugFeatureConfigurations;
+
+    public static boolean DebugStructureConfigurations;
 
     private static OperationsTasker TASKER;
 
@@ -83,6 +86,8 @@ public final class MDEXBalmLayer
             BiomeSpawnAdditionsRegistrySubsystem.InitializeRegistry();
             LOGGER.trace("Initializing world generation feature type definitions.");
             FeatureTypesRegistrySubsystem.RegisterFeatureTypes(Balm.getWorldGen());
+            LOGGER.trace("Initializing world generation structure type definitions.");
+            StructuresRegistrySubsystem.RegisterEntries(regs);
             LOGGER.trace("Initializing world generation structure processor type definitions.");
             StructureProcessorsRegistrySubsystem.RegisterStructureProcessors(regs);
             LOGGER.trace("Initializing world generation rule test type definitions.");

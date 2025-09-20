@@ -1,17 +1,18 @@
 package com.github.mdcdi1315.mdex.features.floatingisland;
 
-import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.Compilable;
-import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
+import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
+
 import com.mojang.serialization.Codec;
 
 public class CompilableIslandLayer
     implements Compilable
 {
-    public CompilableTargetBlockState State;
+    public CompilableBlockState State;
     public byte Size;
 
-    public CompilableIslandLayer(CompilableTargetBlockState state , byte size)
+    public CompilableIslandLayer(CompilableBlockState state , byte size)
     {
         State = state;
         Size = size;
@@ -20,7 +21,7 @@ public class CompilableIslandLayer
     public static Codec<CompilableIslandLayer> GetCodec()
     {
         return CodecUtils.CreateCodecDirect(
-                CompilableTargetBlockState.GetCodec().fieldOf("state").forGetter((p) -> p.State),
+                CompilableBlockState.GetCodec().fieldOf("state").forGetter((p) -> p.State),
                 CodecUtils.ByteRange(1 , 32).fieldOf("size").forGetter((p) -> p.Size),
                 CompilableIslandLayer::new
         );

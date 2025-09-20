@@ -1,8 +1,9 @@
 package com.github.mdcdi1315.mdex.util;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
+
 import net.minecraft.core.BlockPos;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 

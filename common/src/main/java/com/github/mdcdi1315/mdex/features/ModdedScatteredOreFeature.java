@@ -1,8 +1,10 @@
 package com.github.mdcdi1315.mdex.features;
 
+import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
 import com.github.mdcdi1315.mdex.features.config.ModdedOreFeatureConfiguration;
-import com.github.mdcdi1315.mdex.util.SingleBlockState;
+
 import com.mojang.serialization.Codec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
@@ -30,10 +32,10 @@ public final class ModdedScatteredOreFeature
 
         for (int j = 0; j < attempts; ++j)
         {
-            offsetTargetPos(current, randomsource, blockpos, Math.min(j, 7));
+            OffsetTargetPos(current, randomsource, blockpos, Math.min(j, 7));
             BlockState blockstate = worldgenlevel.getBlockState(current);
 
-            for (SingleBlockState targetblockstate : oreconfiguration.TargetStates)
+            for (SingleTargetBlockState targetblockstate : oreconfiguration.TargetStates)
             {
                 if (ModdedOreFeature.CanPlaceOre(blockstate, worldgenlevel::getBlockState, randomsource, oreconfiguration.DiscardChanceOnAirExposure, targetblockstate, current))
                 {
@@ -47,15 +49,17 @@ public final class ModdedScatteredOreFeature
         return atleastone;
     }
 
-    private static void offsetTargetPos(BlockPos.MutableBlockPos mutablePos, RandomSource random, BlockPos pos, int magnitude)
+    private static void OffsetTargetPos(BlockPos.MutableBlockPos mutablePos, RandomSource random, BlockPos pos, int magnitude)
     {
-        mutablePos.setWithOffset(pos,
-                getRandomPlacementInOneAxisRelativeToOrigin(random, magnitude),
-                getRandomPlacementInOneAxisRelativeToOrigin(random, magnitude),
-                getRandomPlacementInOneAxisRelativeToOrigin(random, magnitude));
+        mutablePos.setWithOffset(
+                pos,
+                GetRandomPlacementInOneAxisRelativeToOrigin(random, magnitude),
+                GetRandomPlacementInOneAxisRelativeToOrigin(random, magnitude),
+                GetRandomPlacementInOneAxisRelativeToOrigin(random, magnitude)
+        );
     }
 
-    private static int getRandomPlacementInOneAxisRelativeToOrigin(RandomSource random, int magnitude) {
+    private static int GetRandomPlacementInOneAxisRelativeToOrigin(RandomSource random, int magnitude) {
         return Math.round((random.nextFloat() - random.nextFloat()) * (float)magnitude);
     }
 }

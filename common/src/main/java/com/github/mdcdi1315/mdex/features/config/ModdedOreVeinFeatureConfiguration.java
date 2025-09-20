@@ -1,12 +1,11 @@
 package com.github.mdcdi1315.mdex.features.config;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
-import com.github.mdcdi1315.mdex.util.SingleBlockState;
+import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
 import com.github.mdcdi1315.mdex.features.orevein.RareBlockPlacementSettings;
 
-import com.mojang.serialization.Codec;
-
 import net.minecraft.core.Holder;
+import com.mojang.serialization.Codec;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
@@ -17,7 +16,7 @@ public final class ModdedOreVeinFeatureConfiguration
     extends ModdedFeatureConfiguration
 {
     public RareBlockPlacementSettings RarePlacementSettings;
-    public List<SingleBlockState> TargetStates;
+    public List<SingleTargetBlockState> TargetStates;
     public IntProvider Size;
     public IntProvider Y_Scale;
     public Holder<NormalNoise.NoiseParameters> Parameters;
@@ -28,7 +27,7 @@ public final class ModdedOreVeinFeatureConfiguration
         return CodecUtils.CreateCodecDirect(
                 GetBaseCodec(),
                 RareBlockPlacementSettings.GetCodec().fieldOf("rare_placement").forGetter((f) -> f.RarePlacementSettings),
-                SingleBlockState.GetCodec().listOf().fieldOf("targets").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.TargetStates),
+                SingleTargetBlockState.GetCodec().listOf().fieldOf("targets").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.TargetStates),
                 NormalNoise.NoiseParameters.CODEC.fieldOf("noise").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.Parameters),
                 IntProvider.codec(5 , 58).optionalFieldOf("size" , ConstantInt.of(12)).forGetter((f) -> f.Size),
                 IntProvider.codec(4 , 18).optionalFieldOf("y_scale" , ConstantInt.of(2)).forGetter((f) -> f.Y_Scale),
@@ -37,7 +36,7 @@ public final class ModdedOreVeinFeatureConfiguration
         );
     }
 
-    public ModdedOreVeinFeatureConfiguration(List<String> modids, RareBlockPlacementSettings s , List<SingleBlockState> states , Holder<NormalNoise.NoiseParameters> p , IntProvider size , IntProvider yscale , float discardChanceOnAirExposure)
+    public ModdedOreVeinFeatureConfiguration(List<String> modids, RareBlockPlacementSettings s , List<SingleTargetBlockState> states , Holder<NormalNoise.NoiseParameters> p , IntProvider size , IntProvider yscale , float discardChanceOnAirExposure)
     {
         super(modids);
         RarePlacementSettings = s;

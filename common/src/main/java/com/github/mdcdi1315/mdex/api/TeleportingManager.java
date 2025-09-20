@@ -38,6 +38,7 @@ import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Defines the base class for the Mining Dimension teleporting mechanism. <br />
@@ -49,6 +50,38 @@ public abstract class TeleportingManager
 {
     public static final String TELEPORTER_DATA_DIMFILE_NAME = "MDCDI1315_MDEX_TELEPORTERSPAWNDATA";
     public static final String FEATURE_RESOURCE_LOCATION = MDEXBalmLayer.COMPATIBILITY_NAMESPACE + ":teleporter_placement_feature";
+
+    private static class TeleportingScheduler
+            implements Runnable
+    {
+        private final ServerPlayer player;
+        private final TeleportingManager manager;
+        private final BlockPos teleporterposition;
+
+        public TeleportingScheduler(ServerPlayer sp , BlockPos p , TeleportingManager mgr)
+        {
+            player = sp;
+            teleporterposition = p;
+            manager = mgr;
+        }
+
+        @Override
+        public void run() {
+            try {
+                // Already incremented by the teleport method , we need only to decrement it when done with teleporting
+                // manager.requests.incrementAndGet();
+                try {
+                    while (manager.IsMainRequestPending) { Thread.sleep(10); }
+                } catch (InterruptedException ie) {}
+                manager.TeleportInternal(player , teleporterposition);
+            } finally {
+                manager.requests.decrementAndGet();
+            }
+        }
+    }
+
+    private volatile boolean IsMainRequestPending;
+    private AtomicInteger requests;
     @MaybeNull
     private MinecraftServer Server;
     private ResourceKey<Level> TargetDim;
@@ -93,6 +126,9 @@ public abstract class TeleportingManager
             Server = null;
             MDEXBalmLayer.LOGGER.warn("The mining_dim dimension does not exist in the server. Disabling teleporter implementation for this instance.");
         }
+        requests = new AtomicInteger();
+        requests.set(0);
+        IsMainRequestPending = false;
     }
 
     /**
@@ -118,24 +154,36 @@ public abstract class TeleportingManager
         return TargetDim;
     }
 
-    public boolean Teleport(Player player , BlockPos teleporterposcurrentworld)
+    public TeleportRequestState Teleport(Player player , BlockPos teleporterposcurrentworld)
     {
         if (player instanceof ServerPlayer sp) {
-            return TeleportInternal(sp , teleporterposcurrentworld);
+            ArgumentNullException.ThrowIfNull(teleporterposcurrentworld , "teleporterposcurrentworld");
+            if (Server == null) {
+                // Teleporting features are disabled. This text is not to be translated.
+                sp.displayClientMessage(Component.literal("Unsupported operation.") , true);
+                return TeleportRequestState.FAILED;
+            }
+            if (!IsMainRequestPending && requests.incrementAndGet() == 1) {
+                try {
+                    IsMainRequestPending = true;
+                    boolean v = TeleportInternal(sp, teleporterposcurrentworld);
+                    return v ? TeleportRequestState.COMPLETED : TeleportRequestState.FAILED;
+                } finally {
+                    requests.decrementAndGet();
+                    IsMainRequestPending = false;
+                }
+            } else {
+                // We must schedule the request.
+                MDEXBalmLayer.RunTaskAsync(new TeleportingScheduler(sp , teleporterposcurrentworld , this));
+                return TeleportRequestState.SCHEDULED;
+            }
         } else {
-            return false;
+            return TeleportRequestState.FAILED;
         }
     }
 
     private boolean TeleportInternal(ServerPlayer sp , BlockPos teleporterposcurrentworld)
     {
-        ArgumentNullException.ThrowIfNull(sp , "sp");
-        ArgumentNullException.ThrowIfNull(teleporterposcurrentworld , "teleporterpos");
-        if (Server == null) {
-            // Teleporting features are disabled. This text is not to be translated.
-            sp.displayClientMessage(Component.literal("Unsupported operation.") , true);
-            return false;
-        }
         ServerLevel lvl = ComputeTargetLevel();
         if (lvl == null) { return false; }
         ((ServerLevel)sp.level()).getDataStorage().computeIfAbsent(factory).AddEntry(sp , teleporterposcurrentworld.above());
@@ -154,6 +202,7 @@ public abstract class TeleportingManager
         }
         // Set the block position by one block above
         // That is the point where the player will be placed to
+        // NOTE: I am not including the fix for spawn position, seems to be OK for both mod loaders
         if (TeleportImpl(sp , lvl , bp , sp.level() != lvl))
         {
             tlvldat.AddEntry(sp , bp);
@@ -325,6 +374,12 @@ public abstract class TeleportingManager
     {
         Server = null;
         factory = null;
+        if (requests != null && requests.get() > 0)
+        {
+            MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Waiting for all teleporting requests to finish first.");
+            while (requests.get() > 0) { try { Thread.sleep(10); } catch (InterruptedException e) { break; } }
+        }
+        requests = null;
         TargetDim = null;
         genfeature = null;
     }

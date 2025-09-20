@@ -4,12 +4,13 @@ import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.weight.Weight;
 import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
 import com.github.mdcdi1315.mdex.util.EntityTypeNotFoundException;
+
 import com.mojang.serialization.Codec;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.ExtraCodecs;
+
 import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 
 import java.util.Optional;
@@ -25,8 +26,9 @@ public final class BiomeSpawnerEntity
     {
         return CodecUtils.CreateCodecDirect(
                 ResourceLocation.CODEC.fieldOf("id").forGetter((BiomeSpawnerEntity e) -> e.EntityID),
-                ExtraCodecs.POSITIVE_INT.fieldOf("min_count").forGetter((BiomeSpawnerEntity e) -> e.MinCount),
-                ExtraCodecs.POSITIVE_INT.fieldOf("max_count").forGetter((BiomeSpawnerEntity e) -> e.MaxCount),
+                // This can be zero but max_count must have at least 1 so that the entry is valid
+                CodecUtils.ZERO_OR_POSITIVE_INTEGER.fieldOf("min_count").forGetter((BiomeSpawnerEntity e) -> e.MinCount),
+                CodecUtils.POSITIVE_INTEGER.fieldOf("max_count").forGetter((BiomeSpawnerEntity e) -> e.MaxCount),
                 com.github.mdcdi1315.mdex.util.weight.Weight.CODEC.fieldOf("weight").forGetter((BiomeSpawnerEntity e) -> e.Weight),
                 BiomeSpawnerEntity::new
         );

@@ -219,7 +219,9 @@ public final class FeaturePlacementUtils
      * @param source The random source to use for getting the random item.
      * @return The random item.
      * @param <T> The type of the items to select from. An item of such type is returned.
+     * @deprecated Use {@link com.github.mdcdi1315.mdex.util.Extensions#SelectRandomFromListUnsafe(List, RandomSource)} instead.
      */
+    @Deprecated(since = "1.3.0" , forRemoval = true)
     public static <T> T SampleFromRandomSource(List<T> list , RandomSource source)
     {
         return list.get(
@@ -235,13 +237,15 @@ public final class FeaturePlacementUtils
      * @param source The random source to use for getting the random item.
      * @return The random item, ensuring that is not the instance specified in {@code itemtoexclude}.
      * @param <T> The type of the items to select from. An item of such type is returned.
+     * @deprecated Use {@link com.github.mdcdi1315.mdex.util.Extensions#SelectRandomFromListWithExclusion(List, Object, RandomSource)} instead.
      */
+    @Deprecated(since = "1.3.0" , forRemoval = true)
     public static <T> T SampleFromRandomSource(List<T> list , @MaybeNull T itemtoexclude , RandomSource source)
     {
         T item;
         int size = list.size() - 1;
         if (size == 0) {
-            return list.getFirst();
+            return list.get(0);
         }
         do {
             item = list.get(source.nextIntBetweenInclusive(0, size));

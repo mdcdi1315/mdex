@@ -12,25 +12,31 @@ public class MDEXModConfig
 {
     @Comment(
             "Enables additional debug messages to resolve common errors involving invalid feature configs.\n" +
-                    "For this change to take effect, you must restart the game."
+            "For this change to take effect, you must restart the game."
     )
     public boolean DebugFeatureConfigurations = false;
 
     @Comment(
+            "Enables additional debug messages to resolve common errors involving invalid structure configs.\n" +
+            "For this change to take effect, you must restart the game."
+    )
+    public boolean DebugStructureConfigurations = false;
+
+    @Comment(
             "The dimension where the player should return when he clicks on any Teleporter block in the Mining Dimension.\n" +
-                    "By default it is set to Minecraft's overworld dimension."
+            "By default it is set to Minecraft's overworld dimension."
     )
     public ResourceLocation HomeDimension = BuiltinDimensionTypes.OVERWORLD.location();
 
     @Comment(
             "Enabling this value restricts the portal placement in lower height levels.\n" +
-                    "It is highly recommended enabling this value when you want the players to be spawned in lower height levels."
+            "It is highly recommended enabling this value when you want the players to be spawned in lower height levels."
     )
     public boolean ShouldSpawnPortalInDeep = false;
 
     @Comment(
             "Whether the starter's chest should be placed after all when going to the Mining Dimension for the first time.\n" +
-                    "Useful for cases where the datapack has defined a starter chest to be placed, but server admins do not need it."
+            "Useful for cases where the datapack has defined a starter chest to be placed, but server admins do not need it."
     )
     public boolean ShouldPlaceStarterChestAtFirstTime = true;
 
@@ -44,6 +50,7 @@ public class MDEXModConfig
                 cfg.saveLocalConfig(schema);
             }
             MDEXBalmLayer.DebugFeatureConfigurations = mlc.DebugFeatureConfigurations;
+            MDEXBalmLayer.DebugStructureConfigurations = mlc.DebugStructureConfigurations;
             cfg.updateLocalConfig(MDEXModConfig.class , MDEXModConfig::EmptyUpdater);
         });
     }

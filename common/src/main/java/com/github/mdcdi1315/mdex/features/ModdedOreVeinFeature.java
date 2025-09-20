@@ -1,7 +1,7 @@
 package com.github.mdcdi1315.mdex.features;
 
+import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
 import com.github.mdcdi1315.mdex.features.config.ModdedOreVeinFeatureConfiguration;
-import com.github.mdcdi1315.mdex.util.SingleBlockState;
 
 import net.minecraft.core.BlockPos;
 import com.mojang.serialization.Codec;
@@ -39,7 +39,7 @@ public final class ModdedOreVeinFeature
         {
             BlockState current = wgl.getBlockState(temp);
             density = n.getValue(temp.getX() , temp.getY() , temp.getZ());
-            for (var t : (density >= rareplacement) ? fpc.config().RarePlacementSettings.RareTargetStates : (density > 0d) ? fpc.config().TargetStates : List.<SingleBlockState>of())
+            for (var t : (density >= rareplacement) ? fpc.config().RarePlacementSettings.RareTargetStates : (density > 0d) ? fpc.config().TargetStates : List.<SingleTargetBlockState>of())
             {
                 if (ModdedOreFeature.CanPlaceOre(current , wgl::getBlockState , rs , discardchance , t , temp))
                 {

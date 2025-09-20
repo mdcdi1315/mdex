@@ -3,7 +3,7 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.DataResult;
 
-import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 import com.github.mdcdi1315.mdex.util.weight.SimpleWeightedEntryList;
 
 public final class WeightedStateProviderType
@@ -13,14 +13,14 @@ public final class WeightedStateProviderType
 
     public WeightedStateProviderType()
     {
-        codec = SimpleWeightedEntryList.CreateSimpleWeightedEntryList(CompilableTargetBlockState.GetCodec())
+        codec = SimpleWeightedEntryList.CreateSimpleWeightedEntryList(CompilableBlockState.GetMapCodec())
                 .fieldOf("entries").flatXmap(
                         WeightedStateProviderType::Create,
                         WeightedStateProviderType::Decompose
                 );
     }
 
-    private static DataResult<WeightedStateProvider> Create(SimpleWeightedEntryList<CompilableTargetBlockState> list)
+    private static DataResult<WeightedStateProvider> Create(SimpleWeightedEntryList<CompilableBlockState> list)
     {
         if (list == null) {
             return DataResult.error(() -> "Specified list is null.");
@@ -28,7 +28,7 @@ public final class WeightedStateProviderType
         return DataResult.success(new WeightedStateProvider(list));
     }
 
-    private static DataResult<SimpleWeightedEntryList<CompilableTargetBlockState>> Decompose(WeightedStateProvider wsp)
+    private static DataResult<SimpleWeightedEntryList<CompilableBlockState>> Decompose(WeightedStateProvider wsp)
     {
         if (wsp == null) {
             return DataResult.error(() -> "Specified weighted state provider is null.");

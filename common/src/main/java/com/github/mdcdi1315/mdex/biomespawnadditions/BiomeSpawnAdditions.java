@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.biomespawnadditions;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
 
 import com.mojang.serialization.Codec;
 
@@ -10,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 
 public final class BiomeSpawnAdditions
+    implements IDisposable
 {
     public List<String> ModIds;
     public ResourceLocation BiomeID;
@@ -35,7 +37,7 @@ public final class BiomeSpawnAdditions
         Entries = entries;
     }
 
-    public void Destroy()
+    public void Dispose()
     {
         ModIds = null;
         BiomeID = null;

@@ -2,8 +2,8 @@ package com.github.mdcdi1315.mdex.features;
 
 import com.github.mdcdi1315.DotNetLayer.System.Predicate;
 
+import com.github.mdcdi1315.mdex.util.Extensions;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
-import com.github.mdcdi1315.mdex.util.DirectionExtensions;
 import com.github.mdcdi1315.mdex.features.config.FallenTreeConfiguration;
 
 import net.minecraft.core.Holder;
@@ -43,7 +43,7 @@ public final class FallenTreeFeature
         int ts = fpc.config().FallenTrunkSize.sample(fpc.random());
 
         // Get a random direction.
-        Direction fd = DirectionExtensions.GetRandomDirectionExcludingUpDown(fpc.random());
+        Direction fd = Extensions.GetRandomDirectionExcludingUpDown(fpc.random());
 
         // Place the first log. This will always look to the world's y coordinate.
         if (!FeaturePlacementUtils.SafeSetBlock(wgl , startpos , log.defaultBlockState().setValue(RotatedPillarBlock.AXIS , Direction.Axis.Y) , replaceable))

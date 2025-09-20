@@ -98,7 +98,7 @@ public final class TeleporterSpawnData
 
     public TeleporterSpawnData()
     {
-        version = 0;
+        version = 1;
         magicinternal = MAGIC;
         PlayerMap = new HashMap<>();
         // Initially consider that no starter chest is placed.

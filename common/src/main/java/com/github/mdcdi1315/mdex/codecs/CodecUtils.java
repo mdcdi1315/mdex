@@ -1,16 +1,20 @@
 package com.github.mdcdi1315.mdex.codecs;
 
+import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
+
 import com.mojang.datafixers.util.*;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import java.util.function.BiFunction;
+import java.util.List;
 import java.util.function.Function;
+import java.util.function.BiFunction;
 
 /**
  * Provides Codec manipulation &amp; easy creation methods.
  */
+@SuppressWarnings("unused")
 public final class CodecUtils
 {
     private CodecUtils() {}
@@ -24,6 +28,58 @@ public final class CodecUtils
      * Gets a singleton of the 'probability' codec, that is a codec that can only take a double-precision floating range of values from 0 to 1, all inclusive.
      */
     public static final Codec<Double> DOUBLE_PROBABILITY = Codec.doubleRange(0d , 1d);
+
+    /**
+     * Gets a singleton of a codec that only accepts positive {@link Integer} values.
+     */
+    public static final Codec<Integer> POSITIVE_INTEGER = CreatePositiveIntegerCodec();
+
+    /**
+     * Gets a singleton of a codec that accepts zero or positive {@link Integer} values only.
+     */
+    public static final Codec<Integer> ZERO_OR_POSITIVE_INTEGER = CreateZeroOrPositiveIntegerCodec();
+
+    private static Codec<Integer> CreateZeroOrPositiveIntegerCodec()
+    {
+        var c = new ZeroOrPositiveIntegerChecker();
+        return Codec.INT.flatXmap(c , c);
+    }
+
+    private static Codec<Integer> CreatePositiveIntegerCodec()
+    {
+        var c = new PositiveIntegerChecker();
+        return Codec.INT.flatXmap(c , c);
+    }
+
+    /**
+     * Returns a codec that ensures that the given list {@link Codec} will always have a non-empty list, that is a list at least containing one element.
+     * @param codec The list codec to create the non-empty list codec from.
+     * @return A codec capable of checking that the list provided through {@code codec} is not empty. Substitutes the {@code codec} parameter.
+     * @param <T> The type of the list's elements.
+     * @throws ArgumentNullException {@code codec} is {@code null}.
+     */
+    public static <T> Codec<List<T>> NonEmptyList(Codec<List<T>> codec)
+            throws ArgumentNullException
+    {
+        ArgumentNullException.ThrowIfNull(codec , "codec");
+        var c = new NonEmptyListChecker<T>();
+        return codec.flatXmap(c , c);
+    }
+
+    /**
+     * Constructs a list codec from the specified element codec, plus verifying that the list returned will be always non-empty.
+     * @param elementcodec The codec that can de/serialize {@code T}.
+     * @return A list codec capable of checking that the list is not empty. The elements are de/serialized by the provided {@code elementcodec} parameter.
+     * @param <T> The type of the list's elements, it is also the type of the {@code elementcodec} parameter.
+     * @throws ArgumentNullException {@code elementcodec} is {@code null}.
+     */
+    public static <T> Codec<List<T>> NonEmptyListFromElementCodec(Codec<T> elementcodec)
+            throws ArgumentNullException
+    {
+        ArgumentNullException.ThrowIfNull(elementcodec , "elementcodec");
+        var c = new NonEmptyListChecker<T>();
+        return elementcodec.listOf().flatXmap(c , c);
+    }
 
     /**
      * Defines a codec for defining a short type field with the specified range.

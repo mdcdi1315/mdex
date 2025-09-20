@@ -1,14 +1,14 @@
 package com.github.mdcdi1315.mdex.structures;
 
-import com.mojang.serialization.MapCodec;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.BlockIdOrBlockTagEntry;
 
+import com.mojang.serialization.MapCodec;
 
 public final class ModdedProtectedBlocksProcessorType
     extends AbstractModdedStructureProcessorType<ModdedProtectedBlocksProcessor>
 {
-    public static ModdedProtectedBlocksProcessorType INSTANCE = new ModdedProtectedBlocksProcessorType();
+    public static final ModdedProtectedBlocksProcessorType INSTANCE = new ModdedProtectedBlocksProcessorType();
 
     @Override
     protected MapCodec<ModdedProtectedBlocksProcessor> GetCodecInstance() {

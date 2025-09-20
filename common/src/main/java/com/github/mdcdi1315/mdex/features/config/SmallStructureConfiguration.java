@@ -3,9 +3,10 @@ package com.github.mdcdi1315.mdex.features.config;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.features.smallstructure.StructureElementConfig;
 
+import com.mojang.serialization.Codec;
+
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
-import com.mojang.serialization.Codec;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;

@@ -9,12 +9,11 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
-import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
 import java.util.List;
 
@@ -35,7 +34,7 @@ public final class SpecificLootAppenderProcessor
     }
 
     @Override
-    protected StructureTemplate.StructureBlockInfo processModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings) {
+    protected StructureTemplate.StructureBlockInfo ProcessModdedBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings) {
         BlockPos rbipos = relativeBlockInfo.pos();
         RandomSource rs = settings.getRandom(rbipos);
         if (rs.nextFloat() < Probability)
@@ -65,13 +64,13 @@ public final class SpecificLootAppenderProcessor
     }
 
     @Override
-    protected void compileData() {
+    protected void CompileData() {
         ContainerBlock = BlockUtils.GetBlockFromID(ContainerBlockID);
         ContainerBlockID = null;
     }
 
     @Override
-    protected StructureProcessorType<?> getType() {
+    protected AbstractModdedStructureProcessorType<SpecificLootAppenderProcessor> GetType() {
         return SpecificLootAppenderProcessorType.INSTANCE;
     }
 }

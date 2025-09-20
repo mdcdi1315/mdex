@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
@@ -22,19 +23,23 @@ public final class BlockIdOrBlockTagEntry
     @MaybeNull
     private TagKey<Block> Tag;
 
+    @SuppressWarnings("unchecked")
+    private static Either<TagKey<Block> , ResourceLocation> DecodeFunction(Object obj)
+    {
+        if (obj instanceof ResourceLocation loc) {
+            return Either.right(loc);
+        } else if (obj instanceof TagKey<?> k) {
+            return Either.left((TagKey<Block>)k);
+        } else {
+            throw new MDEXException("Invalid conversion code path");
+        }
+    }
+
     public static Codec<BlockIdOrBlockTagEntry> GetCodec()
     {
-        return Codec.either(TagKey.hashedCodec(BuiltInRegistries.BLOCK.key()) , ResourceLocation.CODEC).xmap(
+        return Codec.either(TagKey.hashedCodec(Registries.BLOCK) , ResourceLocation.CODEC).xmap(
                 BlockIdOrBlockTagEntry::new,
-                (Object obj) -> {
-                    if (obj instanceof ResourceLocation loc) {
-                        return Either.right(loc);
-                    } else if (obj instanceof TagKey<?> k) {
-                        return Either.left((TagKey<Block>)k);
-                    } else {
-                        throw new MDEXException("Invalid conversion code path");
-                    }
-                }
+                BlockIdOrBlockTagEntry::DecodeFunction
         );
     }
 

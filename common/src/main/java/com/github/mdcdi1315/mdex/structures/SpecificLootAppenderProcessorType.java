@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.structures;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+
 import com.github.mdcdi1315.mdex.codecs.StableItemStackCodec;
 import com.github.mdcdi1315.mdex.util.ItemStackChestPlacement;
 
@@ -11,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 public final class SpecificLootAppenderProcessorType
     extends AbstractModdedStructureProcessorType<SpecificLootAppenderProcessor>
 {
-    public static SpecificLootAppenderProcessorType INSTANCE = new SpecificLootAppenderProcessorType();
+    public static final SpecificLootAppenderProcessorType INSTANCE = new SpecificLootAppenderProcessorType();
 
     @Override
     protected MapCodec<SpecificLootAppenderProcessor> GetCodecInstance() {

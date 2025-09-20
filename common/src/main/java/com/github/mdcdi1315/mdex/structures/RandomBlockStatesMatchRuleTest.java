@@ -1,12 +1,11 @@
 package com.github.mdcdi1315.mdex.structures;
 
+import com.github.mdcdi1315.mdex.util.Extensions;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
-import com.github.mdcdi1315.mdex.features.FeaturePlacementUtils;
-import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTestType;
 
 import java.util.List;
 
@@ -14,9 +13,9 @@ public final class RandomBlockStatesMatchRuleTest
     extends AbstractModdedRuleTest
 {
     public final float probability;
-    public List<CompilableTargetBlockState> RandomStates;
+    public List<CompilableBlockState> RandomStates;
 
-    public RandomBlockStatesMatchRuleTest(List<CompilableTargetBlockState> randomstates , float probability)
+    public RandomBlockStatesMatchRuleTest(List<CompilableBlockState> randomstates , float probability)
     {
         this.probability = probability;
         RandomStates = randomstates;
@@ -43,11 +42,11 @@ public final class RandomBlockStatesMatchRuleTest
         if (RandomStates.isEmpty()) {
             return false;
         }
-        return randomSource.nextFloat() < probability && BlockUtils.BlockStatesMatch(FeaturePlacementUtils.SampleFromRandomSource(RandomStates , randomSource).BlockState , blockState);
+        return randomSource.nextFloat() < probability && BlockUtils.BlockStatesMatch(Extensions.SelectRandomFromListUnsafe(RandomStates, randomSource).BlockState , blockState);
     }
 
     @Override
-    protected RuleTestType<?> getType() {
+    protected AbstractModdedRuleTestType<RandomBlockStatesMatchRuleTest> GetType() {
         return RandomBlockStatesMatchRuleTestType.INSTANCE;
     }
 }

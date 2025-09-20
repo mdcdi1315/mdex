@@ -1,12 +1,13 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
-import net.minecraft.Util;
-import net.minecraft.core.BlockPos;
+import com.github.mdcdi1315.mdex.util.Extensions;
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
+
 import net.minecraft.core.Holder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.synth.NormalNoise;
-import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
 
 import java.util.List;
 
@@ -16,11 +17,11 @@ public class NoiseThresholdProvider
    private boolean compiled;
    public final float threshold;
    public final float highChance;
-   public final CompilableTargetBlockState defaultState;
-   public final List<CompilableTargetBlockState> lowStates;
-   public final List<CompilableTargetBlockState> highStates;
+   public final CompilableBlockState defaultState;
+   public final List<CompilableBlockState> lowStates;
+   public final List<CompilableBlockState> highStates;
 
-   public NoiseThresholdProvider(long seed, Holder<NormalNoise.NoiseParameters> parameters, float scale, float threshold, float highChance, CompilableTargetBlockState defaultState, List<CompilableTargetBlockState> lowStates, List<CompilableTargetBlockState> highStates)
+   public NoiseThresholdProvider(long seed, Holder<NormalNoise.NoiseParameters> parameters, float scale, float threshold, float highChance, CompilableBlockState defaultState, List<CompilableBlockState> lowStates, List<CompilableBlockState> highStates)
    {
       super(seed, parameters, scale);
       this.threshold = threshold;
@@ -37,11 +38,10 @@ public class NoiseThresholdProvider
    }
 
    public BlockState getState(RandomSource random, BlockPos pos) {
-      double d0 = this.getNoiseValue(pos, this.scale);
-      if (d0 < (double)this.threshold) {
-         return Util.getRandom(lowStates, random).BlockState;
+      if (this.getNoiseValue(pos, this.scale) < (double)this.threshold) {
+          return Extensions.SelectRandomFromList(lowStates , random).BlockState;
       } else {
-         return random.nextFloat() < this.highChance ? Util.getRandom(this.highStates, random).BlockState : this.defaultState.BlockState;
+          return random.nextFloat() < this.highChance ? Extensions.SelectRandomFromList(this.highStates, random).BlockState : this.defaultState.BlockState;
       }
    }
 

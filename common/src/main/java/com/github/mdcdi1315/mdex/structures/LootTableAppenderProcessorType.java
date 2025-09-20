@@ -1,15 +1,13 @@
 package com.github.mdcdi1315.mdex.structures;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
-
 import com.mojang.serialization.MapCodec;
-
 import net.minecraft.resources.ResourceLocation;
 
 public final class LootTableAppenderProcessorType
     extends AbstractModdedStructureProcessorType<LootTableAppenderProcessor>
 {
-    public static LootTableAppenderProcessorType INSTANCE = new LootTableAppenderProcessorType();
+    public static final LootTableAppenderProcessorType INSTANCE = new LootTableAppenderProcessorType();
 
     @Override
     protected MapCodec<LootTableAppenderProcessor> GetCodecInstance()

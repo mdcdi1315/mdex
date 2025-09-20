@@ -18,7 +18,7 @@ public final class StructureElementConfig
         );
     }
 
-    public StructureTemplate Template;
+    public StructureTemplate Template; // Assigned at run-time once the feature requests that this entry should be placed down.
     public ResourceLocation StructureID;
     public StructureElementSettings Settings;
 

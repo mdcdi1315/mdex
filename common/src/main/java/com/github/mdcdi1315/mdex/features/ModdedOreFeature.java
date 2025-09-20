@@ -2,17 +2,19 @@ package com.github.mdcdi1315.mdex.features;
 
 import com.github.mdcdi1315.DotNetLayer.System.Collections.Generic.KeyValuePair;
 
-import net.minecraft.util.Mth;
+import com.github.mdcdi1315.mdex.util.Extensions;
+import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
+import com.github.mdcdi1315.mdex.features.config.ModdedOreFeatureConfiguration;
+
+import com.mojang.serialization.Codec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import com.mojang.serialization.Codec;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.WorldGenLevel;
-import com.github.mdcdi1315.mdex.util.SingleBlockState;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
-import com.github.mdcdi1315.mdex.features.config.ModdedOreFeatureConfiguration;
 
 import java.util.List;
 import java.util.function.Function;
@@ -34,12 +36,7 @@ public final class ModdedOreFeature
 
         // Select one of the four direction pairs randomly.
 
-        KeyValuePair<Direction , Direction> selecteddir = FeaturePlacementUtils.SampleFromRandomSource(List.of(
-                new KeyValuePair<>(Direction.EAST , Direction.NORTH),
-                new KeyValuePair<>(Direction.WEST , Direction.NORTH),
-                new KeyValuePair<>(Direction.EAST , Direction.SOUTH),
-                new KeyValuePair<>(Direction.WEST , Direction.SOUTH)
-        ) , randomsource);
+        KeyValuePair<Direction , Direction> selecteddir = Extensions.GetRandomDirectionPairNonUpDown(randomsource);
 
         byte sampledsize = (byte) randomsource.nextInt(oreconfiguration.Size);
 
@@ -52,7 +49,7 @@ public final class ModdedOreFeature
         }
     }
 
-    private static boolean PlaceOreMoreThan16Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleBlockState> states , byte numberoforestoplace , float discardchanceonairexposure)
+    private static boolean PlaceOreMoreThan16Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleTargetBlockState> states , byte numberoforestoplace , float discardchanceonairexposure)
     {
         short nplaced = 0;
         int sidesize = numberoforestoplace / 4;
@@ -75,7 +72,7 @@ public final class ModdedOreFeature
         return nplaced >= numberoforestoplace;
     }
 
-    private static boolean PlaceOreMoreThan8Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleBlockState> states , KeyValuePair<Direction , Direction> selected , byte numberoforestoplace , float discardchanceonairexposure)
+    private static boolean PlaceOreMoreThan8Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleTargetBlockState> states , KeyValuePair<Direction , Direction> selected , byte numberoforestoplace , float discardchanceonairexposure)
     {
         byte remaining = numberoforestoplace;
 
@@ -93,7 +90,7 @@ public final class ModdedOreFeature
 
         for (BlockPos ps : positions)
         {
-            int r = Mth.ceil(rs.nextIntBetweenInclusive(0, remaining) / 2f);
+            int r = Extensions.Ceiling(rs.nextIntBetweenInclusive(0, remaining) / 2f);
             for (int I = 0; I < r; I++)
             {
                 boolean placed = false;
@@ -127,7 +124,7 @@ public final class ModdedOreFeature
         return remaining < numberoforestoplace;
     }
 
-    private static boolean PlaceOreLessThan8Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleBlockState> states , KeyValuePair<Direction , Direction> selected , byte numberoforestoplace , float discardchanceonairexposure)
+    private static boolean PlaceOreLessThan8Blocks(WorldGenLevel wgl , BlockPos origin , RandomSource rs , List<SingleTargetBlockState> states , KeyValuePair<Direction , Direction> selected , byte numberoforestoplace , float discardchanceonairexposure)
     {
         byte placed = 0;
 
@@ -157,7 +154,7 @@ public final class ModdedOreFeature
         return placed > 0;
     }
 
-    public static boolean CanPlaceOre(BlockState state, Function<BlockPos, BlockState> adjacentStateAccessor, RandomSource random, float discardchanceonairexposure, SingleBlockState targetState, BlockPos pos)
+    public static boolean CanPlaceOre(BlockState state, Function<BlockPos, BlockState> adjacentStateAccessor, RandomSource random, float discardchanceonairexposure, SingleTargetBlockState targetState, BlockPos pos)
     {
         if (!targetState.Target.test(state, random)) {
             return false;
@@ -168,7 +165,7 @@ public final class ModdedOreFeature
         }
     }
 
-    public static boolean CanPlaceOre(BlockGetter level , RandomSource random , float discardchanceonairexposure , SingleBlockState targetState , BlockPos pos)
+    public static boolean CanPlaceOre(BlockGetter level , RandomSource random , float discardchanceonairexposure , SingleTargetBlockState targetState , BlockPos pos)
     {
         return CanPlaceOre(level.getBlockState(pos) , level::getBlockState , random , discardchanceonairexposure , targetState , pos);
     }

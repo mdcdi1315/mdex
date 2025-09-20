@@ -3,14 +3,14 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
-import com.github.mdcdi1315.mdex.util.CompilableTargetBlockState;
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
 public class SimpleStateProvider
         extends AbstractBlockStateProvider
 {
-    public final CompilableTargetBlockState state;
+    public final CompilableBlockState state;
 
-    protected SimpleStateProvider(CompilableTargetBlockState state) {
+    protected SimpleStateProvider(CompilableBlockState state) {
         this.state = state;
     }
 

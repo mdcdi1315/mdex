@@ -14,7 +14,7 @@ Feature type syntax:
 ~~~
 object(ConfiguredFeature), required
 {
-    "type": resourcelocation(FeatureType), must_have_value="mdex:simple_floating_layered_island"
+    "type": resourcelocation(Feature), must_have_value="mdex:simple_floating_layered_island"
     "config": object(SimpleFloatingIslandConfiguration), required
     {
         "layers": list<<CompilableIslandLayer>>, required

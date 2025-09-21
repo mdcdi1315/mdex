@@ -11,7 +11,7 @@ Feature Type Syntax
 ~~~
 object(ConfiguredFeature), required
 {
-    "type": resourcelocation(FeatureType), must_have_value="mdex:customizable_monster_room"
+    "type": resourcelocation(Feature), must_have_value="mdex:customizable_monster_room"
     "config": object(CustomizableMonsterRoomConfiguration), required
     {
         "modids": list<string>, optional, can_be_empty, default_value=[]

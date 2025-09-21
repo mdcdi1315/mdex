@@ -9,6 +9,5 @@ It was created as a seperate branch so that any changes related to these remain 
 
 Technical documentation about the datapack features that it provides can be found [here](./Docs/Index.md).
 
-More documentation is coming soon!
-
+An overview of how creating a data pack for the mod is roughly described [here](./Docs/GeneralDevelopment/Index.md).
 

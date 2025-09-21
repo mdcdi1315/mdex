@@ -4,3 +4,5 @@
 # Exclude IDE folders.
 .vs
 .idea
+# But keep the custom dictionary
+!.idea/dictionaries

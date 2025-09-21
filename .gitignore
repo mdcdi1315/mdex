@@ -1,0 +1,6 @@
+
+# Default gitignore file for docs branch.
+
+# Exclude IDE folders.
+.vs
+.idea

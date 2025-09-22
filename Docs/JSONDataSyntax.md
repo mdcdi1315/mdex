@@ -44,14 +44,16 @@ Supported types defined by the syntax and supported:
 
 Supported constraints for each field type. Multiple constraints must be delimited with commas.
 
-| Constraint Name | Usage                                                                                                                                                                                                                    |
-|-----------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| required        | Specifies that this field is a required field. Also applied for root JSON objects.                                                                                                                                       |
-| can_be_empty    | Applied to a list type only. Specifies that the list can contain zero elements.                                                                                                                                          |
-| optional        | Defines an optional field, that is, a field that is not required to be included in the JSON object. The constraint `default_value` must have been also defined as well.                                                  |
-| default_value   | Defines the default value of an `optional` field. The value depends on the field's type. If the optional field is a JSON object, it's equivalent JSON representation must be used.                                       |
-| range           | Defines a numeric range in the form [min , max]. Numbers not into this range fail the serialization. Also can be specified for [integer providers](https://minecraft.wiki/w/Template:Nbt_inherit/int_provider/template). |
-| must_have_value | The value of a serialized field must always be the value specified after the equals sign.                                                                                                                                |
+| Constraint Name   | Usage                                                                                                                                                                                                                    |
+|-------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| required          | Specifies that this field is a required field. Also applied for root JSON objects.                                                                                                                                       |
+| can_be_empty      | Applied to a list type only. Specifies that the list can contain zero elements.                                                                                                                                          |
+| optional          | Defines an optional field, that is, a field that is not required to be included in the JSON object. The constraint `default_value` must have been also defined as well.                                                  |
+| default_value     | Defines the default value of an `optional` field. The value depends on the field's type. If the optional field is a JSON object, it's equivalent JSON representation must be used.                                       |
+| range             | Defines a numeric range in the form [min , max]. Numbers not into this range fail the serialization. Also can be specified for [integer providers](https://minecraft.wiki/w/Template:Nbt_inherit/int_provider/template). |
+| must_have_value   | The value of a serialized field must always be the value specified after the equals sign.                                                                                                                                |
+| since_mod_version | Specifies that this field is not used before the specified version string after the equals sign. Also applied for root JSON objects that specify their absence before that version.                                      |
+
 
 Example:
 ~~~

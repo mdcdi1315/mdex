@@ -129,8 +129,10 @@ From now on, individual articles are defined for each aspect of the dimension de
 
 Here is provided a table with the articles I do provide:
 
-| Article Entry | Link | 
-|---------------|------|
-| Creating biomes | [Link](./CreatingBiomes.md) |
-| About the provided tags | [Link](./ProvidedTags.md) |
-| Miscellaneous mod-provided features | [Link](./MiscFeatures.md) |
+| Article Entry                       | Link                        | 
+|-------------------------------------|-----------------------------|
+| Creating biomes                     | [Link](./CreatingBiomes.md) |
+| About the provided tags             | [Link](./ProvidedTags.md)   |
+| Miscellaneous mod-provided features | [Link](./MiscFeatures.md)   |
+| Mod Configuration Options           | [Link](./ConfigOptions.md)  |
+

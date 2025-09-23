@@ -22,8 +22,8 @@ Their JSON syntax can be found [here](https://minecraft.wiki/w/Biome_definition)
 ### Additional notes about Mining Dimension Biomes
 
 > [!WARNING]
-Any new biome you specify for the Mining Dimension it should be also declared in the `mdcdi1315_md:mining_dimension_biomes` tag. <br />
-This tag is used by the mod to identify the mining dimension biomes and to apply to them some proper settings making these suitable to be finally generated in the mining dimension biome.
+Any biome(s) you specify for the Mining Dimension should be also declared in the `mdcdi1315_md:mining_dimension_biomes` tag. <br />
+This tag is used by the mod to identify the mining dimension biomes and to apply to them some proper settings making these suitable to be finally generated in the mining dimension.
 
 > [!NOTE]
 For your biome to generate, you must appropriately declare it in the overridden dimension file you earlier defined.
@@ -33,5 +33,3 @@ In any case, you should also make use of the `mdcdi1315_md:md_default_biome` pro
 It is called 'default biome' because this will be the biome that you will make it to be non-specific,
 and it will be used by Minecraft to fill wherever all the other biomes you specify have failed to be placed. <br />
 You should also override this biome to provide the default features and ores that you want to be found by other players.
-
-

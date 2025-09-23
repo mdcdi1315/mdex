@@ -43,7 +43,7 @@ Fields:
 | config.modids                                           | Defines a list of strings that do represent mod ID's. If the feature does need a specific mod but is not loaded, it is disabled. All the mods in this list must be valid at the specified run time in order for this feature to be placed. |
 | config.base_plate_provider                              | Defines a block state provider that provides the plate (surface) of the teleporter area.                                                                                                                                                   |
 | config.light_block_provider                             | Defines a block state provider that provides the torches placed on the edges of the teleporter area. The torches are placed only if the place where the teleporter is placed is dark enough.                                               |
-| config.size                                             | Defines the size of the area that the teleporter feature will cover. Can be a random value from 1 to 6. Value of 1 makes a 3X3 area.                                                                                                       |
+| config.size                                             | Defines the size of the area that the teleporter feature will cover. Can be a random value from 1 to 6. Value of 1 makes a 3X3 area. This is an [integer provider](https://minecraft.wiki/w/Template:Nbt_inherit/int_provider/template).   |
 | config.starter_chest_placement                          | Optional. Defines starter chest placement settings.                                                                                                                                                                                        |
 | config.starter_chest_placement.container_state_provider | Defines the block state provider providing the container to act as a starter chest. Can be any container extending the `RandomizableContainerBlockEntity` class.                                                                           |
 | config.starter_chest_placement.loot_table               | Defines the loot table to associate with the starter chest. Players opening it will generate loot from the loot table provided here.                                                                                                       |
@@ -64,5 +64,29 @@ The teleporter recipe location is located at the `mdex_teleporter_recipe` file t
 
 You should define there a crafting table recipe that has as output the `mdex:teleporter` block.
 
+Example recipe file for creating the teleporter with 8 iron ingots and an iron pickaxe: 
 
+~~~JSON
+{
+	"type": "minecraft:crafting_shaped",
+	"mirrored": false,
+	"pattern": [
+		"III",
+		"IPI",
+		"III"
+	],
+	"key": {
+		"I": {
+			"item": "minecraft:iron_ingot"
+		},
+		"P": {
+			"item": "minecraft:iron_pickaxe"
+		}
+	},
+	"result": {
+		"id": "mdex:teleporter",
+		"count": 1
+	}
+}
+~~~
 

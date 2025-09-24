@@ -46,7 +46,7 @@ public abstract class AbstractModdedRuleTest
     @Override
     public final boolean test(BlockState blockState, RandomSource randomSource) {
         Compile();
-        return Test(blockState, randomSource);
+        return (state & STATE_COMPILED) != 0 && Test(blockState, randomSource);
     }
 
     public final boolean IsCompiled()

@@ -1,7 +1,10 @@
 package com.github.mdcdi1315.mdex.util;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.mdex.structures.AbstractModdedRuleTest;
+
 import com.mojang.serialization.Codec;
+
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 
 public class SingleTargetBlockState
@@ -11,11 +14,13 @@ public class SingleTargetBlockState
 
     public RuleTest Target;
     public CompilableBlockState State;
+    private boolean compiled;
 
     public SingleTargetBlockState(RuleTest target , CompilableBlockState state)
     {
         Target = target;
         State = state;
+        compiled = false;
     }
 
     public static Codec<SingleTargetBlockState> GetCodec()
@@ -33,10 +38,19 @@ public class SingleTargetBlockState
 
     public void Compile() {
         State.Compile();
+        if (State.IsCompiled())
+        {
+            if (Target instanceof AbstractModdedRuleTest amrt) {
+                amrt.Compile();
+                compiled = amrt.IsCompiled();
+            } else {
+                compiled = true;
+            }
+        }
     }
 
     @Override
     public boolean IsCompiled() {
-        return State.IsCompiled();
+        return compiled;
     }
 }

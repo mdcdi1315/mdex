@@ -55,9 +55,13 @@ public final class MinecraftWrappedModLoaderRegistry<T>
         return reg.getResourceKey(element);
     }
 
+    private static <T> MinecraftWrappedITag<T> TagMapper(Pair<TagKey<T> , HolderSet.Named<T>> pair) {
+        return new MinecraftWrappedITag<>(pair.getSecond());
+    }
+
     @Override
     public Stream<ITag<T>> GetTags() {
-        return reg.getTags().map((Pair<TagKey<T> , HolderSet.Named<T>> p) -> new MinecraftWrappedITag<>(p.getSecond()));
+        return reg.getTags().map(MinecraftWrappedModLoaderRegistry::TagMapper);
     }
 
     @Override

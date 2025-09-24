@@ -6,6 +6,7 @@ import com.github.mdcdi1315.DotNetLayer.System.Runtime.CompilerServices.Extensio
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
 
 import com.github.mdcdi1315.mdex.util.BlockNotFoundException;
+import com.github.mdcdi1315.mdex.util.FluidNotFoundException;
 import com.github.mdcdi1315.mdex.util.BlockPropertyNotFoundException;
 
 import net.minecraft.Util;
@@ -16,9 +17,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.state.BlockState;
@@ -243,38 +245,62 @@ public final class BlockUtils
         return CompareProperties(prop , s1 , s2) != 0;
     }
 
+    /**
+     * Gets a value whether the specified block states are an exact match; that is, are
+     * the same blocks and have the same properties and values.
+     * @param s1 The first block state to match.
+     * @param s2 The second block state to match.
+     * @return A value whether the two block states are an exact match.
+     */
     public static boolean BlockStatesMatch(BlockState s1 , BlockState s2)
-            throws ArgumentNullException
     {
-        ArgumentNullException.ThrowIfNull(s1);
-        ArgumentNullException.ThrowIfNull(s2);
-        // TODO: See whether the s1.equals(s2) check would work
-        if (s1.getBlock() == s2.getBlock())
-        {
-            for (var p1 : s1.getProperties())
-            {
-                if (PropertyDoesNotMatch(s1 , s2 , p1))
-                {
-                    return false;
+        // Null block states do match in fact.
+        if (s1 == null && s2 == null) { return true; }
+        else if (s1 == null || s2 == null) { return false; }
+        else {
+            // TODO: See whether the s1.equals(s2) check would work
+            if (s1.getBlock() == s2.getBlock()) {
+                for (var p1 : s1.getProperties()) {
+                    if (PropertyDoesNotMatch(s1, s2, p1)) {
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
+            return false;
         }
-        return false;
     }
 
     public static ToIntFunction<BlockState> GetBlockLightEmissionWhenLit(int lightValue) {
-        return (p_50763_) -> (Boolean)p_50763_.getValue(BlockStateProperties.LIT) ? lightValue : 0;
+        return (s) -> s.getValue(BlockStateProperties.LIT) ? lightValue : 0;
     }
 
     /**
      * Gets the {@link Block} corresponding to the specified ID, or fails with {@link BlockNotFoundException}.
+     * @param location The resource location of the block to get.
+     * @return The block that is bound to the passed ID.
+     * @exception BlockNotFoundException The block was not found.
+     * @exception ArgumentNullException {@code location} was null.
      */
     public static @NotNull Block GetBlockFromID(ResourceLocation location)
         throws BlockNotFoundException , ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(location , "location");
         return BuiltInRegistries.BLOCK.getOptional(location).orElseThrow(() -> new BlockNotFoundException(location));
+    }
+
+    /**
+     * Gets the {@link Fluid} corresponding to the specified ID, or fails with {@link FluidNotFoundException}.
+     * @param location The resource location of the block to get.
+     * @return The block that is bound to the passed ID.
+     * @exception FluidNotFoundException The fluid was not found.
+     * @exception ArgumentNullException {@code location} was null.
+     */
+    public static @NotNull Fluid GetFluidFromID(ResourceLocation location)
+            throws FluidNotFoundException , ArgumentNullException
+    {
+        ArgumentNullException.ThrowIfNull(location , "location");
+        return BuiltInRegistries.FLUID.getOptional(location).orElseThrow(() -> new FluidNotFoundException(location));
     }
 
     /**

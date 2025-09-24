@@ -2,61 +2,49 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
-import com.mojang.serialization.DataResult;
+import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
-import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.util.random.SimpleWeightedRandomList;
 
-public class WeightedStateProvider
-        extends AbstractBlockStateProvider
+import java.util.Optional;
+
+public final class WeightedStateProvider
+    extends AbstractBlockStateProvider
 {
-   public final SimpleWeightedRandomList<CompilableBlockState> weightedList;
-   private boolean compiled;
+    public SimpleWeightedRandomList<CompilableBlockState> States;
 
-   public static DataResult<WeightedStateProvider> create(SimpleWeightedRandomList<CompilableBlockState> weightedList)
-   {
-      return weightedList.isEmpty() ?
-              DataResult.error(() -> "Supplied an WeightedStateProvider which does not have any valid states.") :
-              DataResult.success(new WeightedStateProvider(weightedList));
-   }
+    public WeightedStateProvider(SimpleWeightedRandomList<CompilableBlockState> states) {
+        States = states;
+    }
 
-   public WeightedStateProvider(SimpleWeightedRandomList<CompilableBlockState> weightedList) {
-      this.weightedList = weightedList;
-      compiled = false;
-   }
+    private static BlockState Mapper(CompilableBlockState s) {
+        return s.BlockState;
+    }
 
-   public WeightedStateProvider(SimpleWeightedRandomList.Builder<CompilableBlockState> builder) {
-      this(builder.build());
-   }
+    @Override
+    public BlockState GetBlockState(BlockStateProviderContext context) {
+        Optional<CompilableBlockState> obs = States.getRandomValue(context.source());
+        return obs.map(WeightedStateProvider::Mapper).orElseThrow(() -> new InvalidOperationException("Cannot find a block state to use!"));
+    }
 
-   @Override
-   protected AbstractBlockStateProviderType<?> type() {
-      return CustomBlockStateProviderRegistrySubsystem.WEIGHTED_STATE_PROVIDER;
-   }
+    @Override
+    public AbstractBlockStateProviderType<?> GetType() {
+        return WeightedStateProviderType.INSTANCE;
+    }
 
-   public BlockState getState(RandomSource random, BlockPos pos) {
-      return this.weightedList.getRandomValue(random).orElseThrow(IllegalStateException::new).BlockState;
-   }
-
-   @Override
-   public void Compile() {
-      CompilableBlockState s;
-      for (var i : weightedList.unwrap())
-      {
-         (s = i.data()).Compile();
-         if (s.IsCompiled() == false)
-         {
-            compiled = false;
-            return;
-         }
-      }
-      compiled = true;
-   }
-
-   @Override
-   public boolean IsCompiled() {
-      return compiled;
-   }
+    @Override
+    protected boolean CompileImplementation()
+    {
+        for (var s : States.unwrap())
+        {
+            var cs = s.data();
+            cs.Compile();
+            if (!cs.IsCompiled()) {
+                States = null;
+                return false;
+            }
+        }
+        return true;
+    }
 }

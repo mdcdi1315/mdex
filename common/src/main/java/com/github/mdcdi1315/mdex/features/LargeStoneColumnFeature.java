@@ -37,8 +37,8 @@ public final class LargeStoneColumnFeature
                 int i = (int) ((float) range.height() * cfg.maxColumnRadiusToCaveHeightRatio);
                 int j = Extensions.Clamp(i, cfg.columnRadius.getMinValue(), cfg.columnRadius.getMaxValue());
                 int k = Extensions.RandomBetweenInclusiveUnsafe(randomsource, cfg.columnRadius.getMinValue(), j);
-                LargeStoneColumn largestonec1 = makeColumn(blockpos.atY(range.ceiling() - 1), false, randomsource, k, cfg.stalactiteBluntness, cfg.heightScale);
-                LargeStoneColumn largestonec2 = makeColumn(blockpos.atY(range.floor() + 1), true, randomsource, k, cfg.stalagmiteBluntness, cfg.heightScale);
+                LargeStoneColumn largestonec1 = MakeColumn(blockpos.atY(range.ceiling() - 1), false, randomsource, k, cfg.stalactiteBluntness, cfg.heightScale);
+                LargeStoneColumn largestonec2 = MakeColumn(blockpos.atY(range.floor() + 1), true, randomsource, k, cfg.stalagmiteBluntness, cfg.heightScale);
                 WindOffsetter offsetter;
                 if (largestonec1.isSuitableForWind(cfg) && largestonec2.isSuitableForWind(cfg)) {
                     offsetter = new WindOffsetter(blockpos.getY(), randomsource, cfg.windSpeed);
@@ -60,7 +60,7 @@ public final class LargeStoneColumnFeature
         return false;
     }
 
-    private static LargeStoneColumn makeColumn(BlockPos root, boolean pointingUp, RandomSource random, int radius, FloatProvider bluntnessBase, FloatProvider scaleBase) {
+    private static LargeStoneColumn MakeColumn(BlockPos root, boolean pointingUp, RandomSource random, int radius, FloatProvider bluntnessBase, FloatProvider scaleBase) {
         return new LargeStoneColumn(root, pointingUp, radius, bluntnessBase.sample(random), scaleBase.sample(random));
     }
 

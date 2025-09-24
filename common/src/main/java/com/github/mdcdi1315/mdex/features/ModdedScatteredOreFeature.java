@@ -39,8 +39,9 @@ public final class ModdedScatteredOreFeature
             {
                 if (ModdedOreFeature.CanPlaceOre(blockstate, worldgenlevel::getBlockState, randomsource, oreconfiguration.DiscardChanceOnAirExposure, targetblockstate, current))
                 {
-                    worldgenlevel.setBlock(current, targetblockstate.State.BlockState, 2);
-                    atleastone = true;
+                    if (worldgenlevel.setBlock(current, targetblockstate.State.BlockState, 2)) {
+                        atleastone = true;
+                    }
                     break;
                 }
             }

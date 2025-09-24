@@ -1,40 +1,39 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
-import net.minecraft.core.BlockPos;
+import com.github.mdcdi1315.mdex.block.BlockUtils;
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
+
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 
-import com.github.mdcdi1315.mdex.util.CompilableBlockState;
-
-public class RotatedBlockProvider
+public final class RotatedBlockProvider
         extends AbstractBlockStateProvider
 {
-   public final CompilableBlockState block;
+    public final CompilableBlockState Block;
 
-   public RotatedBlockProvider(CompilableBlockState block) {
-      this.block = block;
-   }
+    public RotatedBlockProvider(CompilableBlockState block) {
+        Block = block;
+    }
 
-   @Override
-   protected AbstractBlockStateProviderType<?> type() {
-      return CustomBlockStateProviderRegistrySubsystem.ROTATED_BLOCK_PROVIDER;
-   }
+    @Override
+    public BlockState GetBlockState(BlockStateProviderContext context) {
+        // Use the desired block state that the user wants to, but set the axis property right after all the properties are defined in the provider itself
+        return Block.BlockState.setValue(RotatedPillarBlock.AXIS, Direction.Axis.getRandom(context.source()));
+    }
 
-   public BlockState getState(RandomSource random, BlockPos pos) {
-      Direction.Axis axis = Direction.Axis.getRandom(random);
-      // Use the desired block state that the user wants to, but set the axis property right after all the properties are defined in the provider itself
-      return this.block.BlockState.setValue(RotatedPillarBlock.AXIS, axis);
-   }
+    @Override
+    public AbstractBlockStateProviderType<?> GetType() {
+        return RotatedBlockProviderType.INSTANCE;
+    }
 
-   @Override
-   public void Compile() {
-      block.Compile();
-   }
-
-   @Override
-   public boolean IsCompiled() {
-      return block.IsCompiled();
-   }
+    @Override
+    protected boolean CompileImplementation() {
+        Block.Compile();
+        boolean compiled = Block.IsCompiled();
+        if (compiled) {
+            BlockUtils.RequireBlockPropertyOrFail(Block.BlockState.getBlock() , RotatedPillarBlock.AXIS.getName());
+        }
+        return compiled;
+    }
 }

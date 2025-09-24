@@ -1,35 +1,33 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.state.BlockState;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
-public class SimpleStateProvider
-        extends AbstractBlockStateProvider
+import net.minecraft.world.level.block.state.BlockState;
+
+public final class SimpleStateProvider
+    extends AbstractBlockStateProvider
 {
-    public final CompilableBlockState state;
+    public CompilableBlockState State;
 
-    protected SimpleStateProvider(CompilableBlockState state) {
-        this.state = state;
+    public SimpleStateProvider(CompilableBlockState s) {
+        State = s;
     }
 
     @Override
-    protected AbstractBlockStateProviderType<?> type() {
-        return CustomBlockStateProviderRegistrySubsystem.SIMPLE_STATE_PROVIDER;
-    }
-
-    public BlockState getState(RandomSource random, BlockPos pos) {
-        return this.state.BlockState;
+    public BlockState GetBlockState(BlockStateProviderContext context) {
+        return State.BlockState;
     }
 
     @Override
-    public void Compile() {
-        state.Compile();
+    public AbstractBlockStateProviderType<?> GetType() {
+        return SimpleStateProviderType.INSTANCE;
     }
 
     @Override
-    public boolean IsCompiled() {
-        return state.IsCompiled();
+    protected boolean CompileImplementation() {
+        State.Compile();
+        boolean c = State.IsCompiled();
+        if (!c) { State = null; }
+        return c;
     }
 }

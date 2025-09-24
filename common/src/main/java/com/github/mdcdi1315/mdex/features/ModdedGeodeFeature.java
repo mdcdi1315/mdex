@@ -134,22 +134,22 @@ public final class ModdedGeodeFeature
                         BlockUtils.IsHasAnyFluidScheduleTick(worldgenlevel , blockpos3.relative(dir));
                     }
                 } else if (d6 >= d1) {
-                    FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, geodeblocksettings.fillingProvider.getState(randomsource, blockpos3), predicate);
+                    FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, geodeblocksettings.fillingProvider.GetBlockState(worldgenlevel, randomsource, blockpos3), predicate);
                 } else if (d6 >= d2) {
                     boolean flag1 = (double)randomsource.nextFloat() < geodeconfiguration.useAlternateLayer0Chance;
                     if (flag1) {
-                        FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, geodeblocksettings.alternateInnerLayerProvider.getState(randomsource, blockpos3), predicate);
+                        FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, geodeblocksettings.alternateInnerLayerProvider.GetBlockState(worldgenlevel, randomsource, blockpos3), predicate);
                     } else {
-                        FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, geodeblocksettings.innerLayerProvider.getState(randomsource, blockpos3), predicate);
+                        FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, geodeblocksettings.innerLayerProvider.GetBlockState(worldgenlevel, randomsource, blockpos3), predicate);
                     }
 
                     if ((!geodeconfiguration.placementsRequireLayer0Alternate || flag1) && (double)randomsource.nextFloat() < geodeconfiguration.usePotentialPlacementsChance) {
                         list2.add(blockpos3.immutable());
                     }
                 } else if (d6 >= d3) {
-                    FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, geodeblocksettings.middleLayerProvider.getState(randomsource, blockpos3), predicate);
+                    FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, geodeblocksettings.middleLayerProvider.GetBlockState(worldgenlevel, randomsource, blockpos3), predicate);
                 } else if (d6 >= d4) {
-                    FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, geodeblocksettings.outerLayerProvider.getState(randomsource, blockpos3), predicate);
+                    FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, geodeblocksettings.outerLayerProvider.GetBlockState(worldgenlevel, randomsource, blockpos3), predicate);
                 }
             }
         }

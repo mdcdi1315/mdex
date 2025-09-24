@@ -94,7 +94,7 @@ public class ModdedVegetationPatchFeature
 
     protected boolean placeGround(WorldGenLevel level, ModdedVegetationPatchConfiguration config, Predicate<BlockState> replaceableblocks, RandomSource random, BlockPos.MutableBlockPos mutablePos, int maxDistance) {
         for(int i = 0; i < maxDistance; ++i) {
-            BlockState blockstate = config.groundState.getState(random, mutablePos);
+            BlockState blockstate = config.groundState.GetBlockState(level, random, mutablePos);
             BlockState blockstate1 = level.getBlockState(mutablePos);
             if (!blockstate.is(blockstate1.getBlock())) {
                 if (!replaceableblocks.predicate(blockstate1)) {

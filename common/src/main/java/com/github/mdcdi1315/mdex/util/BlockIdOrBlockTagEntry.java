@@ -1,16 +1,21 @@
 package com.github.mdcdi1315.mdex.util;
 
+import com.github.mdcdi1315.DotNetLayer.System.ObjectDisposedException;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
+
+import com.mojang.serialization.Codec;
+
+import com.mojang.datafixers.util.Either;
+
 import net.minecraft.core.Holder;
 import net.minecraft.tags.TagKey;
 import net.minecraft.core.HolderSet;
-import com.mojang.serialization.Codec;
-import com.mojang.datafixers.util.Either;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.registries.BuiltInRegistries;
 
-import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
+import java.util.Optional;
 
 /**
  * A class for defining either a block tag or a single block entry.
@@ -23,15 +28,14 @@ public final class BlockIdOrBlockTagEntry
     @MaybeNull
     private TagKey<Block> Tag;
 
-    @SuppressWarnings("unchecked")
-    private static Either<TagKey<Block> , ResourceLocation> DecodeFunction(Object obj)
+    private static Either<TagKey<Block> , ResourceLocation> DecodeFunction(BlockIdOrBlockTagEntry e)
     {
-        if (obj instanceof ResourceLocation loc) {
-            return Either.right(loc);
-        } else if (obj instanceof TagKey<?> k) {
-            return Either.left((TagKey<Block>)k);
+        if (e.BlockID != null) {
+            return Either.right(e.BlockID);
+        } else if (e.Tag != null) {
+            return Either.left(e.Tag);
         } else {
-            throw new MDEXException("Invalid conversion code path");
+            throw new ObjectDisposedException(e.getClass().getName());
         }
     }
 
@@ -43,23 +47,19 @@ public final class BlockIdOrBlockTagEntry
         );
     }
 
-    @SuppressWarnings("unchecked")
-    public BlockIdOrBlockTagEntry(Object blortag)
+    public BlockIdOrBlockTagEntry(Either<TagKey<Block> , ResourceLocation> blortag)
     {
-        if (blortag instanceof ResourceLocation l) {
-            BlockID = l;
+        Optional<TagKey<Block>> b = blortag.left();
+        if (b.isPresent()) {
+            Tag = b.get();
         } else {
-            try {
-                Tag = (TagKey<Block>) blortag;
-            } catch (ClassCastException cce)
-            {
-                throw new MDEXException("Cannot recognize the given object because it is not possibly a TagKey<Block>.");
-            }
+            BlockID = blortag.right().get();
         }
     }
 
     public HolderSet<Block> GetBlocks()
     {
+        ObjectDisposedException.ThrowIf(BlockID == null && Tag == null , this);
         if (BlockID != null)
         {
             var bl = BuiltInRegistries.BLOCK.getOptional(BlockID);

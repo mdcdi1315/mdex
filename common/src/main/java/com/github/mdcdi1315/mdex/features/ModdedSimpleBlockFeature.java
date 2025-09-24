@@ -22,7 +22,7 @@ public final class ModdedSimpleBlockFeature
         ModdedSimpleBlockFeatureConfiguration simpleblockconfiguration = fpc.config();
         WorldGenLevel worldgenlevel = fpc.level();
         BlockPos blockpos = fpc.origin();
-        BlockState blockstate = simpleblockconfiguration.ToPlace.getState(fpc.random(), blockpos);
+        BlockState blockstate = simpleblockconfiguration.ToPlace.GetBlockState(worldgenlevel, fpc.random(), blockpos);
         if (blockstate.canSurvive(worldgenlevel, blockpos)) {
             if (blockstate.getBlock() instanceof DoublePlantBlock) {
                 if (!worldgenlevel.isEmptyBlock(blockpos.above())) {

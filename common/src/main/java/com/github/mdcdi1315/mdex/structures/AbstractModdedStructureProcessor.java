@@ -86,20 +86,13 @@ public abstract class AbstractModdedStructureProcessor
     @NotNull
     @Override
     public final List<StructureTemplate.StructureBlockInfo> finalizeProcessing(ServerLevelAccessor serverLevel, BlockPos offset, BlockPos pos, List<StructureTemplate.StructureBlockInfo> originalBlockInfos, List<StructureTemplate.StructureBlockInfo> processedBlockInfos, StructurePlaceSettings settings) {
-        if (IsValid()) {
-            return FinalizeModdedBlocksProcessing(serverLevel , offset , pos , originalBlockInfos , processedBlockInfos , settings);
-        }
-        return processedBlockInfos;
+        return IsValid() ? FinalizeModdedBlocksProcessing(serverLevel , offset , pos , originalBlockInfos , processedBlockInfos , settings) : processedBlockInfos;
     }
 
     @MaybeNull
     public final StructureTemplate.StructureBlockInfo processBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
     {
-        if (IsValid()) {
-            return ProcessModdedBlock(level ,offset , pos , blockInfo , relativeBlockInfo , settings);
-        }
-        // This means just to 'passthrough the block data', actually.
-        return relativeBlockInfo;
+        return IsValid() ? ProcessModdedBlock(level ,offset , pos , blockInfo , relativeBlockInfo , settings) : relativeBlockInfo;
     }
 
     public final boolean IsValid()

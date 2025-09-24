@@ -1,23 +1,28 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
-import com.mojang.serialization.MapCodec;
-import net.minecraft.util.random.SimpleWeightedRandomList;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
+
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.DataResult;
+
+import net.minecraft.util.random.SimpleWeightedRandomList;
 
 public final class WeightedStateProviderType
     extends AbstractBlockStateProviderType<WeightedStateProvider>
 {
-    private final MapCodec<WeightedStateProvider> codec;
+    public static final WeightedStateProviderType INSTANCE = new WeightedStateProviderType();
 
-    public WeightedStateProviderType()
+    private static DataResult<WeightedStateProvider> Create(SimpleWeightedRandomList<CompilableBlockState> weightedList)
     {
-        codec = SimpleWeightedRandomList.wrappedCodec(CompilableBlockState.GetCodec())
-                .comapFlatMap(WeightedStateProvider::create, (p) -> p.weightedList)
-                .fieldOf("entries");
+        return weightedList.isEmpty() ?
+                DataResult.error(() -> "Supplied an WeightedStateProvider which does not have any valid states.") :
+                DataResult.success(new WeightedStateProvider(weightedList));
     }
 
     @Override
-    public MapCodec<WeightedStateProvider> Codec() {
-        return codec;
+    protected MapCodec<WeightedStateProvider> GetCodecInstance() {
+        return SimpleWeightedRandomList.wrappedCodec(CompilableBlockState.GetCodec())
+                .comapFlatMap(WeightedStateProviderType::Create, (p) -> p.States)
+                .fieldOf("entries");
     }
 }

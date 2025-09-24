@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.structures.customizablemineshaft;
 
+import com.github.mdcdi1315.mdex.util.Extensions;
 import com.github.mdcdi1315.mdex.structures.AbstractStructure;
 import com.github.mdcdi1315.mdex.structures.AbstractStructureType;
 import com.github.mdcdi1315.mdex.structures.customizablemineshaft.pieces.MineShaftRoom;
@@ -10,10 +11,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.WorldgenRandom;
-import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.level.levelgen.structure.StructurePiece;
+import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
 
 import java.util.List;
@@ -42,45 +41,50 @@ public final class CustomizableMineshaftStructure
         }
     }
 
-    public Optional<GenerationStub> FindGenerationPoint(GenerationContext context) {
-        context.random().nextDouble();
+    public Optional<GenerationStub> FindGenerationPoint(GenerationContext context)
+    {
+        var random = context.random();
+        // About the older technique context.random().nextDouble();
+        // Possibly it was perpetually used to initialize the random number generator appropriately
+        // I am doing the same below and instead of generating a random double I generate 10 int values.
+        // Also see below, I am using the random source to roll a random value from the height provider
+        Extensions.InitializeRandomSource(random);
         ChunkPos chunkpos = context.chunkPos();
-        BlockPos blockpos = new BlockPos(chunkpos.getMiddleBlockX(), 50, chunkpos.getMinBlockZ());
+        // Selected generation height.
+        // The structure will finally select a value below than this height
+        int sh = Settings.Starting_Y_Level.sample(random , new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor()));
+        BlockPos blockpos = new BlockPos(chunkpos.getMiddleBlockX(), sh, chunkpos.getMinBlockZ());
         StructurePiecesBuilder structurepiecesbuilder = new StructurePiecesBuilder();
-        int i = this.generatePiecesAndAdjust(structurepiecesbuilder, context);
+        int i = this.generatePiecesAndAdjust(structurepiecesbuilder, sh , context);
         return Optional.of(new GenerationStub(blockpos.offset(0, i, 0), Either.right(structurepiecesbuilder)));
     }
 
-    private static void offsetPiecesVertically(StructurePiecesBuilder b, int offset)
+    private static int ShiftPiecesBelowLevel(StructurePiecesBuilder b, int desiredheightlevel, int minY, RandomSource random)
     {
-        for (StructurePiece structurepiece : b.build().pieces()) {
-            structurepiece.move(0, offset, 0);
-        }
-    }
-
-    private int moveBelowSeaLevel(StructurePiecesBuilder b, int seaLevel, int minY, RandomSource random, int p_226969_) {
-        int i = seaLevel - p_226969_;
+        int i = desiredheightlevel - 10;
         BoundingBox boundingbox = b.getBoundingBox();
         int j = boundingbox.getYSpan() + minY + 1;
         if (j < i) {
             j += random.nextInt(i - j);
         }
 
-        int k = j - boundingbox.maxY();
-        offsetPiecesVertically(b, k);
-        return k;
+        int offset = j - boundingbox.maxY();
+        for (var sp : b.build().pieces()) {
+            sp.move(0, offset, 0);
+        }
+        return offset;
     }
 
-
-    private int generatePiecesAndAdjust(StructurePiecesBuilder builder, GenerationContext context)
+    private int generatePiecesAndAdjust(StructurePiecesBuilder builder , int start_y, GenerationContext context)
     {
         ChunkPos chunkpos = context.chunkPos();
-        WorldgenRandom worldgenrandom = context.random();
+        RandomSource random = context.random();
         ChunkGenerator chunkgenerator = context.chunkGenerator();
-        MineShaftRoom mineshaftpieces$mineshaftroom = new MineShaftRoom(0, worldgenrandom, chunkpos.getBlockX(2), chunkpos.getBlockZ(2), Settings);
-        builder.addPiece(mineshaftpieces$mineshaftroom);
-        mineshaftpieces$mineshaftroom.addChildren(mineshaftpieces$mineshaftroom, builder, worldgenrandom);
-        return moveBelowSeaLevel(builder, chunkgenerator.getSeaLevel(), chunkgenerator.getMinY(), worldgenrandom, 10);
+        MineShaftRoom room = new MineShaftRoom(0, random, chunkpos.getBlockX(2), start_y, chunkpos.getBlockZ(2), Settings.CreateSettingsObject());
+        builder.addPiece(room);
+        room.addChildren(room, builder, random);
+        // Make min_y instead + 10 to avoid unfaithful issues occurring with the mineshafts spawning in lava levels and makes the planks to be burnt
+        return ShiftPiecesBelowLevel(builder, start_y, chunkgenerator.getMinY() + 10, random);
     }
 
     @Override

@@ -36,9 +36,9 @@ public final class BlockPhasesStructureProcessor
             int s = States.size() - 1;
             for (int I = 0; I < s; I++)
             {
-                if (BlockUtils.BlockStatesMatch(States.get(I).getState(rs , rbipos) , bs)) {
+                if (BlockUtils.BlockStatesMatch(States.get(I).GetBlockState(level, rs , rbipos) , bs)) {
                     // Roll the next state provider from the list, and return that instead
-                    return new StructureTemplate.StructureBlockInfo(rbipos , States.get(I+1).getState(rs , rbipos) , null);
+                    return new StructureTemplate.StructureBlockInfo(rbipos , States.get(I+1).GetBlockState(level, rs , rbipos) , null);
                 }
             }
         }

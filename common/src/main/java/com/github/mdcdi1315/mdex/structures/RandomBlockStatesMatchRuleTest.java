@@ -37,7 +37,7 @@ public final class RandomBlockStatesMatchRuleTest
     }
 
     @Override
-    public boolean test(BlockState blockState, RandomSource randomSource)
+    protected boolean Test(BlockState blockState, RandomSource randomSource)
     {
         if (RandomStates.isEmpty()) {
             return false;

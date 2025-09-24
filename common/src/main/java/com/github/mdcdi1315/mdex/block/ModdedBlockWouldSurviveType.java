@@ -9,7 +9,7 @@ import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 public final class ModdedBlockWouldSurviveType
         extends AbstractModdedBlockPredicateType<ModdedBlockWouldSurvivePredicate>
 {
-    public static ModdedBlockWouldSurviveType INSTANCE = new ModdedBlockWouldSurviveType();
+    public static final ModdedBlockWouldSurviveType INSTANCE = new ModdedBlockWouldSurviveType();
 
     @Override
     protected Codec<ModdedBlockWouldSurvivePredicate> GetCodecInstance()

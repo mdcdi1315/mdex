@@ -1,20 +1,19 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
-import com.mojang.serialization.Codec;
+import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
+import com.mojang.serialization.Codec;
 
 public final class SimpleStateProviderType
     extends AbstractBlockStateProviderType<SimpleStateProvider>
 {
-    private final Codec<SimpleStateProvider> codec;
-
-    public SimpleStateProviderType()
-    {
-        codec = CompilableBlockState.GetCodec().fieldOf("state").xmap(SimpleStateProvider::new, (p_68804_) -> p_68804_.state).codec();
-    }
+    public static final SimpleStateProviderType INSTANCE = new SimpleStateProviderType();
 
     @Override
-    public Codec<SimpleStateProvider> Codec() {
-        return codec;
+    protected Codec<SimpleStateProvider> GetCodecInstance() {
+        return CodecUtils.CreateCodecDirect(
+                CompilableBlockState.GetCodec().fieldOf("state").forGetter((s) -> s.State),
+                SimpleStateProvider::new
+        );
     }
 }

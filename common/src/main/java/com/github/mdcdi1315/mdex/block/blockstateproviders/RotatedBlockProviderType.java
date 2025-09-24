@@ -1,21 +1,19 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
+import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
-
 import com.mojang.serialization.Codec;
 
 public final class RotatedBlockProviderType
     extends AbstractBlockStateProviderType<RotatedBlockProvider>
 {
-    private final Codec<RotatedBlockProvider> codec;
-
-    public RotatedBlockProviderType()
-    {
-        codec = CompilableBlockState.GetCodec().fieldOf("state").xmap(RotatedBlockProvider::new, (p) -> p.block).codec();
-    }
+    public static final RotatedBlockProviderType INSTANCE = new RotatedBlockProviderType();
 
     @Override
-    public Codec<RotatedBlockProvider> Codec() {
-        return codec;
+    protected Codec<RotatedBlockProvider> GetCodecInstance() {
+        return CodecUtils.CreateCodecDirect(
+                CompilableBlockState.GetCodec().fieldOf("state").forGetter((s) -> s.Block),
+                RotatedBlockProvider::new
+        );
     }
 }

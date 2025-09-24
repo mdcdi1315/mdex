@@ -57,7 +57,7 @@ public final class BaseTeleporterPlacementFeatureType
         for (BlockPos temp : FeaturePlacementUtils.GetRectangularArea(pos.offset(-size , -1, -size) , new BlockPos(2+size , 4, 2+size)))
         {
             if (temp.getY() == ydownlayer) {
-                if (!FeaturePlacementUtils.SafeSetBlock(wgl , temp , basestoneprovider.getState(rs , temp) , replaceable))
+                if (!FeaturePlacementUtils.SafeSetBlock(wgl , temp , basestoneprovider.GetBlockState(wgl, rs , temp) , replaceable))
                 {
                     MDEXBalmLayer.LOGGER.error("MDEXTELEPORTER_EVENTS: Failed to place a plate block at {}." , temp);
                     return false;
@@ -84,7 +84,7 @@ public final class BaseTeleporterPlacementFeatureType
                     pos.offset(size , 0 , size),
             })
             {
-                if (!wgl.setBlock(temp , lightblockprovider.getState(rs , temp) , 2))
+                if (!wgl.setBlock(temp , lightblockprovider.GetBlockState(wgl, rs , temp) , 2))
                 {
                     MDEXBalmLayer.LOGGER.error("MDEXTELEPORTER_EVENTS: Failed to place α light block at {}." , temp);
                     return false;
@@ -97,7 +97,7 @@ public final class BaseTeleporterPlacementFeatureType
             var si = fpc.config().ChestPlacement;
             if (si.Probability > 0f && rs.nextFloat() < si.Probability) {
                 BlockPos chestpos = pos.relative(Extensions.GetRandomDirectionExcludingUpDown(rs) , size == 1 ? 1 : size / 2);
-                if (!wgl.setBlock(chestpos , si.ContainerState.getState(rs , chestpos) , 2)) {
+                if (!wgl.setBlock(chestpos , si.ContainerState.GetBlockState(wgl, rs , chestpos) , 2)) {
                     MDEXBalmLayer.LOGGER.info("MDEXTELEPORTER_EVENTS: Failed to place the starter chest for this dimension.");
                 }
                 if (!BlockUtils.SetRandomizableContainerLootTable(wgl , rs , chestpos , si.LootTable)) {

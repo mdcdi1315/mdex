@@ -2,7 +2,7 @@ package com.github.mdcdi1315.mdex.structures.customizablemineshaft.pieces;
 
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 
-import com.github.mdcdi1315.mdex.structures.customizablemineshaft.CustomizableMineshaftStructureSettings;
+import com.github.mdcdi1315.mdex.structures.customizablemineshaft.CustomizableMineshaftPiecesSettings;
 
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -30,7 +30,7 @@ public final class MineshaftPieces
             int z,
             @MaybeNull Direction orientation,
             int genDepth ,
-            CustomizableMineshaftStructureSettings settings
+            CustomizableMineshaftPiecesSettings settings
     ) {
         BoundingBox boundingbox;
         int i = random.nextInt(100);

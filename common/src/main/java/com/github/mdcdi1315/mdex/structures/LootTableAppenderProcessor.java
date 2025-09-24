@@ -1,5 +1,7 @@
 package com.github.mdcdi1315.mdex.structures;
 
+import com.github.mdcdi1315.mdex.util.Extensions;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.LevelReader;
@@ -41,6 +43,8 @@ public final class LootTableAppenderProcessor
     {
         BlockPos rbipos = relativeBlockInfo.pos();
         RandomSource rs = settings.getRandom(rbipos);
+        // Hopefully this fixes issues that not all container block entities do not get loot tables in a structure
+        Extensions.InitializeRandomSource(rs);
         if (rs.nextFloat() < Probability)
         {
             BlockState bs;

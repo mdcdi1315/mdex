@@ -3,6 +3,7 @@ package com.github.mdcdi1315.mdex.features;
 import com.github.mdcdi1315.DotNetLayer.System.Collections.Generic.KeyValuePair;
 
 import com.github.mdcdi1315.mdex.util.Extensions;
+import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
 import com.github.mdcdi1315.mdex.features.config.ModdedOreFeatureConfiguration;
 
@@ -56,15 +57,17 @@ public final class ModdedOreFeature
 
         for (BlockPos temp : FeaturePlacementUtils.GetRectangularArea(origin.offset(-sidesize , 0 , -sidesize) , new BlockPos(sidesize , rs.nextIntBetweenInclusive(1 , 3) , sidesize)))
         {
-            if (rs.nextIntBetweenInclusive(0 , 131070) < 32767)
+            for (var s : states)
             {
-                for (var s : states)
+                if (
+                        CanPlaceOre(wgl , rs , discardchanceonairexposure , s , temp) &&
+                        ShouldPlaceOreByPopularity(wgl , rs , s.State.BlockState , temp)
+                )
                 {
-                    if (CanPlaceOre(wgl , rs , discardchanceonairexposure , s , temp))
-                    {
+                    if (wgl.setBlock(temp , s.State.BlockState, 2)) {
                         nplaced++;
-                        break;
                     }
+                    break;
                 }
             }
         }
@@ -168,6 +171,18 @@ public final class ModdedOreFeature
     public static boolean CanPlaceOre(BlockGetter level , RandomSource random , float discardchanceonairexposure , SingleTargetBlockState targetState , BlockPos pos)
     {
         return CanPlaceOre(level.getBlockState(pos) , level::getBlockState , random , discardchanceonairexposure , targetState , pos);
+    }
+
+    public static boolean ShouldPlaceOreByPopularity(BlockGetter level , RandomSource random , BlockState blacklisted , BlockPos position)
+    {
+        float popularity = 0.10244f;
+        for (Direction d : Direction.values())
+        {
+            if (!BlockUtils.BlockStatesMatch(level.getBlockState(position.relative(d)) , blacklisted)) {
+                popularity += Extensions.Lerp(random.nextFloat() , 0 , 0.3892888f);
+            }
+        }
+        return random.nextFloat() < popularity;
     }
 
     private static boolean ShouldSkipAirCheck(RandomSource random, float chance)

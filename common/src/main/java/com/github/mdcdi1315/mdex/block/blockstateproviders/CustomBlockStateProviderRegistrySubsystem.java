@@ -19,13 +19,6 @@ public final class CustomBlockStateProviderRegistrySubsystem
 {
     public static IModLoaderRegistry<AbstractBlockStateProviderType<?>> REGISTRY;
     public static ResourceKey<Registry<AbstractBlockStateProviderType<?>>> REGISTRYKEY;
-    public static NoiseProviderType NOISE_PROVIDER;
-    public static DualNoiseProviderType DUAL_NOISE_PROVIDER;
-    public static NoiseThresholdProviderType NOISE_THRESHOLD_PROVIDER;
-    public static RandomizedIntStateProviderType RANDOMIZED_INT_STATE_PROVIDER;
-    public static RotatedBlockProviderType ROTATED_BLOCK_PROVIDER;
-    public static SimpleStateProviderType SIMPLE_STATE_PROVIDER;
-    public static WeightedStateProviderType WEIGHTED_STATE_PROVIDER;
     private static DelayLoadedRegistryByNameCodec<AbstractBlockStateProviderType<?>> INTERNAL_CODEC;
 
     // Private so that this class cannot be instantiated as an object
@@ -35,9 +28,8 @@ public final class CustomBlockStateProviderRegistrySubsystem
     {
         MDEXBalmLayer.LOGGER.info("Initializing custom block state providers registry.");
         REGISTRYKEY = ResourceKey.createRegistryKey(MDEXBalmLayer.id("custom_blockstate_provider_types"));
-        var ri = new RegistryCreationInformation<>(REGISTRYKEY);
-        MDEXModAPI.getMethodImplementation().CreateSimpleRegistry(ri);
-        AbstractBlockStateProvider.CODEC = (INTERNAL_CODEC = new DelayLoadedRegistryByNameCodec<>()).dispatch(AbstractBlockStateProvider::type , AbstractBlockStateProviderType::Codec);
+        MDEXModAPI.getMethodImplementation().CreateSimpleRegistry(new RegistryCreationInformation<>(REGISTRYKEY));
+        AbstractBlockStateProvider.CODEC = (INTERNAL_CODEC = new DelayLoadedRegistryByNameCodec<>()).dispatch(AbstractBlockStateProvider::GetType , AbstractBlockStateProviderType::Codec);
         MDEXModAPI.getMethodImplementation().RunMethodOnWhenRegistryIsRegistering(REGISTRYKEY , CustomBlockStateProviderRegistrySubsystem::OnRegistryReady);
     }
 
@@ -57,7 +49,7 @@ public final class CustomBlockStateProviderRegistrySubsystem
         AbstractBlockStateProvider.CODEC = null;
     }
 
-    public static <T extends AbstractBlockStateProvider , G extends AbstractBlockStateProviderType<T>> G Register(G any, ResourceLocation boundname)
+    public static <T extends AbstractBlockStateProvider, G extends AbstractBlockStateProviderType<T>> G Register(G any, ResourceLocation boundname)
     {
         ArgumentNullException.ThrowIfNull(any , "any");
         ArgumentNullException.ThrowIfNull(boundname , "boundname");
@@ -67,7 +59,7 @@ public final class CustomBlockStateProviderRegistrySubsystem
         return any;
     }
 
-    public static <T extends AbstractBlockStateProvider , G extends AbstractBlockStateProviderType<T>> G Register(G any, String name)
+    public static <T extends AbstractBlockStateProvider, G extends AbstractBlockStateProviderType<T>> G Register(G any, String name)
     {
         return Register(any , MDEXBalmLayer.id(name));
     }
@@ -75,13 +67,14 @@ public final class CustomBlockStateProviderRegistrySubsystem
     private static void RegisterBlockStateProviders()
     {
         //AbstractBlockStateProvider.CODEC = REGISTRY.byNameCodec().dispatch(AbstractBlockStateProvider::type , AbstractBlockStateProviderType::Codec);
-        NOISE_PROVIDER = Register(new NoiseProviderType() , "noise_provider");
-        DUAL_NOISE_PROVIDER = Register(new DualNoiseProviderType() , "dual_noise_provider");
-        ROTATED_BLOCK_PROVIDER = Register(new RotatedBlockProviderType() , "rotated_block_provider");
-        SIMPLE_STATE_PROVIDER = Register(new SimpleStateProviderType() , "simple_state_provider");
-        WEIGHTED_STATE_PROVIDER = Register(new WeightedStateProviderType() , "weighted_state_provider");
-        NOISE_THRESHOLD_PROVIDER = Register(new NoiseThresholdProviderType() , "noise_threshold_provider");
-        RANDOMIZED_INT_STATE_PROVIDER = Register(new RandomizedIntStateProviderType() , "randomized_int_state_provider");
+        Register(NoiseStateProviderType.INSTANCE , "noise_provider");
+        Register(DualNoiseProviderType.INSTANCE , "dual_noise_provider");
+        Register(RotatedBlockProviderType.INSTANCE , "rotated_block_provider");
+        Register(SimpleStateProviderType.INSTANCE , "simple_state_provider");
+        Register(WeightedStateProviderType.INSTANCE , "weighted_state_provider");
+        Register(NoiseThresholdProviderType.INSTANCE , "noise_threshold_provider");
+        Register(RandomizedIntStateProviderType.INSTANCE , "randomized_int_state_provider");
+        Register(RuleTestBasedBlockStateProviderType.INSTANCE , "rule_test_based_provider");
         //REGISTRY.freeze();
     }
 }

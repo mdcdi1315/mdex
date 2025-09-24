@@ -22,34 +22,22 @@ public final class CodecUtils
     /**
      * Gets a singleton of the 'probability' codec, that is a codec that can only take a floating range of values from 0 to 1, all inclusive.
      */
-    public static final Codec<Float> FLOAT_PROBABILITY = Codec.floatRange(0f , 1f);
+    public static final Codec<Float> FLOAT_PROBABILITY = new FloatProbabilityCodec();
 
     /**
      * Gets a singleton of the 'probability' codec, that is a codec that can only take a double-precision floating range of values from 0 to 1, all inclusive.
      */
-    public static final Codec<Double> DOUBLE_PROBABILITY = Codec.doubleRange(0d , 1d);
+    public static final Codec<Double> DOUBLE_PROBABILITY = new DoubleProbabilityCodec();
 
     /**
      * Gets a singleton of a codec that only accepts positive {@link Integer} values.
      */
-    public static final Codec<Integer> POSITIVE_INTEGER = CreatePositiveIntegerCodec();
+    public static final Codec<Integer> POSITIVE_INTEGER = new PositiveIntegerCodec();
 
     /**
      * Gets a singleton of a codec that accepts zero or positive {@link Integer} values only.
      */
-    public static final Codec<Integer> ZERO_OR_POSITIVE_INTEGER = CreateZeroOrPositiveIntegerCodec();
-
-    private static Codec<Integer> CreateZeroOrPositiveIntegerCodec()
-    {
-        var c = new ZeroOrPositiveIntegerChecker();
-        return Codec.INT.flatXmap(c , c);
-    }
-
-    private static Codec<Integer> CreatePositiveIntegerCodec()
-    {
-        var c = new PositiveIntegerChecker();
-        return Codec.INT.flatXmap(c , c);
-    }
+    public static final Codec<Integer> ZERO_OR_POSITIVE_INTEGER = new ZeroOrPositiveIntegerCodec();
 
     /**
      * Returns a codec that ensures that the given list {@link Codec} will always have a non-empty list, that is a list at least containing one element.
@@ -91,8 +79,7 @@ public final class CodecUtils
      */
     public static Codec<Short> ShortRange(int min_inclusive , int max_inclusive)
     {
-        var c = new ShortRangeChecker((short) min_inclusive , (short) max_inclusive);
-        return Codec.SHORT.flatXmap(c, c);
+        return new ShortRangeCodec(min_inclusive , max_inclusive);
     }
 
     /**
@@ -105,8 +92,7 @@ public final class CodecUtils
      */
     public static Codec<Byte> ByteRange(int min_inclusive, int max_inclusive)
     {
-        var c = new ByteRangeChecker((byte) min_inclusive , (byte) max_inclusive);
-        return Codec.BYTE.flatXmap(c , c);
+        return new ByteRangeCodec(min_inclusive , max_inclusive);
     }
 
     public static <TCODEC , C1T> Codec<TCODEC> CreateCodecDirect(

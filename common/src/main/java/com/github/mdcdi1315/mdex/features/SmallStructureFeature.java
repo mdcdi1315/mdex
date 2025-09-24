@@ -54,19 +54,20 @@ public final class SmallStructureFeature
     @Override
     protected boolean placeModdedFeature(FeaturePlaceContext<SmallStructureConfiguration> fpc)
     {
-        if (!fpc.config().TemplatesAreCompiled)
+        var feat_cfg = fpc.config();
+        if (!feat_cfg.TemplatesAreCompiled)
         {
-            GetCompiledTemplates(fpc.level() , fpc.config().Structures);
-            if (fpc.config().Structures.isEmpty()) {
-                fpc.config().setConfigAsInvalid();
+            GetCompiledTemplates(fpc.level() , feat_cfg.Structures);
+            if (feat_cfg.Structures.isEmpty()) {
+                feat_cfg.setConfigAsInvalid();
                 return false;
             }
-            fpc.config().TemplatesAreCompiled = true;
+            feat_cfg.TemplatesAreCompiled = true;
         }
 
         RandomSource rs = fpc.random();
 
-        var cfg = fpc.config().Structures.get(rs.nextIntBetweenInclusive(0 , fpc.config().Structures.size() - 1));
+        var cfg = feat_cfg.Structures.get(rs.nextIntBetweenInclusive(0 , feat_cfg.Structures.size() - 1));
 
         var temp = cfg.Template;
         var settings = cfg.Settings;
@@ -82,7 +83,7 @@ public final class SmallStructureFeature
         sets.setIgnoreEntities(settings.GetShouldIgnoreEntities());
         sets.setKeepLiquids(settings.GetShouldKeepFluids());
         // Apply all the found processors
-        for (var proc : fpc.config().StructuresProcessors.value().list())
+        for (var proc : feat_cfg.StructuresProcessors.value().list())
         {
             sets.addProcessor(proc);
         }
@@ -93,7 +94,7 @@ public final class SmallStructureFeature
             // As a starting point I will get the center of the structure and I will start throwing random calls
             // to the placed features.
 
-            if (fpc.config().AdditionalFeatures.size() == 0)
+            if (feat_cfg.AdditionalFeatures.size() == 0)
             {
                 // No additional features to generate, return directly.
                 return true;
@@ -110,14 +111,14 @@ public final class SmallStructureFeature
             // Express the center of the structure as a reference point to hit random features
             BlockPos posbound = fpc.origin().offset(size) , bp;
 
-            for (int I = fpc.random().nextIntBetweenInclusive(3 , size.getY()); I > 0; I--)
+            for (int I = rs.nextIntBetweenInclusive(3 , size.getY()); I > 0; I--)
             {
-                bp = posbound.offset(0 , fpc.random().nextIntBetweenInclusive(3 , size.getY()) , 0);
+                bp = posbound.offset(0 , rs.nextIntBetweenInclusive(3 , size.getY()) , 0);
                 // Hit all features for this pass, ensuring that all features are being tested on the same position.
                 // If at least one is generated for this pass, all the others are skipped.
-                for (var f : fpc.config().AdditionalFeatures)
+                for (var f : feat_cfg.AdditionalFeatures)
                 {
-                    if (f.value().place(fpc.level() , fpc.chunkGenerator() , fpc.random() , bp)) {
+                    if (f.value().place(fpc.level() , fpc.chunkGenerator() , rs , bp)) {
                         break;
                     }
                 }

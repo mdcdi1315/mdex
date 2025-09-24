@@ -1,18 +1,20 @@
 package com.github.mdcdi1315.mdex.util;
 
+import com.github.mdcdi1315.DotNetLayer.System.ObjectDisposedException;
+
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 
 import com.mojang.serialization.Codec;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 
 public final class CompilableBlockState
@@ -44,30 +46,34 @@ public final class CompilableBlockState
 
     public void Compile()
     {
-        // Get the block's default state. With this state we will work on and set all the other properties that the user requires.
-        this.BlockState = BlockUtils.GetBlockFromID(Name).defaultBlockState();
-        PropertySettingData tdata;
-        for (var k : IProperties.keySet())
-        {
-            String value = IProperties.get(k); // We need to find a way to optimize this - is really very bad to see this
-            for (Property<?> prop : BlockState.getProperties())
+        try {
+            // Get the block's default state. With this state we will work on and set all the other properties that the user requires.
+            this.BlockState = BlockUtils.GetBlockFromID(Name).defaultBlockState();
+            PropertySettingData tdata;
+            for (var ent : IProperties.entrySet())
             {
-                if (k.equals(prop.getName())) // this might be less error-prone
+                String key = ent.getKey();
+                String value = ent.getValue();
+                for (Property<?> prop : BlockState.getProperties())
                 {
-                    tdata = SetPropertyValue(BlockState , prop , value);
-                    if (tdata.Succeeded) {
-                        // If the desired value was set, update our block state.
-                        BlockState = tdata.AssignedState;
-                    } else {
-                        MDEXBalmLayer.LOGGER.warn("Cannot set the value of the block's property '{}' with ID '{}' to '{}'. The value may be invalid or invalid for this block definition. Not including it in the final property list." , k , Name , value);
+                    if (key.equals(prop.getName())) // this might be less error-prone
+                    {
+                        tdata = SetPropertyValue(BlockState, prop, value);
+                        if (tdata.Succeeded) {
+                            // If the desired value was set, update our block state.
+                            BlockState = tdata.AssignedState;
+                        } else {
+                            MDEXBalmLayer.LOGGER.warn("Cannot set the value of the block's property '{}' with ID '{}' to '{}'. The value may be invalid or invalid for this block definition. Not including it in the final property list.", key, Name, value);
+                        }
+                        break; // OPT - We do not need to check for other properties, we have done our purpose
                     }
-                    break; // OPT - We do not need to check for other properties, we have done our purpose
                 }
             }
+        } finally {
+            // Destroy unneeded fields
+            Name = null;
+            IProperties = null;
         }
-        // Destroy unneeded fields
-        Name = null;
-        IProperties = null;
     }
 
     // A small record class to retrieve information whether the set property value operation happening in the SetPropertyValue
@@ -78,6 +84,7 @@ public final class CompilableBlockState
         public boolean Succeeded;
     }
 
+    // TODO: Generalize this API, make it public
     private static <T extends Comparable<T>> PropertySettingData SetPropertyValue(BlockState bs , Property<T> prop , String propvalas_string)
     {
         PropertySettingData d = new PropertySettingData();
@@ -98,11 +105,13 @@ public final class CompilableBlockState
 
     private ResourceLocation GetId()
     {
+        ObjectDisposedException.ThrowIf(BlockState == null , this);
         return BuiltInRegistries.BLOCK.getKey(BlockState.getBlock());
     }
 
     private Map<String , String> GetPropertyMap()
     {
+        ObjectDisposedException.ThrowIf(BlockState == null , this);
         var ps = BlockState.getProperties();
         HashMap<String , String> s = new HashMap<>(ps.size());
         for (var p : ps)

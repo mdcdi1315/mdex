@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.biomespawnadditions;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.DotNetLayer.System.ArgumentException;
 import com.github.mdcdi1315.mdex.util.EntityTypeNotFoundException;
 
 import com.mojang.serialization.Codec;
@@ -37,7 +38,9 @@ public final class BiomeSpawnerEntity
     {
         EntityID = l;
         MinCount = mincount;
-        MaxCount = maxcount;
+        if ((MaxCount = maxcount) < MinCount) {
+            throw new ArgumentException("Maximum pack spawn value must be larger than the minimum pack spawn value.");
+        }
         Weight = wt;
     }
 

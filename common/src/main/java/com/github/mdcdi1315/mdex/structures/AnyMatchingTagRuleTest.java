@@ -23,7 +23,7 @@ public final class AnyMatchingTagRuleTest
     }
 
     @Override
-    public boolean test(BlockState blockState, RandomSource randomSource)
+    protected boolean Test(BlockState blockState, RandomSource randomSource)
     {
         for (var g : ListOfTags)
         {

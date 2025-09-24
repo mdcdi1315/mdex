@@ -4,7 +4,7 @@ import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.util.MDEXException;
 import com.github.mdcdi1315.mdex.structures.AbstractStructurePiece;
 import com.github.mdcdi1315.mdex.structures.AbstractStructurePieceType;
-import com.github.mdcdi1315.mdex.structures.customizablemineshaft.CustomizableMineshaftStructureSettings;
+import com.github.mdcdi1315.mdex.structures.customizablemineshaft.CustomizableMineshaftPiecesSettings;
 
 import com.mojang.serialization.DataResult;
 
@@ -28,9 +28,9 @@ import java.util.Optional;
 public abstract class AbstractMineshaftPiece
     extends AbstractStructurePiece
 {
-    protected final CustomizableMineshaftStructureSettings settings;
+    protected final CustomizableMineshaftPiecesSettings settings;
 
-    protected AbstractMineshaftPiece(CustomizableMineshaftStructureSettings s, AbstractStructurePieceType type, int genDepth, BoundingBox boundingBox) {
+    protected AbstractMineshaftPiece(CustomizableMineshaftPiecesSettings s, AbstractStructurePieceType type, int genDepth, BoundingBox boundingBox) {
         super(type, genDepth, boundingBox);
         settings = s;
     }
@@ -38,25 +38,17 @@ public abstract class AbstractMineshaftPiece
     public AbstractMineshaftPiece(AbstractStructurePieceType type, CompoundTag tag) {
         super(type, tag);
         Optional<CompoundTag> ct = tag.getCompound("SETTINGS");
-        if (ct.isPresent()) {
-            settings = CustomizableMineshaftStructureSettings.GetCodec().codec().decode(NbtOps.INSTANCE , ct.get()).getOrThrow().getFirst();
-            settings.Compile();
-            if (!settings.IsCompiled()) {
-                throw new MDEXException("Cannot re-compile back the given structure settings! Possibly a data corruption?");
-            }
-        } else {
-            settings = null;
-        }
+        settings = ct.map(compoundTag -> CustomizableMineshaftPiecesSettings.GetCodec().decode(NbtOps.INSTANCE, compoundTag).getOrThrow().getFirst()).orElse(null);
     }
 
     protected boolean canBeReplaced(LevelReader level, int x, int y, int z, BoundingBox box) {
         BlockState blockstate = this.getBlock(level, x, y, z, box);
-        return !blockstate.is(settings.PlanksState.BlockState.getBlock()) && !blockstate.is(settings.WoodState.BlockState.getBlock()) && !blockstate.is(settings.FenceState.BlockState.getBlock()) && !blockstate.is(Blocks.CHAIN);
+        return !blockstate.is(settings.PlanksState.getBlock()) && !blockstate.is(settings.WoodState.getBlock()) && !blockstate.is(settings.FenceState.getBlock()) && !blockstate.is(Blocks.CHAIN);
     }
 
     protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag tag)
     {
-        DataResult<Tag> t = CustomizableMineshaftStructureSettings.GetCodec().encode(settings , NbtOps.INSTANCE , NbtOps.INSTANCE.mapBuilder()).build(tag);
+        DataResult<Tag> t = CustomizableMineshaftPiecesSettings.GetCodec().encode(settings , NbtOps.INSTANCE , tag);
         try {
             tag.put("SETTINGS", t.getOrThrow());
         } catch (Exception e) {
@@ -128,7 +120,7 @@ public abstract class AbstractMineshaftPiece
             BlockPos blockpos = this.getWorldPos(x, y, z);
             BlockState blockstate = level.getBlockState(blockpos);
             if (!blockstate.isFaceSturdy(level, blockpos, Direction.UP)) {
-                level.setBlock(blockpos, settings.PlanksState.BlockState, 2);
+                level.setBlock(blockpos, settings.PlanksState, 2);
             }
         }
     }

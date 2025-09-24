@@ -2,7 +2,7 @@ package com.github.mdcdi1315.mdex.structures.customizablemineshaft.pieces;
 
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
-import com.github.mdcdi1315.mdex.structures.customizablemineshaft.CustomizableMineshaftStructureSettings;
+import com.github.mdcdi1315.mdex.structures.customizablemineshaft.CustomizableMineshaftPiecesSettings;
 
 import net.minecraft.world.level.*;
 import net.minecraft.core.BlockPos;
@@ -12,8 +12,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.entity.vehicle.MinecartChest;
 import net.minecraft.world.level.block.state.BlockState;
@@ -61,7 +61,7 @@ public final class MineShaftCorridor
         tag.putInt("Num", this.numSections);
     }
 
-    public MineShaftCorridor(int genDepth, RandomSource random, BoundingBox boundingBox, Direction orientation, CustomizableMineshaftStructureSettings settings) {
+    public MineShaftCorridor(int genDepth, RandomSource random, BoundingBox boundingBox, Direction orientation, CustomizableMineshaftPiecesSettings settings) {
         super(settings, MineShaftCorridorType.INSTANCE, genDepth, boundingBox);
         this.setOrientation(orientation);
         if (random.nextInt(3) == 0) { SetState(STATE_HAS_RAILS); }
@@ -265,8 +265,8 @@ public final class MineShaftCorridor
 
     private void placeDoubleLowerOrUpperSupport(WorldGenLevel level, BoundingBox box, int x, int y, int z)
     {
-        BlockState blockstate = settings.WoodState.BlockState;
-        BlockState blockstate1 = settings.PlanksState.BlockState;
+        BlockState blockstate = settings.WoodState;
+        BlockState blockstate1 = settings.PlanksState;
         if (this.getBlock(level, x, y, z, box).is(blockstate1.getBlock())) {
             this.fillPillarDownOrChainUp(level, blockstate, x, y, z, box);
         }
@@ -296,7 +296,7 @@ public final class MineShaftCorridor
 
     }
 
-    protected void fillPillarDownOrChainUp(WorldGenLevel level, BlockState state, int x, int y, int z, BoundingBox box) {
+    private void fillPillarDownOrChainUp(WorldGenLevel level, BlockState state, int x, int y, int z, BoundingBox box) {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = this.getWorldPos(x, y, z);
         if (box.isInside(blockpos$mutableblockpos)) {
             int i = blockpos$mutableblockpos.getY();
@@ -321,7 +321,7 @@ public final class MineShaftCorridor
                     BlockState blockstate1 = level.getBlockState(blockpos$mutableblockpos);
                     boolean flag3 = this.isReplaceableByStructures(blockstate1);
                     if (!flag3 && this.canHangChainBelow(level, blockpos$mutableblockpos, blockstate1)) {
-                        level.setBlock(blockpos$mutableblockpos.setY(i + 1), settings.FenceState.BlockState, 2);
+                        level.setBlock(blockpos$mutableblockpos.setY(i + 1), settings.FenceState, 2);
                         fillColumnBetween(level, Blocks.CHAIN.defaultBlockState(), blockpos$mutableblockpos, i + 2, i + j);
                         return;
                     }
@@ -351,8 +351,8 @@ public final class MineShaftCorridor
     private void placeSupport(WorldGenLevel level, BoundingBox box, int minX, int minY, int z, int maxY, int maxX, RandomSource random) {
         if (IsSupportingBox(level, box, minX, maxX, maxY, z))
         {
-            BlockState blockstate = settings.PlanksState.BlockState;
-            BlockState blockstate1 = settings.FenceState.BlockState;
+            BlockState blockstate = settings.PlanksState;
+            BlockState blockstate1 = settings.FenceState;
             this.generateBox(level, box, minX, minY, z, minX, maxY - 1, z, blockstate1.setValue(FenceBlock.WEST, true), CAVE_AIR, false);
             this.generateBox(level, box, maxX, minY, z, maxX, maxY - 1, z, blockstate1.setValue(FenceBlock.EAST, true), CAVE_AIR, false);
             if (random.nextInt(4) == 0) {
@@ -360,8 +360,8 @@ public final class MineShaftCorridor
                 this.generateBox(level, box, maxX, maxY, z, maxX, maxY, z, blockstate, CAVE_AIR, false);
             } else {
                 this.generateBox(level, box, minX, maxY, z, maxX, maxY, z, blockstate, CAVE_AIR, false);
-                this.maybeGenerateBlock(level, box, random, 0.05F, minX + 1, maxY, z - 1, settings.TorchState.BlockState.setValue(WallTorchBlock.FACING, Direction.SOUTH));
-                this.maybeGenerateBlock(level, box, random, 0.05F, minX + 1, maxY, z + 1, settings.TorchState.BlockState.setValue(WallTorchBlock.FACING, Direction.NORTH));
+                this.maybeGenerateBlock(level, box, random, 0.05F, minX + 1, maxY, z - 1, settings.TorchState.setValue(WallTorchBlock.FACING, Direction.SOUTH));
+                this.maybeGenerateBlock(level, box, random, 0.05F, minX + 1, maxY, z + 1, settings.TorchState.setValue(WallTorchBlock.FACING, Direction.NORTH));
             }
         }
 

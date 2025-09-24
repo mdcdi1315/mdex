@@ -7,7 +7,7 @@ import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 public final class ModdedBlockPredicateType
         extends AbstractModdedBlockPredicateType<ModdedBlockMatchesBlockPredicate>
 {
-    public static ModdedBlockPredicateType INSTANCE = new ModdedBlockPredicateType();
+    public static final ModdedBlockPredicateType INSTANCE = new ModdedBlockPredicateType();
 
     @Override
     protected MapCodec<ModdedBlockMatchesBlockPredicate> GetCodecInstance() {

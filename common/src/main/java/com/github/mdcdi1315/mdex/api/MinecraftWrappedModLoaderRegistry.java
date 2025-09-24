@@ -1,18 +1,19 @@
 package com.github.mdcdi1315.mdex.api;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 
+import net.minecraft.tags.TagKey;
 import net.minecraft.core.Registry;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.List;
+import java.util.Iterator;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public final class MinecraftWrappedModLoaderRegistry<T>
@@ -56,9 +57,13 @@ public final class MinecraftWrappedModLoaderRegistry<T>
         return reg.getResourceKey(element);
     }
 
+    private static <T> MinecraftWrappedITag<T> TagMapper(HolderSet.Named<T> hst) {
+        return new MinecraftWrappedITag<>(hst);
+    }
+
     @Override
     public Stream<ITag<T>> GetTags() {
-        return reg.getTags().map(MinecraftWrappedITag::new);
+        return reg.getTags().map(MinecraftWrappedModLoaderRegistry::TagMapper);
     }
 
     @Override

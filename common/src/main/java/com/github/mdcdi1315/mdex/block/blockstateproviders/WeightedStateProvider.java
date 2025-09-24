@@ -3,16 +3,18 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 import com.github.mdcdi1315.mdex.util.weight.SimpleWeightedEntryList;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
+import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
+
+import com.github.mdcdi1315.mdex.util.weight.SimpleWeightedEntryList_Entry;
 import com.mojang.serialization.DataResult;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class WeightedStateProvider
-        extends AbstractBlockStateProvider
+import java.util.Optional;
+
+public final class WeightedStateProvider
+    extends AbstractBlockStateProvider
 {
-   public final SimpleWeightedEntryList<CompilableBlockState> weightedList;
-   private boolean compiled;
+   public SimpleWeightedEntryList<CompilableBlockState> States;
 
    public static DataResult<WeightedStateProvider> create(SimpleWeightedEntryList<CompilableBlockState> weightedList)
    {
@@ -21,37 +23,38 @@ public class WeightedStateProvider
               DataResult.success(new WeightedStateProvider(weightedList));
    }
 
-   public WeightedStateProvider(SimpleWeightedEntryList<CompilableBlockState> weightedList) {
-      this.weightedList = weightedList;
-      compiled = false;
+   public WeightedStateProvider(SimpleWeightedEntryList<CompilableBlockState> list)
+   {
+       States = list;
    }
 
-   @Override
-   protected AbstractBlockStateProviderType<?> type() {
-      return CustomBlockStateProviderRegistrySubsystem.WEIGHTED_STATE_PROVIDER;
-   }
+    private static BlockState Mapper(SimpleWeightedEntryList_Entry<CompilableBlockState> s) {
+        return s.getValue().BlockState;
+    }
 
-   public BlockState getState(RandomSource random, BlockPos pos) {
-      return this.weightedList.GetRandom(random).orElseThrow(IllegalStateException::new).getValue().BlockState;
-   }
+    @Override
+    public BlockState GetBlockState(BlockStateProviderContext context) {
+        Optional<SimpleWeightedEntryList_Entry<CompilableBlockState>> obs = States.GetRandom(context.source());
+        return obs.map(WeightedStateProvider::Mapper).orElseThrow(() -> new InvalidOperationException("Cannot find a block state to use!"));
+    }
 
-   @Override
-   public void Compile() {
-      CompilableBlockState s;
-      for (var i : weightedList.GetUnderlying())
-      {
-         (s = i.getValue()).Compile();
-         if (s.IsCompiled() == false)
-         {
-            compiled = false;
-            return;
-         }
-      }
-      compiled = true;
-   }
+    @Override
+    public AbstractBlockStateProviderType<?> GetType() {
+        return WeightedStateProviderType.INSTANCE;
+    }
 
-   @Override
-   public boolean IsCompiled() {
-      return compiled;
-   }
+    @Override
+    protected boolean CompileImplementation()
+    {
+        for (var s : States)
+        {
+            var cs = s.getValue();
+            cs.Compile();
+            if (!cs.IsCompiled()) {
+                States = null;
+                return false;
+            }
+        }
+        return true;
+    }
 }

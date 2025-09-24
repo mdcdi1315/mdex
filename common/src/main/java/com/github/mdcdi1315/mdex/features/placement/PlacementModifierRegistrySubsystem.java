@@ -1,7 +1,6 @@
 package com.github.mdcdi1315.mdex.features.placement;
 
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
-import com.github.mdcdi1315.mdex.util.MDEXInitException;
 
 import net.blay09.mods.balm.api.BalmRegistries;
 
@@ -14,23 +13,15 @@ public final class PlacementModifierRegistrySubsystem
 
     public static void RegisterPlacementModifiers(BalmRegistries registries)
     {
-        RegisterPlacementModifierType(registries , "place_with_exact_attempts" , PlaceTheSpecifiedTimesPlacementModifierType.class);
-        RegisterPlacementModifierType(registries , "place_only_once" , PlaceOnlyOncePlacementModifierType.class);
-        RegisterPlacementModifierType(registries , "ensure_valid_ceiling_placement" , IsValidCeilingPlacementModifierType.class);
-        RegisterPlacementModifierType(registries , "ensure_valid_surface_placement" , IsValidSurfacePlacementModifierType.class);
-        RegisterPlacementModifierType(registries , "randomize_input_position" , RandomizeInputPositionPlacementModifierType.class);
+        RegisterPlacementModifierType(registries , "place_with_exact_attempts" , PlaceTheSpecifiedTimesPlacementModifierType.INSTANCE);
+        RegisterPlacementModifierType(registries , "place_only_once" , PlaceOnlyOncePlacementModifierType.INSTANCE);
+        RegisterPlacementModifierType(registries , "ensure_valid_ceiling_placement" , IsValidCeilingPlacementModifierType.INSTANCE);
+        RegisterPlacementModifierType(registries , "ensure_valid_surface_placement" , IsValidSurfacePlacementModifierType.INSTANCE);
+        RegisterPlacementModifierType(registries , "randomize_input_position" , RandomizeInputPositionPlacementModifierType.INSTANCE);
     }
 
-    public static <T extends AbstractModdedPlacementModifierType<? extends AbstractModdedPlacementModifier>> void RegisterPlacementModifierType(BalmRegistries regs , String name , Class<T> modifiertype)
+    public static <T extends AbstractModdedPlacementModifierType<? extends AbstractModdedPlacementModifier>> void RegisterPlacementModifierType(BalmRegistries regs , String name , T instance)
     {
-        regs.register(BuiltInRegistries.PLACEMENT_MODIFIER_TYPE , (ResourceLocation location) -> {
-            try {
-                return (T) modifiertype.getField("INSTANCE").get(null);
-            } catch (IllegalAccessException e) {
-                throw new MDEXInitException(String.format("Cannot access the instance field for class %s." , modifiertype.getName()));
-            } catch (NoSuchFieldException e) {
-                throw new MDEXInitException(String.format("Cannot find the required INSTANCE field for class %s." , modifiertype.getName()));
-            }
-        } , MDEXBalmLayer.id(name));
+        regs.register(BuiltInRegistries.PLACEMENT_MODIFIER_TYPE , (ResourceLocation location) -> instance, MDEXBalmLayer.id(name));
     }
 }

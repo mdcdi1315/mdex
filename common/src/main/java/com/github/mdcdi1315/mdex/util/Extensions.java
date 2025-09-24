@@ -212,6 +212,48 @@ public final class Extensions
         return SelectRandomFromListWithExclusionUnsafe(list , item_to_exclude , new JavaObjectEqualsEqualityComparer<>() , source);
     }
 
+    /**
+     * Compiles all the compilable objects in the iterable object, or fails. <br />
+     * The method will additionally throw the exception directly, if any exception occurs from {@link Compilable#Compile()} calls.
+     * @param iterable The iterable to compile its objects.
+     * @return A value whether all the objects were compiled in the list. If false, at least one element in the list failed compilation.
+     * @param <T> The compilable object type to be compiled.
+     * @exception ArgumentNullException {@code iterable} was null.
+     */
+    public static <T extends Compilable> boolean CompileAllOrFail(Iterable<T> iterable)
+        throws ArgumentNullException
+    {
+        ArgumentNullException.ThrowIfNull(iterable , "iterable");
+        for (T i : iterable)
+        {
+            i.Compile();
+            if (!i.IsCompiled()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Compiles all the specified compilable objects, or fails.<br />
+     * The method will additionally throw the exception directly, if any exception occurs from {@link Compilable#Compile()} calls.
+     * @param elements The elements to compile. This is a variable argument array.
+     * @return A value whether all the objects were compiled in the array. If false, at least one element in the list failed compilation.
+     * @param <T> The compilable object type to be compiled.
+     */
+    @SafeVarargs
+    public static <T extends Compilable> boolean CompileAllOrFail(T... elements)
+    {
+        for (T i : elements)
+        {
+            i.Compile();
+            if (!i.IsCompiled()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static int RandomBetweenInclusive(RandomSource rs , int min_inclusive , int max_inclusive)
             throws ArgumentNullException
     {
@@ -244,6 +286,20 @@ public final class Extensions
 
     public static double RandomBetweenUnsafe(RandomSource random, double min_inclusive, double max_exclusive) {
         return random.nextDouble() * (max_exclusive - min_inclusive) + min_inclusive;
+    }
+
+    /**
+     * Initializes appropriately the given random number generator.
+     * @param random The random source to initialize.
+     * @throws ArgumentNullException {@code random} was {@code null}.
+     */
+    public static void InitializeRandomSource(RandomSource random)
+            throws ArgumentNullException
+    {
+        ArgumentNullException.ThrowIfNull(random);
+        for (byte I = 0; I < 10; I++) {
+            random.nextInt();
+        }
     }
 
     public static double NumberMap(double input , double inputbase , double outputbase)

@@ -166,10 +166,10 @@ public final class ModdedLegacyOreFeature
                                                         int k3 = SectionPos.sectionRelative(k2);
                                                         BlockState blockstate = levelchunksection.getBlockState(i3, j3, k3);
 
-                                                        for (var oreconfiguration$targetblockstate : config.TargetStates)
+                                                        for (var statetarget : config.TargetStates)
                                                         {
-                                                            if (ModdedOreFeature.CanPlaceOre(blockstate, bulksectionaccess::getBlockState, random, config.DiscardChanceOnAirExposure, oreconfiguration$targetblockstate, blockpos$mutableblockpos)) {
-                                                                levelchunksection.setBlockState(i3, j3, k3, oreconfiguration$targetblockstate.State.BlockState, false);
+                                                            if (ModdedOreFeature.CanPlaceOre(blockstate, bulksectionaccess::getBlockState, random, config.DiscardChanceOnAirExposure, statetarget, blockpos$mutableblockpos)) {
+                                                                levelchunksection.setBlockState(i3, j3, k3, statetarget.State.BlockState, false);
                                                                 atleastone = true;
                                                                 break;
                                                             }

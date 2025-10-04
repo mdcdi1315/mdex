@@ -42,4 +42,6 @@ public final class SimpleWeightedEntryList_Entry<T>
     public Weight getWeight() {
         return weight;
     }
+
+    public int getWeightValue() { return weight.getValue(); }
 }

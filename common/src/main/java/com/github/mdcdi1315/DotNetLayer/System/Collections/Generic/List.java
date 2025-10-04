@@ -1,11 +1,12 @@
 package com.github.mdcdi1315.DotNetLayer.System.Collections.Generic;
 
 import com.github.mdcdi1315.DotNetLayer.System.*;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
+
 import com.google.common.primitives.UnsignedInteger;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
 public class List<T>
     implements IList<T> , IReadOnlyList<T>
@@ -93,11 +94,11 @@ public class List<T>
     private final int DefaultCapacity = 4;
 
     @SuppressWarnings("unchecked")
-    private T[] CreateArrayOfSize(int len)
+    private @NotNull T[] CreateArrayOfSize(int len)
     {
         try {
             Type gentype = getClass().getTypeParameters()[0].getBounds()[0];
-            return (T[]) java.lang.reflect.Array.newInstance(Class.forName(gentype.getTypeName()), len);
+            return (T[]) Array.CreateInstance(Class.forName(gentype.getTypeName()), len);
         } catch (ClassNotFoundException ignored) {}
         return null;
     }
@@ -105,9 +106,10 @@ public class List<T>
     T[] _items; // Do not rename (binary serialization)
     int _size; // Do not rename (binary serialization)
     int _version; // Do not rename (binary serialization)
+
     public List()
     {
-        _items = CreateArrayOfSize(0);
+        _items = CreateArrayOfSize(DefaultCapacity);
     }
 
     public List(int capacity)
@@ -176,12 +178,14 @@ public class List<T>
             if (value > 0)
             {
                 if (_size > 0) {
-                    _items = Arrays.copyOf(_items , _size);
+                    T[] items = CreateArrayOfSize(value);
+                    Array.Copy(_items , items , _size);
+                    _items = items;
                 } else {
                     _items = CreateArrayOfSize(value);
                 }
             } else {
-                _items = CreateArrayOfSize(0);
+                _items = CreateArrayOfSize(DefaultCapacity);
             }
         }
     }
@@ -238,14 +242,14 @@ public class List<T>
     }
 
     /// <summary>
-    /// Increase the capacity of this list to at least the specified <paramref name="capacity"/>.
+    /// Increase the capacity of this list to at least the specified {@code capacity}.
     /// </summary>
     /// <param name="capacity">The minimum capacity to ensure.</param>
     void Grow(int capacity)
     {
         //Debug.Assert(_items.Length < capacity);
 
-        int newCapacity = _items.length == 0 ? DefaultCapacity : 2 * _items.length;
+        int newCapacity = _items.length == 0 ? DefaultCapacity : 2 * capacity;
 
         // Allow the list to grow to maximum possible capacity (~2G elements) before encountering overflow.
         // Note that this check works even when _items.Length overflowed thanks to the (uint) cast
@@ -275,13 +279,10 @@ public class List<T>
         _version++;
         T[] array = _items;
         int size = _size;
-        if (size < array.length)
-        {
+        if (size < array.length) {
             _size = size + 1;
             array[size] = item;
-        }
-        else
-        {
+        } else {
             AddWithResize(item);
         }
     }
@@ -454,7 +455,7 @@ public class List<T>
             {
                 break;
             }
-            action.action((T)_items[i]);
+            action.action(_items[i]);
         }
 
         if (version != _version)
@@ -730,14 +731,14 @@ public class List<T>
         int freeIndex = 0;   // the first free slot in items array
 
         // Find the first item which needs to be removed.
-        while (freeIndex < _size && !match.predicate((T)_items[freeIndex])) freeIndex++;
+        while (freeIndex < _size && !match.predicate(_items[freeIndex])) freeIndex++;
         if (freeIndex >= _size) return 0;
 
         int current = freeIndex + 1;
         while (current < _size)
         {
             // Find the first item which needs to be kept.
-            while (current < _size && match.predicate((T)_items[current])) current++;
+            while (current < _size && match.predicate(_items[current])) current++;
 
             if (current < _size)
             {
@@ -759,6 +760,4 @@ public class List<T>
         _version++;
         return result;
     }
-
-
 }

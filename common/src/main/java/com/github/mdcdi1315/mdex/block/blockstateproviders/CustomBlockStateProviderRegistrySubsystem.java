@@ -5,8 +5,10 @@ import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.api.MDEXModAPI;
 import com.github.mdcdi1315.mdex.api.IModLoaderRegistry;
+import com.github.mdcdi1315.mdex.codecs.DelayLoadedCodec;
 import com.github.mdcdi1315.mdex.api.RegistryCreationInformation;
-import com.github.mdcdi1315.mdex.codecs.DelayLoadedRegistryByNameCodec;
+
+import com.mojang.serialization.Codec;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -19,7 +21,6 @@ public final class CustomBlockStateProviderRegistrySubsystem
 {
     public static IModLoaderRegistry<AbstractBlockStateProviderType<?>> REGISTRY;
     public static ResourceKey<Registry<AbstractBlockStateProviderType<?>>> REGISTRYKEY;
-    private static DelayLoadedRegistryByNameCodec<AbstractBlockStateProviderType<?>> INTERNAL_CODEC;
 
     // Private so that this class cannot be instantiated as an object
     private CustomBlockStateProviderRegistrySubsystem() {}
@@ -29,16 +30,19 @@ public final class CustomBlockStateProviderRegistrySubsystem
         MDEXBalmLayer.LOGGER.info("Initializing custom block state providers registry.");
         REGISTRYKEY = ResourceKey.createRegistryKey(MDEXBalmLayer.id("custom_blockstate_provider_types"));
         MDEXModAPI.getMethodImplementation().CreateSimpleRegistry(new RegistryCreationInformation<>(REGISTRYKEY));
-        AbstractBlockStateProvider.CODEC = (INTERNAL_CODEC = new DelayLoadedRegistryByNameCodec<>()).dispatch(AbstractBlockStateProvider::GetType , AbstractBlockStateProviderType::Codec);
+        AbstractBlockStateProvider.CODEC = new DelayLoadedCodec<>(CustomBlockStateProviderRegistrySubsystem::CodecGetter).dispatch(AbstractBlockStateProvider::GetType , AbstractBlockStateProviderType::Codec);
         MDEXModAPI.getMethodImplementation().RunMethodOnWhenRegistryIsRegistering(REGISTRYKEY , CustomBlockStateProviderRegistrySubsystem::OnRegistryReady);
     }
 
     private static void OnRegistryReady(IModLoaderRegistry<AbstractBlockStateProviderType<?>> reg)
     {
         REGISTRY = reg;
-        INTERNAL_CODEC.ProvideRegistry(REGISTRY);
-        INTERNAL_CODEC = null;
         RegisterBlockStateProviders();
+    }
+
+    private static Codec<AbstractBlockStateProviderType<?>> CodecGetter()
+    {
+        return REGISTRY.ByNameCodec();
     }
 
     public static void DestroyRegistry()

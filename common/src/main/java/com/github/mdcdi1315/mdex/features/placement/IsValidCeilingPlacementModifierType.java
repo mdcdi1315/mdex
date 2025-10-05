@@ -1,5 +1,7 @@
 package com.github.mdcdi1315.mdex.features.placement;
 
+import com.github.mdcdi1315.mdex.codecs.LazyUnitCodec;
+
 import com.mojang.serialization.Codec;
 
 public final class IsValidCeilingPlacementModifierType
@@ -9,6 +11,6 @@ public final class IsValidCeilingPlacementModifierType
 
     @Override
     protected Codec<IsValidCeilingPlacementModifier> GetCodecInstance() {
-        return Codec.unit(new IsValidCeilingPlacementModifier());
+        return new LazyUnitCodec<>(IsValidCeilingPlacementModifier::new);
     }
 }

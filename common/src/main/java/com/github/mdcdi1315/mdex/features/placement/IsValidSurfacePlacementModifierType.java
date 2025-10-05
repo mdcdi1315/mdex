@@ -1,5 +1,7 @@
 package com.github.mdcdi1315.mdex.features.placement;
 
+import com.github.mdcdi1315.mdex.codecs.LazyUnitCodec;
+
 import com.mojang.serialization.Codec;
 
 public final class IsValidSurfacePlacementModifierType
@@ -9,6 +11,6 @@ public final class IsValidSurfacePlacementModifierType
 
     @Override
     protected Codec<IsValidSurfacePlacementModifier> GetCodecInstance() {
-        return Codec.unit(new IsValidSurfacePlacementModifier());
+        return new LazyUnitCodec<>(IsValidSurfacePlacementModifier::new);
     }
 }

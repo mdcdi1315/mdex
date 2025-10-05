@@ -5,6 +5,9 @@ import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNul
 
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.util.RectAreaIterable;
+import com.github.mdcdi1315.mdex.util.weight.WeightUtils;
+import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
+import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
 import com.github.mdcdi1315.mdex.features.config.ModdedFeatureConfiguration;
 
 import net.minecraft.tags.TagKey;
@@ -14,18 +17,14 @@ import net.minecraft.world.entity.*;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.util.random.WeightedEntry;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.AirBlock;
-import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
-
 
 import java.lang.Exception;
 import java.util.List;
@@ -207,7 +206,7 @@ public final class FeaturePlacementUtils
         return (BlockState b) -> b.getBlock() instanceof AirBlock;
     }
 
-    public static boolean SafeSetBlock(WorldGenLevel level, BlockPos pos, BlockState state, Predicate<BlockState> oldState)
+    public static boolean SafeSetBlock(LevelAccessor level, BlockPos pos, BlockState state, Predicate<BlockState> oldState)
     {
         if (oldState.predicate(level.getBlockState(pos))) {
             return level.setBlock(pos, state, 2);
@@ -255,10 +254,10 @@ public final class FeaturePlacementUtils
         return item;
     }
 
-    public static @MaybeNull <T extends WeightedEntry> T SampleWeightedFromRandomSource(List<T> list , RandomSource rs)
+    public static @MaybeNull <T extends IWeightedEntry> T SampleWeightedFromRandomSource(List<T> list , RandomSource rs)
     {
         // TODO: Optimize weighted calculations at some moment.
-        return WeightedRandom.getRandomItem(rs, list).orElse(null);
+        return WeightUtils.GetRandomItem(rs , list).orElse(null);
     }
 
     public static void TrySpawnEntityAtChunkGenPhase(ServerLevelAccessor level , BlockPos finalpos , EntityType<?> type)
@@ -331,7 +330,7 @@ public final class FeaturePlacementUtils
             throw new ArgumentOutOfRangeException("maxtries" , "Maximum tries must not be a negative number!!!");
         }
         if (entityData.isEmpty()) { return; }
-        var et = WeightedRandom.getRandomItem(rs, entityData);
+        var et = WeightUtils.GetRandomItem(rs, entityData);
         if (et.isPresent() == false) { return; }
         int mt = rs.nextIntBetweenInclusive(0 , maxtries);
         boolean flag = false;

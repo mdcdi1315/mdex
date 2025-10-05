@@ -18,6 +18,10 @@ public enum AttributeTargets
      */
     Method,
     /**
+     * The attribute can be applied to a constructor.
+     */
+    Constructor,
+    /**
      * The attribute can be applied to an enumeration type.
      */
     Enum,

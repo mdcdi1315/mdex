@@ -10,6 +10,10 @@ import java.util.stream.Stream;
 public final class IsValidCeilingPlacementModifier
     extends AbstractModdedPlacementModifier
 {
+    public IsValidCeilingPlacementModifier() {
+        Compile();
+    }
+
     @Override
     protected boolean CompilePlacementModifierData() {
         return true;
@@ -25,7 +29,7 @@ public final class IsValidCeilingPlacementModifier
     }
 
     @Override
-    public AbstractModdedPlacementModifierType<? extends AbstractModdedPlacementModifier> type() {
+    public AbstractModdedPlacementModifierType<? extends AbstractModdedPlacementModifier> GetType() {
         return IsValidSurfacePlacementModifierType.INSTANCE;
     }
 }

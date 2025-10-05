@@ -29,18 +29,6 @@ public class NotSupportedException
     {
         super(message);
     }
-    //
-    // Summary:
-    //
-    //
-    // Parameters:
-    //   message:
-    //     The error message that explains the reason for the exception.
-    //
-    //   innerException:
-    //     The exception that is the cause of the current exception. If the innerException
-    //     parameter is not a null reference, the current exception is raised in a catch
-    //     block that handles the inner exception.
 
     /**
      * Initializes a new instance of the {@link NotSupportedException} class with a specified

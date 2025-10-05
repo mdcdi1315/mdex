@@ -1,27 +1,38 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
+import com.github.mdcdi1315.mdex.util.weight.SimpleWeightedEntryList;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import net.minecraft.util.random.SimpleWeightedRandomList;
 
 public final class WeightedStateProviderType
     extends AbstractBlockStateProviderType<WeightedStateProvider>
 {
     public static final WeightedStateProviderType INSTANCE = new WeightedStateProviderType();
 
-    private static DataResult<WeightedStateProvider> Create(SimpleWeightedRandomList<CompilableBlockState> weightedList)
+    private static DataResult<SimpleWeightedEntryList<CompilableBlockState>> Decompose(WeightedStateProvider wsp)
     {
-        return weightedList.isEmpty() ?
-                DataResult.error(() -> "Supplied an WeightedStateProvider which does not have any valid states.") :
-                DataResult.success(new WeightedStateProvider(weightedList));
+        if (wsp == null) {
+            return DataResult.error(() -> "Specified weighted state provider is null.");
+        }
+        return DataResult.success(wsp.States);
+    }
+
+    private static DataResult<WeightedStateProvider> Create(SimpleWeightedEntryList<CompilableBlockState> list)
+    {
+        if (list == null) {
+            return DataResult.error(() -> "Specified list is null.");
+        }
+        return DataResult.success(new WeightedStateProvider(list));
     }
 
     @Override
     protected Codec<WeightedStateProvider> GetCodecInstance() {
-        return SimpleWeightedRandomList.wrappedCodec(CompilableBlockState.GetCodec())
-                .comapFlatMap(WeightedStateProviderType::Create, (p) -> p.States)
-                .fieldOf("entries").codec();
+        return SimpleWeightedEntryList.CreateSimpleWeightedEntryList(CompilableBlockState.GetMapCodec())
+                .fieldOf("entries").flatXmap(
+                        WeightedStateProviderType::Create,
+                        WeightedStateProviderType::Decompose
+                ).codec();
     }
 }

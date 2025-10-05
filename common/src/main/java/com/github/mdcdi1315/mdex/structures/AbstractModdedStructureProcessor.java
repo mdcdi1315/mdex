@@ -92,7 +92,7 @@ public abstract class AbstractModdedStructureProcessor
     @MaybeNull
     public final StructureTemplate.StructureBlockInfo processBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings)
     {
-        return IsValid() ? ProcessModdedBlock(level ,offset , pos , blockInfo , relativeBlockInfo , settings) : relativeBlockInfo;
+        return IsValid() ? ProcessModdedBlock(level , offset , pos , blockInfo , relativeBlockInfo , settings) : relativeBlockInfo;
     }
 
     public final boolean IsValid()
@@ -100,11 +100,17 @@ public abstract class AbstractModdedStructureProcessor
         if ((state & STATE_MODLIST_DETERMINED) == 0 && InternalDetermineIfModListIsValid())
         {
             try {
+                if (MDEXBalmLayer.LoggingFlags.StructureProcessors()) {
+                    MDEXBalmLayer.LOGGER.info("Compiling structure processor DCO of type {} with hash code {}." , getClass().getName() , hashCode());
+                }
                 CompileData();
             } catch (Exception e) {
                 MDEXBalmLayer.LOGGER.warn("Reporting exception during COMPILE stage for modded structure processor of type {}: \n{}" , getClass().getName() , e);
                 MarkAsInvalid();
                 return false;
+            }
+            if (MDEXBalmLayer.LoggingFlags.StructureProcessors()) {
+                MDEXBalmLayer.LOGGER.info("Structure processor DCO of type {} with hash code {} was successfully compiled!" , getClass().getName() , hashCode());
             }
             return true;
         }

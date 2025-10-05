@@ -11,16 +11,28 @@ import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 public class MDEXModConfig
 {
     @Comment(
-            "Enables additional debug messages to resolve common errors involving invalid feature configs.\n" +
+            "Enables additional debug messages to resolve common errors involving invalid feature configurations.\n" +
             "For this change to take effect, you must restart the game."
     )
     public boolean DebugFeatureConfigurations = false;
 
     @Comment(
-            "Enables additional debug messages to resolve common errors involving invalid structure configs.\n" +
+            "Enables additional debug messages to resolve common errors involving invalid structure configurations.\n" +
             "For this change to take effect, you must restart the game."
     )
     public boolean DebugStructureConfigurations = false;
+
+    @Comment(
+            "Enables additional debug messages to resolve common errors involving invalid structure processor configurations.\n" +
+            "For this change to take effect, you must restart the game."
+    )
+    public boolean DebugStructureProcessorConfigurations = false;
+
+    @Comment(
+            "Enables additional debug messages to resolve common errors involving invalid feature placement modifier configurations.\n" +
+            "For this change to take effect, you must restart the game."
+    )
+    public boolean DebugFeaturePlacementModifierConfigurations = false;
 
     @Comment(
             "The dimension where the player should return when he clicks on any Teleporter block in the Mining Dimension.\n" +
@@ -49,8 +61,7 @@ public class MDEXModConfig
                 MDEXBalmLayer.LOGGER.info("Creating empty config file since the file does not exist.");
                 cfg.saveLocalConfig(schema);
             }
-            MDEXBalmLayer.DebugFeatureConfigurations = mlc.DebugFeatureConfigurations;
-            MDEXBalmLayer.DebugStructureConfigurations = mlc.DebugStructureConfigurations;
+            MDEXBalmLayer.LoggingFlags = new MDEXDCOLoggingFlags(mlc);
             cfg.updateLocalConfig(MDEXModConfig.class , MDEXModConfig::EmptyUpdater);
         });
     }

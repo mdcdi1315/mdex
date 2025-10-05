@@ -6,14 +6,14 @@ import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
+
+import net.minecraft.tags.TagKey;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 
-import java.util.Optional;
 import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -29,23 +29,7 @@ public interface IModLoaderRegistry<T>
      * @return The codec by-name to use.
      */
     default Codec<T> ByNameCodec() {
-        return ResourceLocation.CODEC.flatXmap(
-                (loc) ->
-                        GetElementValue(loc)
-                                .map(DataResult::success)
-                                .orElseGet(() -> DataResult.error(
-                                            () -> "Unknown registry key in " + this.GetRegistryKey() + ": " + loc
-                                        )
-                                ),
-                (e) ->
-                        GetResourceKey(e)
-                                .map(ResourceKey::location)
-                                .map(DataResult::success)
-                                .orElseGet(() -> DataResult.error(
-                                            () -> "Unknown registry element in " + this.GetRegistryKey() + ":" + e
-                                        )
-                                )
-        );
+        return new ModLoaderRegistryByNameCodec<>(this);
     }
 
     /**

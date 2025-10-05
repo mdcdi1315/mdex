@@ -7,6 +7,7 @@ import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -42,6 +43,15 @@ public final class CompilableBlockState
             );
         }
         return codec;
+    }
+
+    public static MapCodec<CompilableBlockState> GetMapCodec()
+    {
+        return CodecUtils.CreateMapCodecDirect(
+                ResourceLocation.CODEC.fieldOf(net.minecraft.world.level.block.state.BlockState.NAME_TAG).forGetter(CompilableBlockState::GetId),
+                Codec.unboundedMap(Codec.STRING , Codec.STRING).optionalFieldOf(net.minecraft.world.level.block.state.BlockState.PROPERTIES_TAG , Map.of()).forGetter(CompilableBlockState::GetPropertyMap),
+                CompilableBlockState::new
+        );
     }
 
     public void Compile()

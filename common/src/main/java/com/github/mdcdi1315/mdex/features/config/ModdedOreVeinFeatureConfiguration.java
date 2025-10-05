@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.features.config;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.mdex.util.Extensions;
 import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
 import com.github.mdcdi1315.mdex.features.orevein.RareBlockPlacementSettings;
 
@@ -29,8 +30,8 @@ public final class ModdedOreVeinFeatureConfiguration
                 RareBlockPlacementSettings.GetCodec().fieldOf("rare_placement").forGetter((f) -> f.RarePlacementSettings),
                 SingleTargetBlockState.GetCodec().listOf().fieldOf("targets").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.TargetStates),
                 NormalNoise.NoiseParameters.CODEC.fieldOf("noise").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.Parameters),
-                IntProvider.codec(5 , 58).optionalFieldOf("size" , ConstantInt.of(12)).forGetter((f) -> f.Size),
-                IntProvider.codec(4 , 18).optionalFieldOf("y_scale" , ConstantInt.of(2)).forGetter((f) -> f.Y_Scale),
+                IntProvider.codec(5 , 48).optionalFieldOf("size" , ConstantInt.of(12)).forGetter((f) -> f.Size),
+                IntProvider.codec(4 , 26).optionalFieldOf("y_scale" , ConstantInt.of(2)).forGetter((f) -> f.Y_Scale),
                 CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((ModdedOreVeinFeatureConfiguration f) -> f.DiscardChanceOnAirExposure),
                 ModdedOreVeinFeatureConfiguration::new
         );
@@ -56,10 +57,8 @@ public final class ModdedOreVeinFeatureConfiguration
             setConfigAsInvalid();
             return;
         }
-        for (var i : TargetStates)
-        {
-            i.Compile();
-            if (!i.IsCompiled()) { setConfigAsInvalid(); return; }
+        if (!Extensions.CompileAllOrFail(TargetStates)) {
+            setConfigAsInvalid();
         }
     }
 

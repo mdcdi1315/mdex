@@ -43,4 +43,8 @@ public record BlockStateProviderContext(@MaybeNull BlockGetter getter , @Disallo
     public boolean StateAtPositionMatchesWith(BlockState other) {
         return BlockUtils.BlockStatesMatch(GetStateAtPosition() , other);
     }
+
+    public BlockStateProviderContext WithNewPosition(BlockPos position) {
+        return new BlockStateProviderContext(getter , source , position);
+    }
 }

@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 
+import java.util.List;
 import java.util.function.ToIntFunction;
 
 /**
@@ -238,12 +239,6 @@ public final class BlockUtils
         return s1.getValue(p).compareTo(s2.getValue(p));
     }
 
-    private static boolean PropertyDoesNotMatch(BlockState s1 , BlockState s2 , Property<?> prop)
-    {
-        // Unknown (wildcard) declaration to generic translation.
-        return CompareProperties(prop , s1 , s2) != 0;
-    }
-
     /**
      * Gets a value whether the specified block states are an exact match; that is, are
      * the same blocks and have the same properties and values.
@@ -253,14 +248,16 @@ public final class BlockUtils
      */
     public static boolean BlockStatesMatch(BlockState s1 , BlockState s2)
     {
-        // Null block states do match in fact.
-        if (s1 == null && s2 == null) { return true; }
-        else if (s1 == null || s2 == null) { return false; }
-        else {
+        if (s1 == null) {
+            // Null block states do match in fact.
+            return s2 == null;
+        } else if (s2 == null) {
+            return false;
+        } else {
             // TODO: See whether the s1.equals(s2) check would work
             if (s1.getBlock() == s2.getBlock()) {
                 for (var p1 : s1.getProperties()) {
-                    if (PropertyDoesNotMatch(s1, s2, p1)) {
+                    if (CompareProperties(p1, s1, s2) != 0) {
                         return false;
                     }
                 }
@@ -270,8 +267,46 @@ public final class BlockUtils
         }
     }
 
+    private record LightEmissionFunction(int lightvalue)
+        implements ToIntFunction<BlockState>
+    {
+        @Override
+        public int applyAsInt(BlockState value) {
+            return value.getValue(BlockStateProperties.LIT) ? lightvalue : 0;
+        }
+    }
+
     public static ToIntFunction<BlockState> GetBlockLightEmissionWhenLit(int lightValue) {
-        return (s) -> s.getValue(BlockStateProperties.LIT) ? lightValue : 0;
+        return new LightEmissionFunction(lightValue);
+    }
+
+    /**
+     * Finds out whether a block state belongs to a block from the specified list.
+     * @param blocklist The list of blocks to test.
+     * @param state The block state to be tested whether it's backing block exists in {@code blocklist}.
+     * @return A value whether the specified backing block from the specified state was found in {@code blocklist}.
+     * @exception ArgumentNullException {@code blocklist} and/or {@code state} were null.
+     */
+    public static boolean IsABlockFromList(List<Block> blocklist, BlockState state)
+        throws ArgumentNullException
+    {
+        ArgumentNullException.ThrowIfNull(blocklist , "blocklist");
+        ArgumentNullException.ThrowIfNull(state , "state");
+        return IsABlockFromListUnsafe(blocklist , state);
+    }
+
+    /**
+     * Finds out whether a block state belongs to a block from the specified list.
+     * @param blocklist The list of blocks to test.
+     * @param state The block state to be tested whether it's backing block exists in {@code blocklist}.
+     * @return A value whether the specified backing block from the specified state was found in {@code blocklist}.
+     */
+    public static boolean IsABlockFromListUnsafe(List<Block> blocklist, BlockState state)
+    {
+        for (var b : blocklist) {
+            if (state.is(b)) { return true; }
+        }
+        return false;
     }
 
     /**

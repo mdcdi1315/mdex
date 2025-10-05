@@ -11,11 +11,11 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
-
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
 public final class SimpleFloatingIslandFeature
     extends ModdedFeature<SimpleFloatingIslandConfiguration>
@@ -48,15 +48,19 @@ public final class SimpleFloatingIslandFeature
         // Placement will be done layer by layer.
 
         boolean generated = false;
+
+        var layers = fpc.config().Layers;
+        var layerssizem1 = layers.size() - 1;
+
         // After each layer end, the FOR loop will also automatically update the y for the next island layer.
-        for (int I = fpc.config().Layers.size() - 1 ; I > -1; I-- , layer = layer.offset(0 , 1 , 0))
+        for (int I = layerssizem1; I > -1; I-- , layer = layer.offset(0 , 1 , 0))
         {
             if (wgl.ensureCanWrite(layer) == false)
             {
                 MDEXBalmLayer.LOGGER.warn("Cannot place the simple floating island because the level is not writeable here.");
                 return false;
             }
-            PlaceSingleLayer(wgl , layer , predicate , fpc.config().Layers.get(I));
+            PlaceSingleLayer(wgl , layer , predicate , layers.get(I));
             generated = true;
         }
 
@@ -69,14 +73,12 @@ public final class SimpleFloatingIslandFeature
         // Thankfully for us, the layer variable is already placed above the lastly placed layer.
         // From there, we can dispatch additional features to be generated on the island.
 
-        int lastlayersize = fpc.config().Layers.get(fpc.config().Layers.size() - 1).Size;
-
-        FeaturePlacementUtils.ForEachInHolderSetUnsafe(fpc.config().FeaturesToGenerateOnTop , fpc , layer , lastlayersize , SimpleFloatingIslandFeature::RunTopFeature);
+        FeaturePlacementUtils.ForEachInHolderSetUnsafe(fpc.config().FeaturesToGenerateOnTop , fpc , layer , layers.get(layerssizem1).Size , SimpleFloatingIslandFeature::RunTopFeature);
 
         return true;
     }
 
-    private static void RunTopFeature(PlacedFeature p , FeaturePlaceContext<SimpleFloatingIslandConfiguration> cfg , BlockPos layer , int lastlayersize)
+    private static void RunTopFeature(PlacedFeature p , FeaturePlaceContext<SimpleFloatingIslandConfiguration> cfg , BlockPos layer , byte lastlayersize)
     {
         var rd = cfg.random();
         // Run random values at most 12 times
@@ -141,7 +143,7 @@ public final class SimpleFloatingIslandFeature
         }
     }
 
-    public static boolean IsConsideredValidPlacement(WorldGenLevel wgl , BlockPos origin , int nlayers)
+    public static boolean IsConsideredValidPlacement(LevelReader wgl , BlockPos origin , int nlayers)
     {
         BlockPos ofs = origin;
         for (int I = 0; I < nlayers; I++ , ofs = ofs.above())

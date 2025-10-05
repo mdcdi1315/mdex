@@ -1,30 +1,31 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
+import com.github.mdcdi1315.mdex.util.weight.SimpleWeightedEntryList;
 
 import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 
+import com.github.mdcdi1315.mdex.util.weight.SimpleWeightedEntryList_Entry;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.util.random.SimpleWeightedRandomList;
 
 import java.util.Optional;
 
 public final class WeightedStateProvider
     extends AbstractBlockStateProvider
 {
-    public SimpleWeightedRandomList<CompilableBlockState> States;
+    public SimpleWeightedEntryList<CompilableBlockState> States;
 
-    public WeightedStateProvider(SimpleWeightedRandomList<CompilableBlockState> states) {
+    public WeightedStateProvider(SimpleWeightedEntryList<CompilableBlockState> states) {
         States = states;
     }
 
-    private static BlockState Mapper(CompilableBlockState s) {
-        return s.BlockState;
+    private static BlockState Mapper(SimpleWeightedEntryList_Entry<CompilableBlockState> s) {
+        return s.getValue().BlockState;
     }
 
     @Override
     public BlockState GetBlockState(BlockStateProviderContext context) {
-        Optional<CompilableBlockState> obs = States.getRandomValue(context.source());
+        Optional<SimpleWeightedEntryList_Entry<CompilableBlockState>> obs = States.GetRandom(context.source());
         return obs.map(WeightedStateProvider::Mapper).orElseThrow(() -> new InvalidOperationException("Cannot find a block state to use!"));
     }
 
@@ -36,9 +37,9 @@ public final class WeightedStateProvider
     @Override
     protected boolean CompileImplementation()
     {
-        for (var s : States.unwrap())
+        for (var s : States)
         {
-            var cs = s.getData();
+            var cs = s.getValue();
             cs.Compile();
             if (!cs.IsCompiled()) {
                 States = null;

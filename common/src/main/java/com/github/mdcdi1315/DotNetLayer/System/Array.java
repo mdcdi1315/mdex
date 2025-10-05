@@ -2,9 +2,26 @@ package com.github.mdcdi1315.DotNetLayer.System;
 
 import com.github.mdcdi1315.DotNetLayer.System.Collections.Generic.List;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.RequiresDynamicCode;
+
+import java.lang.reflect.Type;
+import java.util.Arrays;
 
 public final class Array
 {
+    private record TYPEDESCRIPTOR<T>()
+    {
+        @SuppressWarnings("unchecked")
+        public Class<T> DescribeTypeT()
+        {
+            try {
+                Type gentype = getClass().getTypeParameters()[0].getBounds()[0];
+                return (Class<T>) Class.forName(gentype.getTypeName());
+            } catch (ClassNotFoundException ignored) {}
+            return null;
+        }
+    }
+
     public static final int MaxLength = 0x7FFFFFFF;
 
     public static <T> void Clear(T[] array , int index , int count)
@@ -44,6 +61,48 @@ public final class Array
             throw new IndexOutOfRangeException(b.getMessage());
         } catch (ArrayStoreException ase) {
             throw new ArrayTypeMismatchException(ase.getMessage());
+        }
+    }
+
+    @RequiresDynamicCode(Message = "The code for an array of the specified type might not be available.")
+    public static Object CreateInstance(Class<?> elementType , int length)
+    {
+        try {
+            return java.lang.reflect.Array.newInstance(elementType, length);
+        } catch (NullPointerException npe) {
+            throw new ArgumentNullException("elementType");
+        } catch (NegativeArraySizeException nase) {
+            throw new ArgumentOutOfRangeException("length" , "length cannot be a negative number.");
+        } catch (IllegalArgumentException iae) {
+            throw new NotSupportedException(String.format("Type not supported: %s" , elementType.getName()));
+        }
+    }
+
+    @RequiresDynamicCode(Message = "The code for an array of the specified type might not be available.")
+    public static Object CreateInstance(Class<?> elementType, int... lengths)
+    {
+        try {
+            return java.lang.reflect.Array.newInstance(elementType, lengths);
+        } catch (NullPointerException npe) {
+            throw new ArgumentNullException("elementType");
+        } catch (NegativeArraySizeException nase) {
+            throw new ArgumentOutOfRangeException("lengths" , "An element in the dimension array was negative.");
+        } catch (IllegalArgumentException iae) {
+            throw new NotSupportedException(String.format("Type not supported: %s" , elementType.getName()));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T[] CreateInstanceFast(Class<T> elementType, int length)
+    {
+        try {
+            return (T[]) java.lang.reflect.Array.newInstance(elementType, length);
+        } catch (NullPointerException npe) {
+            throw new ArgumentNullException("elementType");
+        } catch (NegativeArraySizeException nase) {
+            throw new ArgumentOutOfRangeException("lengths" , "An element in the dimension array was negative.");
+        } catch (IllegalArgumentException iae) {
+            throw new NotSupportedException(String.format("Type not supported: %s" , elementType.getName()));
         }
     }
 
@@ -173,6 +232,43 @@ public final class Array
             firstindex++;
             lastindex--;
         } while (firstindex < lastindex);
+    }
+
+    public static <T> void Fill(T[] array, @MaybeNull T value)
+    {
+        // .NET's method does not also seem to throw ArgumentNullException, so we will follow Java behavior as their behavior seems to be identical.
+        Arrays.fill(array, value);
+    }
+
+    public static <T> void Fill(T[] array, @MaybeNull T value, int startIndex, int count)
+    {
+        int ctf = startIndex + count;
+        for (int I = startIndex; I < ctf; I++) {
+            array[I] = value;
+        }
+    }
+
+    public static <T> void ForEach(T[] array, Action1<T> action)
+            throws ArgumentNullException
+    {
+        ArgumentNullException.ThrowIfNull(array, "array");
+        ArgumentNullException.ThrowIfNull(action, "action");
+        for (T element : array)
+        {
+            action.action(element);
+        }
+    }
+
+    public static <T , TD> TD[] ConvertAll(T[] array , Converter<T , TD> converter)
+    {
+        ArgumentNullException.ThrowIfNull(array , "array");
+        ArgumentNullException.ThrowIfNull(converter, "converter");
+        TD[] dest = CreateInstanceFast(new TYPEDESCRIPTOR<TD>().DescribeTypeT() , array.length);
+        for (int I = 0; I < dest.length; I++)
+        {
+            dest[I] = converter.convert(array[I]);
+        }
+        return dest;
     }
 
 }

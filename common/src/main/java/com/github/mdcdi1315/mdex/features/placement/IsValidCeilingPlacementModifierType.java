@@ -1,6 +1,8 @@
 package com.github.mdcdi1315.mdex.features.placement;
 
-import com.mojang.serialization.Codec;
+import com.github.mdcdi1315.mdex.codecs.LazyUnitMapCodec;
+
+import com.mojang.serialization.MapCodec;
 
 public final class IsValidCeilingPlacementModifierType
     extends AbstractModdedPlacementModifierType<IsValidCeilingPlacementModifier>
@@ -8,7 +10,7 @@ public final class IsValidCeilingPlacementModifierType
     public static IsValidSurfacePlacementModifierType INSTANCE = new IsValidSurfacePlacementModifierType();
 
     @Override
-    protected Codec<IsValidCeilingPlacementModifier> GetCodecInstance() {
-        return Codec.unit(new IsValidCeilingPlacementModifier());
+    protected MapCodec<IsValidCeilingPlacementModifier> GetCodecInstance() {
+        return new LazyUnitMapCodec<>(IsValidCeilingPlacementModifier::new);
     }
 }

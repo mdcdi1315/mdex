@@ -29,8 +29,9 @@ public final class Extensions
     {
         Direction ret;
         var values = Direction.values();
+        int len = values.length - 1;
         do {
-            ret = values[rs.nextIntBetweenInclusive(0 , values.length-1)];
+            ret = values[rs.nextIntBetweenInclusive(0 , len)];
         } while (ret == Direction.UP || ret == Direction.DOWN);
         return ret;
     }

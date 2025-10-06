@@ -7,7 +7,7 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 
-public class SingleTargetBlockState
+public final class SingleTargetBlockState
     implements Compilable
 {
     private static Codec<SingleTargetBlockState> codec;

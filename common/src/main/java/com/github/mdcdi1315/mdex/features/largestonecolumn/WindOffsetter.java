@@ -26,7 +26,7 @@ public final class WindOffsetter
         this.windSpeed = null;
     }
 
-    public static WindOffsetter noWind() {
+    public static WindOffsetter NoWind() {
         return new WindOffsetter();
     }
 

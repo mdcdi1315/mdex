@@ -51,7 +51,7 @@ public abstract class AbstractStructure
     private void DestroyInternalState()
     {
         try {
-            if (MDEXBalmLayer.DebugStructureConfigurations)
+            if (MDEXBalmLayer.LoggingFlags.StructureProcessors())
             {
                 MDEXBalmLayer.LOGGER.info("Destroying invalid structure class instance named as {}" , getClass().getName());
             }
@@ -81,7 +81,7 @@ public abstract class AbstractStructure
     {
         if ((state & HAS_RUN_AT_LEAST_ONCE) != 0) { return; }
         try {
-            if (MDEXBalmLayer.DebugStructureConfigurations)
+            if (MDEXBalmLayer.LoggingFlags.StructureProcessors())
             {
                 MDEXBalmLayer.LOGGER.info("Attempting to compile structure DCO {} with hash code {}." , getClass().getName() , hashCode());
             }
@@ -98,7 +98,7 @@ public abstract class AbstractStructure
             if ((state & STATE_IS_INVALID) == 0) // May found errors during compilation
             {
                 state |= STATE_IS_COMPILED;
-                if (MDEXBalmLayer.DebugStructureConfigurations) {
+                if (MDEXBalmLayer.LoggingFlags.StructureProcessors()) {
                     MDEXBalmLayer.LOGGER.info("Structure DCO with hash code {} succeeded with compilation." , hashCode());
                 }
             }
@@ -131,7 +131,7 @@ public abstract class AbstractStructure
     {
         if ((state & STATE_IS_INVALID) != 0) { return; }
         state |= STATE_IS_INVALID;
-        if (MDEXBalmLayer.DebugStructureConfigurations) {
+        if (MDEXBalmLayer.LoggingFlags.StructureProcessors()) {
             StringBuilder sb = StackWalker.getInstance().walk((Stream<StackWalker.StackFrame> s) -> {
                 StringBuilder sbi = new StringBuilder(2048);
                 s.limit(8).forEach(

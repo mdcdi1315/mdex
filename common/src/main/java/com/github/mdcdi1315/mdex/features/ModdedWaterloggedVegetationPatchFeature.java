@@ -7,11 +7,10 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.WorldGenLevel;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import java.util.HashSet;
@@ -24,37 +23,41 @@ public class ModdedWaterloggedVegetationPatchFeature
         super(codec);
     }
 
-    protected Set<BlockPos> placeGroundPatch(WorldGenLevel level, ModdedVegetationPatchConfiguration config , RandomSource random, BlockPos pos, Predicate<BlockState> state, int xRadius, int zRadius) {
-        Set<BlockPos> set = super.placeGroundPatch(level, config, random, pos, state, xRadius, zRadius);
-        Set<BlockPos> set1 = new HashSet<>();
-        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+    protected Set<BlockPos> placeGroundPatch(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, BlockPos pos, Predicate<BlockState> state, int xRadius, int zRadius)
+    {
+        var level = context.level();
+        Set<BlockPos> set = new HashSet<>();
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
 
-        for (BlockPos blockpos : set) {
-            if (!isExposed(level, set, blockpos, blockpos$mutableblockpos)) {
-                set1.add(blockpos);
+        for (BlockPos blockpos : super.placeGroundPatch(context, pos, state, xRadius, zRadius)) {
+            if (!isExposed(level, blockpos, mutable)) {
+                set.add(blockpos);
+                // OPT: Instead of iterating the found elements again, execute what we want to do here.
+                level.setBlock(blockpos, Blocks.WATER.defaultBlockState(), 2);
             }
         }
 
-        for (BlockPos blockpos1 : set1) {
-            level.setBlock(blockpos1, Blocks.WATER.defaultBlockState(), 2);
-        }
-
-        return set1;
+        return set;
     }
 
-    private static boolean isExposed(WorldGenLevel level, Set<BlockPos> positions, BlockPos pos, BlockPos.MutableBlockPos mutablePos) {
-        return isExposedDirection(level, pos, mutablePos, Direction.NORTH) || isExposedDirection(level, pos, mutablePos, Direction.EAST) || isExposedDirection(level, pos, mutablePos, Direction.SOUTH) || isExposedDirection(level, pos, mutablePos, Direction.WEST) || isExposedDirection(level, pos, mutablePos, Direction.DOWN);
+    private static boolean isExposed(BlockGetter level, BlockPos pos, BlockPos.MutableBlockPos mutablePos) {
+        return isExposedDirection(level, pos, mutablePos, Direction.NORTH) ||
+                isExposedDirection(level, pos, mutablePos, Direction.EAST) ||
+                isExposedDirection(level, pos, mutablePos, Direction.SOUTH) ||
+                isExposedDirection(level, pos, mutablePos, Direction.WEST) ||
+                isExposedDirection(level, pos, mutablePos, Direction.DOWN);
     }
 
-    private static boolean isExposedDirection(WorldGenLevel level, BlockPos pos, BlockPos.MutableBlockPos mutablePos, Direction direction) {
+    private static boolean isExposedDirection(BlockGetter level, BlockPos pos, BlockPos.MutableBlockPos mutablePos, Direction direction) {
         mutablePos.setWithOffset(pos, direction);
         return !level.getBlockState(mutablePos).isFaceSturdy(level, mutablePos, direction.getOpposite());
     }
 
-    protected boolean placeVegetation(WorldGenLevel level, ModdedVegetationPatchConfiguration config, ChunkGenerator chunkGenerator, RandomSource random, BlockPos pos)
+    protected boolean placeVegetation(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, BlockPos pos)
     {
-        boolean placed = super.placeVegetation(level, config, chunkGenerator, random, pos.below());
+        boolean placed = super.placeVegetation(context, pos.below());
         if (placed) {
+            var level = context.level();
             BlockState blockstate = level.getBlockState(pos);
             if (blockstate.hasProperty(BlockStateProperties.WATERLOGGED) && !(Boolean)blockstate.getValue(BlockStateProperties.WATERLOGGED)) {
                 level.setBlock(pos, blockstate.setValue(BlockStateProperties.WATERLOGGED, true), 2);

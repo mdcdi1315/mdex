@@ -1,11 +1,14 @@
 package com.github.mdcdi1315.mdex.util;
 
-import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
+
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.mdex.util.weight.Weight;
+
 import com.mojang.serialization.Codec;
+
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.random.Weight;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 
@@ -38,7 +41,7 @@ public class WeightedCountedEntityEntry
     {
         return CodecUtils.CreateCodecDirect(
                 ResourceLocation.CODEC.fieldOf("id").forGetter((WeightedCountedEntityEntry e) -> e.EntityID),
-                Weight.CODEC.fieldOf("weight").orElse(Weight.of(1)).forGetter((WeightedCountedEntityEntry e) -> e.weight),
+                Weight.CODEC.fieldOf("weight").orElse(Weight.Of(1)).forGetter((WeightedCountedEntityEntry e) -> e.weight),
                 IntProvider.codec(1 , 32).fieldOf("count").orElse(ConstantInt.of(1)).forGetter((WeightedCountedEntityEntry e) -> e.Count),
                 WeightedCountedEntityEntry::new
         );

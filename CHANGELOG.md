@@ -1,13 +1,21 @@
-Now releasing 1.4.0:
+Now releasing 1.5.0:
 
--> The mineshaft's placement height can be now configured, if deemed necessary
--> The block state providers have a code rewrite. A new block state provider was added mimicking the ore feature targets field and is called Rule Test Based Block State Provider.
+-> Added two new modded feature types, the Modded Spring and the Modded Classic ore feature.
+-> The biome spawn additions subsystem had a code re-write allowing for more simple, flexible and consistent definitions.
+-> Added additional debugging options in the config. 
 
 Bugfixes and performance optimizations were done, such as:
 
--> Codecs provided through codec utilities do no longer perform a second class creation to provide checking services, instead one class instance is created at run-time now.
--> The block state objects now do faster execute because the property entries are retrieved through key-value pairs, thus less CPU overload is required to fetch properties.
--> Some registries that were still using reflection to get several type objects is now replaced with their instance fields respectively.
--> The rotated block state provider will no longer crash the game when any block declared through the state field does not have the axis property, instead it will now appropriately fail compilation.
--> The loot table/specific appender processors now try to initialize the random source they get to ensure that the results that they produce are valid. Might change structure loot table generation by a bit, but I do not consider it a breaking change.
--> Rule test objects were not using effectively the Distributed Compilation Object logic. Now, they do.
+-> Weight utilities defined only for the 1.21.5 flavor of the mod is now backported.
+
+-> The custom placement modifiers were not effectively using the Distributed Compilation Object logic. Now they do, and they are now considered as a public and shipped feature of the mod.
+
+-> Simplified the process how the Block State Providers registry codec is loaded.
+
+-> Some recipes were not unlocked to the player as appropriate, now they do.
+
+-> Fixed some texture glitches and storage, especially for the tools.
+
+-> Cleaned the code for how the biome spawn additions subsystem works.
+
+-> Performance fixes for Modded Vegetation Patch feature types

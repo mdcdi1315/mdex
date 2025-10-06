@@ -21,6 +21,7 @@ public final class RandomizeInputPositionPlacementModifier
         Y_Offset = yofs;
         Z_Offset = zofs;
         PositionsToReturn = positions;
+        Compile();
     }
 
     @Override
@@ -46,7 +47,7 @@ public final class RandomizeInputPositionPlacementModifier
     }
 
     @Override
-    public AbstractModdedPlacementModifierType<? extends AbstractModdedPlacementModifier> type() {
+    public AbstractModdedPlacementModifierType<? extends AbstractModdedPlacementModifier> GetType() {
         return RandomizeInputPositionPlacementModifierType.INSTANCE;
     }
 }

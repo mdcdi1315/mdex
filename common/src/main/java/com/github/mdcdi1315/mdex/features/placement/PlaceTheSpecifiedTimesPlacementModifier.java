@@ -18,6 +18,7 @@ public final class PlaceTheSpecifiedTimesPlacementModifier
     {
         TimesToPlace = t;
         PlacementTimeCountingDiscardProbability = p;
+        Compile();
     }
 
     @Override
@@ -37,7 +38,7 @@ public final class PlaceTheSpecifiedTimesPlacementModifier
     }
 
     @Override
-    public AbstractModdedPlacementModifierType<? extends AbstractModdedPlacementModifier> type() {
+    public AbstractModdedPlacementModifierType<? extends AbstractModdedPlacementModifier> GetType() {
         return PlaceTheSpecifiedTimesPlacementModifierType.INSTANCE;
     }
 }

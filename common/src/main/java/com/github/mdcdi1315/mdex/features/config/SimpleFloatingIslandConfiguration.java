@@ -2,14 +2,12 @@ package com.github.mdcdi1315.mdex.features.config;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.InvalidFeatureConfigurationException;
-import com.github.mdcdi1315.mdex.features.floatingisland.CompilableIslandLayer;
-
 import com.mojang.serialization.Codec;
-
 import net.minecraft.core.HolderSet;
 import net.minecraft.util.valueproviders.ConstantInt;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
+import com.github.mdcdi1315.mdex.features.floatingisland.CompilableIslandLayer;
 
 import java.util.List;
 

@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+			"item": "mdex:polished_granite"
+		},
+		{
+			"item": "mdex:polished_granite"
+		},
+		{
+			"item": "mdex:polished_granite"
+		}
+	],
+	"result": {
+		"id": "mdex:polished_granite_slab",
+		"count": 6
+	}
+}

@@ -7,6 +7,7 @@ import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.FluidState;
@@ -46,6 +47,15 @@ public final class CompilableFluidState
             );
         }
         return codec;
+    }
+
+    public static MapCodec<CompilableFluidState> GetMapCodec()
+    {
+        return CodecUtils.CreateMapCodecDirect(
+                ResourceLocation.CODEC.fieldOf(net.minecraft.world.level.material.FluidState.NAME_TAG).forGetter(CompilableFluidState::GetId),
+                Codec.unboundedMap(Codec.STRING , Codec.STRING).optionalFieldOf(net.minecraft.world.level.material.FluidState.PROPERTIES_TAG , Map.of()).forGetter(CompilableFluidState::GetPropertyMap),
+                CompilableFluidState::new
+        );
     }
 
     @Override

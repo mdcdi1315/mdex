@@ -44,5 +44,7 @@ public final class FeatureTypesRegistrySubsystem
         RegisterCustomFeatureType(wg,"modded_vegetation_patch" , () -> new ModdedVegetationPatchFeature(vegpconfig));
         RegisterCustomFeatureType(wg,"modded_waterlogged_vegetation_patch" , () -> new ModdedWaterloggedVegetationPatchFeature(vegpconfig));
         RegisterCustomFeatureType(wg,"modded_simple_block" , () -> new ModdedSimpleBlockFeature(ModdedSimpleBlockFeatureConfiguration.GetCodec()));
+        RegisterCustomFeatureType(wg,"modded_classic_ore_vein" , () -> new ModdedClassicOreVeinFeature(ModdedClassicOreVeinFeatureConfiguration.GetCodec()));
+        RegisterCustomFeatureType(wg,"modded_spring" , () -> new ModdedSpringFeature(ModdedSpringFeatureConfiguration.GetCodec()));
     }
 }

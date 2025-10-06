@@ -50,9 +50,7 @@ public final class MDEXBalmLayer
 
     public static ResourceLocation MINING_DIM_IDENTIFIER;
 
-    public static boolean DebugFeatureConfigurations;
-
-    public static boolean DebugStructureConfigurations;
+    public static MDEXDCOLoggingFlags LoggingFlags;
 
     private static OperationsTasker TASKER;
 
@@ -192,7 +190,6 @@ public final class MDEXBalmLayer
     static {
         TASKER = null;
         MINING_DIM_IDENTIFIER = null;
-        DebugFeatureConfigurations = false;
     }
 
 }

@@ -1,15 +1,16 @@
 package com.github.mdcdi1315.mdex.features;
 
 import com.github.mdcdi1315.mdex.util.Extensions;
+import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.features.largestonecolumn.*;
 import com.github.mdcdi1315.mdex.features.config.LargeStoneColumnFeatureConfiguration;
 
 import net.minecraft.core.BlockPos;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.levelgen.Column;
-import net.minecraft.util.valueproviders.FloatProvider;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 
@@ -25,43 +26,37 @@ public final class LargeStoneColumnFeature
     @Override
     protected boolean placeModdedFeature(FeaturePlaceContext<LargeStoneColumnFeatureConfiguration> fpc)
     {
-        WorldGenLevel worldgenlevel = fpc.level();
-        BlockPos blockpos = fpc.origin();
         LargeStoneColumnFeatureConfiguration cfg = fpc.config();
+        BlockPos blockpos = fpc.origin();
         RandomSource randomsource = fpc.random();
-        if (Utils.isEmptyOrWater(worldgenlevel , blockpos))
+        WorldGenLevel worldgenlevel = fpc.level();
+        if (BlockUtils.BlockIsEmptyOrWaterUnsafe(worldgenlevel , blockpos))
         {
-            Optional<Column> optional = Column.scan(worldgenlevel, blockpos, cfg.floorToCeilingSearchRange, Utils::isEmptyOrWater, (BlockState s) -> Utils.IsDesiredBlockOrLava(s , cfg.BlockState.BlockState.getBlock()));
+            Optional<Column> optional = Column.scan(worldgenlevel, blockpos, cfg.floorToCeilingSearchRange, BlockUtils::ReferentIsEmptyOrWaterUnsafe, (BlockState s) -> s.is(Blocks.LAVA) || s.is(cfg.BlockState.BlockState.getBlock()));
             if (optional.isPresent() && optional.get() instanceof Column.Range range && range.height() > 3)
             {
-                int i = (int) ((float) range.height() * cfg.maxColumnRadiusToCaveHeightRatio);
-                int j = Extensions.Clamp(i, cfg.columnRadius.getMinValue(), cfg.columnRadius.getMaxValue());
-                int k = Extensions.RandomBetweenInclusiveUnsafe(randomsource, cfg.columnRadius.getMinValue(), j);
-                LargeStoneColumn largestonec1 = MakeColumn(blockpos.atY(range.ceiling() - 1), false, randomsource, k, cfg.stalactiteBluntness, cfg.heightScale);
-                LargeStoneColumn largestonec2 = MakeColumn(blockpos.atY(range.floor() + 1), true, randomsource, k, cfg.stalagmiteBluntness, cfg.heightScale);
+                int radius = Extensions.RandomBetweenInclusiveUnsafe(randomsource, cfg.columnRadius.getMinValue(), Extensions.Clamp((int) ((float) range.height() * cfg.maxColumnRadiusToCaveHeightRatio), cfg.columnRadius.getMinValue(), cfg.columnRadius.getMaxValue()));
+                LargeStoneColumn largestonec1 = new LargeStoneColumn(blockpos.atY(range.ceiling() - 1), false, radius, cfg.stalactiteBluntness.sample(randomsource), cfg.heightScale.sample(randomsource));
+                LargeStoneColumn largestonec2 = new LargeStoneColumn(blockpos.atY(range.floor() + 1), true, radius, cfg.stalagmiteBluntness.sample(randomsource), cfg.heightScale.sample(randomsource));
                 WindOffsetter offsetter;
-                if (largestonec1.isSuitableForWind(cfg) && largestonec2.isSuitableForWind(cfg)) {
+                if (largestonec1.IsSuitableForWind(cfg.minRadiusForWind , cfg.minBluntnessForWind) && largestonec2.IsSuitableForWind(cfg.minRadiusForWind , cfg.minBluntnessForWind)) {
                     offsetter = new WindOffsetter(blockpos.getY(), randomsource, cfg.windSpeed);
                 } else {
-                    offsetter = WindOffsetter.noWind();
+                    offsetter = WindOffsetter.NoWind();
                 }
 
-                if (largestonec1.moveBackUntilBaseIsInsideStoneAndShrinkRadiusIfNecessary(worldgenlevel, offsetter)) {
-                    largestonec1.placeBlocks(worldgenlevel, randomsource, offsetter, cfg.BlockState.BlockState);
+                if (largestonec1.MoveBackUntilBaseIsInsideStoneAndShrinkRadiusIfNecessary(worldgenlevel, offsetter)) {
+                    largestonec1.PlaceBlocks(worldgenlevel, randomsource, offsetter, cfg.BlockState.BlockState);
                 }
 
-                if (largestonec2.moveBackUntilBaseIsInsideStoneAndShrinkRadiusIfNecessary(worldgenlevel, offsetter)) {
-                    largestonec2.placeBlocks(worldgenlevel, randomsource, offsetter, cfg.BlockState.BlockState);
+                if (largestonec2.MoveBackUntilBaseIsInsideStoneAndShrinkRadiusIfNecessary(worldgenlevel, offsetter)) {
+                    largestonec2.PlaceBlocks(worldgenlevel, randomsource, offsetter, cfg.BlockState.BlockState);
                 }
 
                 return true;
             }
         }
         return false;
-    }
-
-    private static LargeStoneColumn MakeColumn(BlockPos root, boolean pointingUp, RandomSource random, int radius, FloatProvider bluntnessBase, FloatProvider scaleBase) {
-        return new LargeStoneColumn(root, pointingUp, radius, bluntnessBase.sample(random), scaleBase.sample(random));
     }
 
     /*

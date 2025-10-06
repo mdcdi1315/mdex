@@ -104,7 +104,7 @@ public abstract class ModdedFeatureConfiguration
         {
             if (!Balm.isModLoaded(mod)) {
                 STATE_AddFlag(STATE_MODLIST_IS_INVALID);
-                if (MDEXBalmLayer.DebugFeatureConfigurations)
+                if (MDEXBalmLayer.LoggingFlags.Feature())
                 {
                     MDEXBalmLayer.LOGGER.warn("Feature configuration of type {} will not be applied to the current world because the mod named as '{}' is not present in the mod lifecycle." , getClass().getName() , mod);
                 }
@@ -120,7 +120,7 @@ public abstract class ModdedFeatureConfiguration
     private void DestroyConfigurationState()
     {
         try {
-            if (MDEXBalmLayer.DebugFeatureConfigurations)
+            if (MDEXBalmLayer.LoggingFlags.Feature())
             {
                 MDEXBalmLayer.LOGGER.info("Destroying invalid config class instance named as {}" , getClass().getName());
             }
@@ -185,7 +185,7 @@ public abstract class ModdedFeatureConfiguration
     {
         try {
             if (STATE_HasFlag(STATE_IS_COMPILED)) { return; }
-            if (MDEXBalmLayer.DebugFeatureConfigurations)
+            if (MDEXBalmLayer.LoggingFlags.Feature())
             {
                 MDEXBalmLayer.LOGGER.info("Attempting to compile DCO {} with hash code {}." , getClass().getName() , hashCode());
             }
@@ -197,7 +197,7 @@ public abstract class ModdedFeatureConfiguration
                 return;
             }
             STATE_AddFlag(STATE_IS_COMPILED);
-            if (MDEXBalmLayer.DebugFeatureConfigurations)
+            if (MDEXBalmLayer.LoggingFlags.Feature())
             {
                 MDEXBalmLayer.LOGGER.info("DCO with hash code {} succeeded with compilation." , hashCode());
             }
@@ -234,7 +234,7 @@ public abstract class ModdedFeatureConfiguration
     {
         if (STATE_HasFlag(STATE_IS_INVALID)) { return; }
         STATE_AddFlag(STATE_IS_INVALID);
-        if (MDEXBalmLayer.DebugFeatureConfigurations) {
+        if (MDEXBalmLayer.LoggingFlags.Feature()) {
             StringBuilder sb = StackWalker.getInstance().walk((Stream<StackWalker.StackFrame> s) -> {
                 StringBuilder sbi = new StringBuilder(2048);
                 s.limit(8).forEach(

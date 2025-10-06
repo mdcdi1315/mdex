@@ -12,6 +12,7 @@ public final class PlaceOnlyOncePlacementModifier
     private boolean notplaced;
 
     public PlaceOnlyOncePlacementModifier() {
+        Compile();
         notplaced = true;
     }
 
@@ -30,7 +31,7 @@ public final class PlaceOnlyOncePlacementModifier
     }
 
     @Override
-    public AbstractModdedPlacementModifierType<? extends AbstractModdedPlacementModifier> type() {
+    public AbstractModdedPlacementModifierType<? extends AbstractModdedPlacementModifier> GetType() {
         return PlaceOnlyOncePlacementModifierType.INSTANCE;
     }
 }

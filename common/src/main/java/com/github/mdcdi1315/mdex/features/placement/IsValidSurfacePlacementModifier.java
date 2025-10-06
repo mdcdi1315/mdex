@@ -15,8 +15,8 @@ import java.util.stream.Stream;
 public final class IsValidSurfacePlacementModifier
     extends AbstractModdedPlacementModifier
 {
-    public IsValidSurfacePlacementModifier()
-    {
+    public IsValidSurfacePlacementModifier() {
+        Compile();
     }
 
     @Override
@@ -35,7 +35,7 @@ public final class IsValidSurfacePlacementModifier
     }
 
     @Override
-    public AbstractModdedPlacementModifierType<IsValidSurfacePlacementModifier> type() {
+    public AbstractModdedPlacementModifierType<IsValidSurfacePlacementModifier> GetType() {
         return IsValidSurfacePlacementModifierType.INSTANCE;
     }
 }

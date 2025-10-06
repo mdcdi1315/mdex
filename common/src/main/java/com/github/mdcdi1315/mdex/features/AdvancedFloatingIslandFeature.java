@@ -4,6 +4,7 @@ import com.github.mdcdi1315.DotNetLayer.System.Predicate;
 
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
+import com.github.mdcdi1315.mdex.block.blockstateproviders.BlockStateProviderContext;
 import com.github.mdcdi1315.mdex.features.config.AdvancedFloatingIslandConfiguration;
 import com.github.mdcdi1315.mdex.features.floatingisland.AdvancedCompilableIslandLayer;
 import com.github.mdcdi1315.mdex.features.floatingisland.FloatingIslandLayerDimensions;
@@ -95,27 +96,28 @@ public final class AdvancedFloatingIslandFeature
         int wz = layer.Randomized_Z.sample(rs);
         int wx = layer.Randomized_X.sample(rs);
         BlockPos pos1 , pos2;
+        var providercontext = new BlockStateProviderContext(level , rs , layerpos);
         // Place the central block first.
-        FeaturePlacementUtils.SafeSetBlock(level , layerpos , layer.Provider.GetBlockState(level , rs , layerpos) , predicate);
+        FeaturePlacementUtils.SafeSetBlock(level , layerpos , layer.Provider.GetBlockState(providercontext) , predicate);
         // Modify Z and expand the blocks there.
         for (int Z = 1; Z < wz; Z++)
         {
             pos1 = layerpos.offset(0 , 0 , Z);
             pos2 = layerpos.offset(0 , 0 , -Z);
-            FeaturePlacementUtils.SafeSetBlock(level , pos1 , layer.Provider.GetBlockState(level , rs , pos1) , predicate);
-            FeaturePlacementUtils.SafeSetBlock(level , pos2 , layer.Provider.GetBlockState(level , rs , pos2) , predicate);
+            FeaturePlacementUtils.SafeSetBlock(level , pos1 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pos1)) , predicate);
+            FeaturePlacementUtils.SafeSetBlock(level , pos2 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pos2)) , predicate);
             BlockPos pzx1 , pzx2;
             // Expand the block column by Z_WIDTH / 2.
             for (int ZX = wz / 2; ZX > 0; ZX--)
             {
                 pzx1 = pos1.offset(ZX , 0 , 0);
-                FeaturePlacementUtils.SafeSetBlock(level , pzx1 , layer.Provider.GetBlockState(level, rs , pzx1) , predicate);
+                FeaturePlacementUtils.SafeSetBlock(level , pzx1 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pzx1)) , predicate);
                 pzx1 = pos1.offset(-ZX , 0 , 0);
-                FeaturePlacementUtils.SafeSetBlock(level , pzx1 , layer.Provider.GetBlockState(level, rs , pzx1) , predicate);
+                FeaturePlacementUtils.SafeSetBlock(level , pzx1 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pzx1)) , predicate);
                 pzx2 = pos2.offset(ZX , 0 , 0);
-                FeaturePlacementUtils.SafeSetBlock(level , pzx2 , layer.Provider.GetBlockState(level, rs , pzx2) , predicate);
+                FeaturePlacementUtils.SafeSetBlock(level , pzx2 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pzx2)) , predicate);
                 pzx2 = pos2.offset(-ZX , 0 , 0);
-                FeaturePlacementUtils.SafeSetBlock(level , pzx2 , layer.Provider.GetBlockState(level, rs , pzx2) , predicate);
+                FeaturePlacementUtils.SafeSetBlock(level , pzx2 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pzx2)) , predicate);
             }
         }
         // Modify X and expand also the blocks.
@@ -123,20 +125,20 @@ public final class AdvancedFloatingIslandFeature
         {
             pos1 = layerpos.offset(X , 0 , 0);
             pos2 = layerpos.offset(-X , 0 , 0);
-            FeaturePlacementUtils.SafeSetBlock(level , pos1 , layer.Provider.GetBlockState(level, rs , pos1) , predicate);
-            FeaturePlacementUtils.SafeSetBlock(level , pos2 , layer.Provider.GetBlockState(level, rs , pos2) , predicate);
+            FeaturePlacementUtils.SafeSetBlock(level , pos1 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pos1)) , predicate);
+            FeaturePlacementUtils.SafeSetBlock(level , pos2 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pos2)) , predicate);
             BlockPos pxz1 , pxz2;
             // Expand the block column by X_WIDTH / 2.
             for (int XZ = wx / 2; XZ > 0; XZ--)
             {
                 pxz1 = pos1.offset(0 , 0 , XZ);
-                FeaturePlacementUtils.SafeSetBlock(level , pxz1 , layer.Provider.GetBlockState(level, rs , pxz1) , predicate);
+                FeaturePlacementUtils.SafeSetBlock(level , pxz1 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pxz1)) , predicate);
                 pxz1 = pos1.offset(0 , 0 , -XZ);
-                FeaturePlacementUtils.SafeSetBlock(level , pxz1 , layer.Provider.GetBlockState(level, rs , pxz1) , predicate);
+                FeaturePlacementUtils.SafeSetBlock(level , pxz1 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pxz1)) , predicate);
                 pxz2 = pos2.offset(0 , 0 , XZ);
-                FeaturePlacementUtils.SafeSetBlock(level , pxz2 , layer.Provider.GetBlockState(level, rs , pxz2) , predicate);
+                FeaturePlacementUtils.SafeSetBlock(level , pxz2 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pxz2)) , predicate);
                 pxz2 = pos2.offset(0 , 0 , -XZ);
-                FeaturePlacementUtils.SafeSetBlock(level , pxz2 , layer.Provider.GetBlockState(level, rs , pxz2) , predicate);
+                FeaturePlacementUtils.SafeSetBlock(level , pxz2 , layer.Provider.GetBlockState(providercontext.WithNewPosition(pxz2)) , predicate);
             }
         }
         return new FloatingIslandLayerDimensions(wx , wz);

@@ -29,7 +29,7 @@ public final class ModdedSpringFeature
             return false;
         } else {
             BlockState blockstate = worldgenlevel.getBlockState(blockpos);
-            if (BlockUtils.ReferentIsAirBlock(blockstate) || BlockUtils.IsABlockFromListUnsafe(vbs, blockstate))
+            if (BlockUtils.ReferentIsAirBlockUnsafe(blockstate) || BlockUtils.IsABlockFromListUnsafe(vbs, blockstate))
             {
                 byte j = 0, k = 0;
                 if (BlockUtils.IsABlockFromListUnsafe(vbs, worldgenlevel.getBlockState(blockpos.west()))) {

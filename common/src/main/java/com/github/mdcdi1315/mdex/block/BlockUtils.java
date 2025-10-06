@@ -6,9 +6,9 @@ import com.github.mdcdi1315.DotNetLayer.System.Runtime.CompilerServices.Extensio
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
 
 import com.github.mdcdi1315.mdex.util.BlockNotFoundException;
+import com.github.mdcdi1315.mdex.util.FluidNotFoundException;
 import com.github.mdcdi1315.mdex.util.BlockPropertyNotFoundException;
 
-import com.github.mdcdi1315.mdex.util.FluidNotFoundException;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,6 +16,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.resources.ResourceLocation;
@@ -30,12 +31,17 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.ToIntFunction;
 
 /**
  * Block utilities class. <br />
  * This class was created for abstracting how individual features of the mod should interact with the world blocks. <br />
- * This is intended to be a stable API, because Minecraft implementation details do continually change, thus this makes it easy to port to newer versions.
+ * This is intended to be a stable API, because Minecraft implementation details do continually change, thus this makes it easy to port to newer versions. <br /> <br />
+ * Notes about the unsafe variants: <br />
+ * The unsafe counterparts of most methods are provided for performance considerations only. <br />
+ * During your initial development and testing you should use the normal methods to detect bugs easily. <br />
+ * After you have stabilized the code you can replace the calls with their unsafe variants to skip detecting common programmer mistakes.
  */
 @Extension
 @SuppressWarnings("unused")
@@ -62,17 +68,32 @@ public final class BlockUtils
      * Gets a value whether this block instance represents a solid block.
      * @param b The block to test for solidness.
      * @return A value whether the block passed is, in fact, solid. <br /> Will additionally return {@code false} if {@code b} is {@code null}.
+     * @see BlockUtils#ReferentIsSolidBlock(BlockState)
      */
     @Extension
     public static boolean IsSolidBlock(Block b) {
-        if (b == null) { return false; }
-        return !(b instanceof AirBlock);
+        return b != null && !(b instanceof AirBlock);
     }
 
+    /**
+     * Gets a value whether the block that the passed {@link BlockState} represents a solid block.
+     * @param bs The {@link BlockState} instance to test.
+     * @return A value whether the block state passed is a solid block or not.
+     * @see BlockUtils#ReferentIsSolidBlockUnsafe(BlockState)
+     */
     @Extension
-    public static boolean ReferentIsSolidBlock(BlockState bs)
-    {
-        if (bs == null) { return false; }
+    public static boolean ReferentIsSolidBlock(BlockState bs) {
+        return bs != null && !bs.isAir();
+    }
+
+    /**
+     * Gets a value whether the block that the passed {@link BlockState} represents a solid block.
+     * @param bs The {@link BlockState} instance to test.
+     * @return A value whether the block state passed is a solid block or not.
+     * @since 1.5.0
+     */
+    @Extension
+    public static boolean ReferentIsSolidBlockUnsafe(BlockState bs) {
         return !bs.isAir();
     }
 
@@ -80,12 +101,11 @@ public final class BlockUtils
      * Gets a value whether the block that the passed {@link BlockState} represents is an air block, modded or not.
      * @param bs The {@link BlockState} instance to test.
      * @return A value whether the block state passed is air or not.
+     * @see BlockUtils#ReferentIsAirBlockUnsafe(BlockState)
      */
     @Extension
-    public static boolean ReferentIsAirBlock(BlockState bs)
-    {
-        if (bs == null) { return false; }
-        return ReferentIsAirBlockUnsafe(bs);
+    public static boolean ReferentIsAirBlock(BlockState bs) {
+        return bs != null && ReferentIsAirBlockUnsafe(bs);
     }
 
     /**
@@ -99,16 +119,136 @@ public final class BlockUtils
     }
 
     /**
+     * Gets a value whether the specified block state is empty (air), water or a lava block only.
+     * @param state The block state to test.
+     * @return A value whether {@code state} is air, water or lava. {@code false} is additionally returned if {@code state} is {@code null}.
+     * @since 1.5.0
+     */
+    @Extension
+    public static boolean ReferentIsEmptyOrWaterOrLava(BlockState state) {
+        return state != null && ReferentIsEmptyOrWaterOrLavaUnsafe(state);
+    }
+
+    /**
+     * Gets a value whether the specified block state is empty (air), water or a lava block only.
+     * @param state The block state to test.
+     * @return A value whether {@code state} is air, water or lava.
+     * @since 1.5.0
+     */
+    @Extension
+    public static boolean ReferentIsEmptyOrWaterOrLavaUnsafe(@DisallowNull BlockState state) {
+        return (state.isAir() || state.is(Blocks.WATER) || state.is(Blocks.LAVA));
+    }
+
+    /**
+     * Gets a value whether the specified block state is empty (air) or a water block only.
+     * @param state The block state to test.
+     * @return A value whether {@code state} is air or water. {@code false} is additionally returned if {@code state} is {@code null}.
+     * @since 1.5.0
+     */
+    @Extension
+    public static boolean ReferentIsEmptyOrWater(BlockState state) {
+        return state != null && ReferentIsEmptyOrWaterUnsafe(state);
+    }
+
+    /**
+     * Gets a value whether the specified block state is empty (air) or a water block only.
+     * @param state The block state to test.
+     * @return A value whether {@code state} is air or water.
+     * @since 1.5.0
+     */
+    @Extension
+    public static boolean ReferentIsEmptyOrWaterUnsafe(@DisallowNull BlockState state) {
+        return state.isAir() || state.is(Blocks.WATER);
+    }
+
+    /**
+     * Gets a value whether the block at the specified position is empty (air) or water.
+     * @param level The read-only level to read the block position from.
+     * @param position The position where you want to test. Specifying null passes the first block in the first chunk (that is, 0 , 0 , 0).
+     * @return The test result.
+     * @since 1.5.0
+     * @exception ArgumentNullException {@code level} was {@code null}.
+     * @see BlockUtils#BlockIsEmptyOrWaterUnsafe(BlockGetter, BlockPos)
+     */
+    public static boolean BlockIsEmptyOrWater(BlockGetter level, BlockPos position)
+        throws ArgumentNullException
+    {
+        ArgumentNullException.ThrowIfNull(level , "level");
+        return BlockIsEmptyOrWaterUnsafe(level, position);
+    }
+
+    /**
+     * Gets a value whether the block at the specified position is empty (air) or water.
+     * @param level The read-only level to read the block position from.
+     * @param position The position where you want to test. Specifying null passes the first block in the first chunk (that is, 0 , 0 , 0).
+     * @return The test result.
+     * @since 1.5.0
+     */
+    public static boolean BlockIsEmptyOrWaterUnsafe(BlockGetter level, BlockPos position)
+    {
+        if (position == null) {
+            position = new BlockPos(0, 0,0);
+        }
+        return ReferentIsEmptyOrWaterUnsafe(level.getBlockState(position));
+    }
+
+    /**
+     * Gets a value whether the block at the specified position is empty (air), water or a lava block only.
+     * @param level The read-only level to read the block position from.
+     * @param position The position where you want to test. Specifying null passes the first block in the first chunk (that is, 0 , 0 , 0).
+     * @return The test result.
+     * @since 1.5.0
+     * @exception ArgumentNullException {@code level} was {@code null}.
+     */
+    public static boolean BlockIsAirOrWaterOrLava(BlockGetter level, BlockPos position)
+        throws ArgumentNullException
+    {
+        ArgumentNullException.ThrowIfNull(level , "level");
+        return BlockIsAirOrWaterOrLavaUnsafe(level, position);
+    }
+
+    /**
+     * Gets a value whether the block at the specified position is empty (air), water or a lava block only.
+     * @param level The read-only level to read the block position from.
+     * @param position The position where you want to test. Specifying null passes the first block in the first chunk (that is, 0 , 0 , 0).
+     * @return The test result.
+     * @since 1.5.0
+     */
+    public static boolean BlockIsAirOrWaterOrLavaUnsafe(BlockGetter level, BlockPos position)
+    {
+        if (position == null) {
+            position = new BlockPos(0 , 0 , 0);
+        }
+        return ReferentIsEmptyOrWaterOrLavaUnsafe(level.getBlockState(position));
+    }
+
+    /**
      * Gets a value whether the block at the specified position is solid and the block above one is air block. <br />
      * Used by some features that want to enforce that the feature should be placed at a surface.
      * @param level The read-only level to read block positions from.
      * @param position The position where you want to test. Specifying null passes the first block in the first chunk (that is, 0 , 0 , 0).
      * @return The test result.
+     * @exception ArgumentNullException {@code level} was {@code null}.
+     * @see BlockUtils#BlockIsSolidAndAboveIsAirUnsafe(BlockGetter, BlockPos) 
      */
     public static boolean BlockIsSolidAndAboveIsAir(BlockGetter level , BlockPos position)
         throws ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(level , "level");
+        return BlockIsSolidAndAboveIsAirUnsafe(level , position);
+    }
+
+    /**
+     * Gets a value whether the block at the specified position is solid and the block above one is air block. <br />
+     * Used by some features that want to enforce that the feature should be placed at a surface.
+     * @param level The read-only level to read block positions from.
+     * @param position The position where you want to test. Specifying null passes the first block in the first chunk (that is, 0 , 0 , 0).
+     * @return The test result.
+     * @since 1.5.0
+     */
+    public static boolean BlockIsSolidAndAboveIsAirUnsafe(BlockGetter level , BlockPos position)
+    {
         if (position == null) {
             position = new BlockPos(0 , 0 , 0);
         }
@@ -320,7 +460,11 @@ public final class BlockUtils
         throws BlockNotFoundException , ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(location , "location");
-        return BuiltInRegistries.BLOCK.getOptional(location).orElseThrow(() -> new BlockNotFoundException(location));
+        Optional<Block> o = BuiltInRegistries.BLOCK.getOptional(location);
+        if (o.isEmpty()) {
+            throw new BlockNotFoundException(location);
+        }
+        return o.get();
     }
 
     /**
@@ -334,7 +478,11 @@ public final class BlockUtils
             throws FluidNotFoundException , ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(location , "location");
-        return BuiltInRegistries.FLUID.getOptional(location).orElseThrow(() -> new FluidNotFoundException(location));
+        Optional<Fluid> f = BuiltInRegistries.FLUID.getOptional(location);
+        if (f.isEmpty()) {
+            throw new FluidNotFoundException(location);
+        }
+        return f.get();
     }
 
     /**

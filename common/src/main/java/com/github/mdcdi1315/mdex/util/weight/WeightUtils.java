@@ -32,7 +32,7 @@ public final class WeightUtils
             throws ArgumentException
     {
         if (totalWeight < 0) {
-            throw Util.pauseInIde(new ArgumentException("Negative total weight in getRandomItem"));
+            throw Util.pauseInIde(new ArgumentException("Negative total weight in GetRandomItem"));
         } else if (totalWeight == 0) {
             return Optional.empty();
         } else {

@@ -304,11 +304,9 @@ public final class FeaturePlacementUtils
 
     /**
      * Places entities around the specified block position.
-     * The entity to be spawned is selected once then it is randomly generated up to maxtimes parameter.
-     * <p>
-     *     Remarks: <br />
-     *     The entities are placed on the world using the mob spawn type {@link MobSpawnType#CHUNK_GENERATION}.
-     * </p>
+     * The entity to be spawned is selected once then it is randomly generated up to {@code maxtimes} parameter. <br /> <br />
+     * Remarks: <br />
+     * The entities are placed on the world using the mob spawn type {@link MobSpawnType#CHUNK_GENERATION}.
      * @param level The {@link ServerLevelAccessor} object to apply the entities to.
      * @param basepos The block position where to place the entities to.
      * @param rs The {@link RandomSource} instance to use for randomization.

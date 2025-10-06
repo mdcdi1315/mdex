@@ -77,7 +77,7 @@ public final class BiomeEntitySpawnEntry
 
     public static Codec<BiomeEntitySpawnEntry> GetCodec()
     {
-        var countcodec = CodecUtils.ByteRange(1 , 255);
+        var countcodec = CodecUtils.ByteRange(1 , 127);
         return CodecUtils.CreateCodecDirect(
                 CompilableEntityType.GetCodec().fieldOf("entity_id").forGetter((c) -> c.Entity),
                 countcodec.fieldOf("min_count").forGetter((c) -> c.min_inclusive),

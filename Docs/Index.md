@@ -2,7 +2,7 @@
 ## Datapack developing with Mining Dimension: EX mod
 
 In order to ease developing with the Minecraft's datapack features, plus including performance optimizations,
-it defines and/or modifies some aspects of the game itself.
+the mod defines and/or modifies some aspects of the game itself.
 
 These alternatives are recommended due to the performance optimizations that most of them include.
 

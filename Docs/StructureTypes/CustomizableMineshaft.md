@@ -23,11 +23,17 @@ object(AbstractStructure), required, since_mod_version="1.3.0"
     "fence_state": object(CompilableBlockState), required
     "torch_state": object(CompilableBlockState), required
     "wood_state": object(CompilableBlockState), required
+    "minecart_loot_table": resourcelocation(LootTable), optional, default_value="minecraft:abandoned_minseshaft"
+    "minecart_placement_probability": float, range=[0, 1], optional, default_value=0.01
+    "starting_y_level": <HeightProvider>, optional, default_value={ "type": "minecraft:constant", "value": { "absolute": 50 } }, since_mod_version="1.4.0"
 }
 ~~~
 
 > [!NOTE]
 Structure types do inherently get and other fields too, common for all structure types. Those fields are documented [here](https://minecraft.wiki/w/Structure_definition#JSON_format).
+
+> [!NOTE]
+The `starting_y_level` field was first defined in 1.4.0 version of the mod. Defining it in 1.3.0 will have no effect.
 
 Fields:
 
@@ -39,5 +45,9 @@ Fields:
 | fence_state  | Defines a block state to use for defining the fence used for shafts and bridges.                                                                                    |
 | torch_state  | Defines a block state to use for defining the torch that is placed randomly on some shafts.                                                                         |
 | wood_state   | Defines a block state to use for bridge columns.                                                                                                                    |
+| starting_y_level | Defines the height where the mineshaft room should be generated to. Optional and defaults to Y=50. This is a [height provider](https://minecraft.wiki/w/Template:Nbt_inherit/height_provider/template). |
+| minecart_loot_table | Defines the loot table to use for all generated minecarts in the mineshaft's corridors, if any. Optional and defaults to the loot table that usual mineshaft structures make use of, which is `minecraft:abandoned_mineshaft`. |
+| minecart_placement_probability | Defines the probability of generating a minecart with the loot defined in the `minecart_loot_table` field for each corridor. Optional and defaults to the value that is used for usual abandoned mineshaft structures, which is 0.01 . | 
+
 
 

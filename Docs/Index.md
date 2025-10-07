@@ -17,4 +17,4 @@ For more information however, you can visit [this wiki](https://minecraft.wiki/w
 | Mod-provided structure processors           | [Link](./StructureProcessors/Index.md) |
 | The Biome Spawn Additions datapack registry | [Link](./BiomeSpawnAdditions/Index.md) |
 | Mod-provided structure types                | [Link](./StructureTypes/Index.md)      |
-
+| Mod-provided feature placement modifiers | [Link](./FeaturePlacementModifierTypes/Index.md) |

@@ -30,17 +30,18 @@ object(Type), required // <-- This must always exist as is. Only the 'Type' must
 }
 ~~~
 
-Supported types defined by the syntax and supported:
+Supported types defined by the syntax:
 
-| Type                        | Syntax                                                                                                                                                                                                              |
-|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| string                      | A simple JSON string value.                                                                                                                                                                                         |
-| int                         | A simple JSON integer value.                                                                                                                                                                                        |
-| float , double              | A simple JSON floating-point value.                                                                                                                                                                                 |
-| resourcelocation(ClassName) | A Minecraft resource location ID. It's backing type is defined as the `ClassName` parameter. The value of this type is always a string.                                                                             |
-| list&lt;NestedType&gt;      | A simple JSON array of the specified type. The `NestedType` must be replaced with another one of the members of this table. Containing multiple and nested arrays is also possible.                                 |
-| object(ClassType)           | Another serialized JSON object of the specified class type defined in the `ClassType` parameter. The object's fields can be defined by using {} below the field declaration if deemed necessary by the implementer. |
-| &lt;AlreadyDefinedType&gt;  | Specifies another serialized JSON object type. This is like an 'external reference'.                                                                                                                                |
+| Type                                                   | Syntax                                                                                                                                                                                                              |
+|--------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| string                                                 | A simple JSON string value.                                                                                                                                                                                         |
+| int                                                    | A simple JSON integer value.                                                                                                                                                                                        |
+| float , double                                         | A simple JSON floating-point value.                                                                                                                                                                                 |
+| resourcelocation(ClassName)                            | A Minecraft resource location ID. It's backing type is defined as the `ClassName` parameter. The value of this type is always a string.                                                                             |
+| list&lt;NestedType&gt;                                 | A simple JSON array of the specified type. The `NestedType` must be replaced with another one of the members of this table. Containing multiple and nested arrays is also possible.                                 |
+| object(ClassType)                                      | Another serialized JSON object of the specified class type defined in the `ClassType` parameter. The object's fields can be defined by using {} below the field declaration if deemed necessary by the implementer. |
+| &lt;AlreadyDefinedType&gt;                             | Specifies another serialized JSON object type. This is like an 'external reference'.                                                                                                                                |
+| either&lt;AlreadyDefinedType1, AlreadyDefinedType2&gt; | Specifies that an object can be one of the types defined in the either construct. Note: both types cannot be supported simutaneously.                                                                               |
 
 Supported constraints for each field type. Multiple constraints must be delimited with commas.
 

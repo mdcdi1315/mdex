@@ -97,6 +97,29 @@ This is a good example of that:
 }
 ~~~
 
+For 1.5.0 versions of the mod and later the above example becomes:
+~~~JSON
+{
+    "type": "mdex:weighted_state_provider",
+    "entries": [
+        {
+            "weight": 10,
+			"Name": "minecraft:chest",
+			"Properties": {
+				"facing": "west"
+			}
+        }, 
+        {
+            "weight": 20,
+			"Name": "minecraft:chest",
+			"Properties": {
+				"facing": "east"
+			}
+        }
+    ]
+}
+~~~
+
 When the feature will want to generate something using this provider,
 the provider will roll a random value and the random value will be mapped to
 one of the list's entries. That entry will be returned instead.
@@ -112,7 +135,7 @@ that can help you to achieve controlled randomization over which block states ar
 by just modifying the noise values.
 
 These providers do also allow to load their noise data from an external noise file,
-allowing for an hierarchical organization of your noise data (or for reusability, why not?)
+allowing for a hierarchical organization of your noise data (or for reusability, why not?)
 
 There are multiple variants of noise-based state providers,
 but I will only describe the most basic one.
@@ -148,6 +171,45 @@ Notice the difference in how the states are defined: no weights are required sin
 
 Try also to experiment with the noise values to achieve the desired result; you can also use [this visualization tool](https://misode.github.io/worldgen/noise) to see when a block from the list will be placed or not.
 
+### The rule test-based state provider
+
+This state provider provides a similar syntax to how the ore feature targets are defined.
+
+Useful for cases where you want to apply specific blocks in specific stone types.
+
+For this state provider to work, however, it requires and a default, 'fallback' block state to use if all the rule tests defined have failed.
+
+Here is an example of using it:
+
+~~~JSON
+{
+    "type": "mdex:rule_test_based_provider",
+	"fallback_state": {
+        "Name": "minecraft:stone"
+    },
+    "targets": [
+		{
+            "state": {
+                "Name": "minecraft:granite"
+            },
+            "target": {
+				"predicate_type": "minecraft:tag_match",
+				"tag": "minecraft:stone_ore_replaceables"
+            }
+        },
+		{
+            "state": {
+                "Name": "mdex:granite"
+            },
+            "target": {
+				"predicate_type": "minecraft:tag_match",
+				"tag": "mdcdi1315_md:hardstone_ore_replaceables"
+            }
+        }
+    ]
+}
+~~~
+
 ### Advanced block state providers
 
 There are also and some other providers that can manipulate block states on their own.
@@ -160,7 +222,7 @@ This special kind of block provider is a simple state provider that can place pi
 
 You also do normally define any other properties you need to through the `Properties` object.
 
-For the provider to work, the block must support the `axis` property. If the property is not defined, the game will possibly panic, so be careful with that!
+For the provider to work, the block must support the `axis` property. If the property is not defined, the object referencing this block state provider will fail compilation.
 
 A prime example of such blocks are the log blocks.
 

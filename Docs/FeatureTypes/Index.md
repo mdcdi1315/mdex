@@ -10,6 +10,8 @@ allowing them to only load when specific mods are loaded, if required.
 | Feature Type              | Link                                                                                                                                                            |
 |---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Customizable Monster Room | [Link](CustomizableMonsterRoom.md)                                                                                                                              |
-| Floating Island           | [Simple](SimpleFloatingIsland.md) [Advanced](AdvancedFloatingIsland.md)                                                                                         |
-| Modded Geode              | [Link](ModdedGeode.md)                                                                                                                                          |
-| Modded Ore                | [Simple](ModdedOre.md) [Legacy](ModdedLegacyOre.md) [Scattered](ModdedScatteredOre.md) [Ore Vein](OreVein.md) [Noise-Based Generation Ore](NoiseGenBasedOre.md) |
+| Floating Island                     | [Simple](SimpleFloatingIsland.md) [Advanced](AdvancedFloatingIsland.md)                                                                                         |
+| Modded Geode					   | [Link](ModdedGeode.md)                                                                                                                                          |
+| Modded Ore                           | [Simple](ModdedOre.md) [Legacy](ModdedLegacyOre.md) [Scattered](ModdedScatteredOre.md) [Ore Vein](OreVein.md) [Noise-Based Generation Ore](NoiseGenBasedOre.md) |
+| Modded Spring                      | [Link](ModdedSpring.md) |
+| Modded Vegetation Patch     | [Link](ModdedVegetationPatch.md) |

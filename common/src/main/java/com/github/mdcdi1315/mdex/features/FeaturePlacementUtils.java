@@ -206,12 +206,17 @@ public final class FeaturePlacementUtils
         return (BlockState b) -> b.getBlock() instanceof AirBlock;
     }
 
+    /**
+     * Safely sets the specified block state by replacing only when the predicate specified in {@code oldState} parameter passes.
+     * @param level The read-write level to check and safely set the specified block.
+     * @param pos The position where to safely set the specified block.
+     * @param state The state that will replace the current block.
+     * @param oldState The predicated that must pass in order for the block to be able to be changed.
+     * @return A value whether the block was successfully replaced at {@code pos}.
+     */
     public static boolean SafeSetBlock(LevelAccessor level, BlockPos pos, BlockState state, Predicate<BlockState> oldState)
     {
-        if (oldState.predicate(level.getBlockState(pos))) {
-            return level.setBlock(pos, state, 2);
-        }
-        return false;
+        return oldState.predicate(level.getBlockState(pos)) && level.setBlock(pos, state, 2);
     }
 
     /**

@@ -46,8 +46,4 @@ public final class SmallStructureConfiguration
         // Not any compilation data are required, return
     }
 
-    @Override
-    protected void invalidateUntransformedFields() {
-
-    }
 }

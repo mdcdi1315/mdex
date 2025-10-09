@@ -35,8 +35,4 @@ public final class ModdedSimpleBlockFeatureConfiguration
         }
     }
 
-    @Override
-    protected void invalidateUntransformedFields() {
-
-    }
 }

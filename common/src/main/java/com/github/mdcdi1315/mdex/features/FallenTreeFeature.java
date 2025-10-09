@@ -11,8 +11,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.core.Direction;
 import com.mojang.serialization.Codec;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -32,18 +32,15 @@ public final class FallenTreeFeature
     {
         // Check that the current block is solid, and it's top one is air.
 
+        RandomSource rs = fpc.random();
         WorldGenLevel wgl = fpc.level();
         BlockPos startpos = fpc.origin();
         Block log = fpc.config().LogTypeProvider;
         Predicate<BlockState> replaceable = FeaturePlacementUtils.IsReplaceable(BlockTags.FEATURES_CANNOT_REPLACE);
 
-        if (!BlockUtils.BlockIsSolidAndAboveIsAir(wgl , startpos)) { return false; }
+        if (!BlockUtils.BlockIsSolidAndAboveIsAirUnsafe(wgl , startpos)) { return false; }
 
-        // Calculate the size of the fallen trunk
-        int ts = fpc.config().FallenTrunkSize.sample(fpc.random());
-
-        // Get a random direction.
-        Direction fd = Extensions.GetRandomDirectionExcludingUpDown(fpc.random());
+        startpos = startpos.above();
 
         // Place the first log. This will always look to the world's y coordinate.
         if (!FeaturePlacementUtils.SafeSetBlock(wgl , startpos , log.defaultBlockState().setValue(RotatedPillarBlock.AXIS , Direction.Axis.Y) , replaceable))
@@ -51,20 +48,21 @@ public final class FallenTreeFeature
             return false;
         }
 
-        startpos = startpos.relative(fd , 1);
+        // Get a random direction.
+        Direction fd = Extensions.GetRandomDirectionExcludingUpDown(rs);
 
-        // Place the air block
-        if (!FeaturePlacementUtils.SafeSetBlock(wgl , startpos , Blocks.AIR.defaultBlockState() , replaceable))
-        {
-            return false;
-        }
-
-        startpos = startpos.relative(fd , 1);
         byte placed = 0; // Number of fallen logs placed.
+
+        // Calculate the size of the fallen trunk
+        int ts = fpc.config().FallenTrunkSize.sample(rs);
+
+        // Compute fallen trunk start position.
+        startpos = startpos.relative(fd , 2);
 
         // Start position has been defined, we can now proceed with placement.
 
         BlockPos temp;
+        // The below is the block state to use for placing the log.
         BlockState computedstate = log.defaultBlockState().setValue(RotatedPillarBlock.AXIS , fd.getAxis());
         for (int I = 0; I < ts; I++)
         {
@@ -72,18 +70,15 @@ public final class FallenTreeFeature
             if (
                     !wgl.getBlockState(temp.below()).isAir() &&
                     FeaturePlacementUtils.SafeSetBlock(wgl, temp , computedstate , replaceable)
-            )
-            {
-                placed++;
-            }
+            ) { placed++; } else { break; }
         }
 
         Holder<PlacedFeature> patch;
 
-        // Place the vegetation patch, if possible
-        if ((patch = fpc.config().VegetationPatch).isBound() && placed >= (ts / 2))
+        // Place the vegetation patch, if possible and if allowed by the probability value
+        if (placed >= (ts / 2) && rs.nextFloat() < fpc.config().VegetationPatchPlacementProbability && (patch = fpc.config().VegetationPatch).isBound())
         {
-            patch.value().place(fpc.level() , fpc.chunkGenerator(), fpc.random() , startpos.relative(fd , ts / 2));
+            patch.value().place(fpc.level() , fpc.chunkGenerator(), fpc.random() , startpos.relative(fd , ts / 2).above());
         }
 
         return placed > 1;

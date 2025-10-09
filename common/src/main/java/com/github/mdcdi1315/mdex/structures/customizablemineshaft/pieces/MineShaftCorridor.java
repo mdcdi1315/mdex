@@ -144,7 +144,7 @@ public final class MineShaftCorridor
 
         if (depth < MineshaftPieces.MAX_DEPTH) {
             if (direction != Direction.NORTH && direction != Direction.SOUTH) {
-                for (int i1 = this.boundingBox.minX() + 3; i1 + 3 <= this.boundingBox.maxX(); i1 += 5)
+                for (int i1 = this.boundingBox.minX() + 3; i1 + 3 <= this.boundingBox.maxX(); i1 += MineshaftPieces.DEFAULT_SHAFT_LENGTH)
                 {
                     switch (random.nextInt(5))
                     {
@@ -157,7 +157,7 @@ public final class MineShaftCorridor
                     }
                 }
             } else {
-                for (int k = this.boundingBox.minZ() + 3; k + 3 <= this.boundingBox.maxZ(); k += 5) {
+                for (int k = this.boundingBox.minZ() + 3; k + 3 <= this.boundingBox.maxZ(); k += MineshaftPieces.DEFAULT_SHAFT_LENGTH) {
                     switch (random.nextInt(5))
                     {
                         case 0:
@@ -260,7 +260,7 @@ public final class MineShaftCorridor
 
     }
 
-    private void placeDoubleLowerOrUpperSupport(WorldGenLevel level, BoundingBox box, int x, int y, int z)
+    private void placeDoubleLowerOrUpperSupport(LevelAccessor level, BoundingBox box, int x, int y, int z)
     {
         BlockState blockstate = settings.WoodState;
         BlockState blockstate1 = settings.PlanksState;
@@ -293,7 +293,7 @@ public final class MineShaftCorridor
 
     }
 
-    private void fillPillarDownOrChainUp(WorldGenLevel level, BlockState state, int x, int y, int z, BoundingBox box) {
+    private void fillPillarDownOrChainUp(LevelAccessor level, BlockState state, int x, int y, int z, BoundingBox box) {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = this.getWorldPos(x, y, z);
         if (box.isInside(blockpos$mutableblockpos)) {
             int i = blockpos$mutableblockpos.getY();
@@ -330,7 +330,7 @@ public final class MineShaftCorridor
 
     }
 
-    private static void fillColumnBetween(WorldGenLevel level, BlockState state, BlockPos.MutableBlockPos pos, int minY, int maxY) {
+    private static void fillColumnBetween(LevelWriter level, BlockState state, BlockPos.MutableBlockPos pos, int minY, int maxY) {
         for (int i = minY; i < maxY; ++i) {
             level.setBlock(pos.setY(i), state, 2);
         }

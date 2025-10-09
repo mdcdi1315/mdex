@@ -41,13 +41,9 @@ public final class MineShaftCrossing
     }
 
     @MaybeNull
-    public static BoundingBox findCrossing(StructurePieceAccessor pieces, RandomSource random, int x, int y, int z, Direction direction) {
-        int i;
-        if (random.nextInt(4) == 0) {
-            i = 6;
-        } else {
-            i = 2;
-        }
+    public static BoundingBox findCrossing(StructurePieceAccessor pieces, RandomSource random, int x, int y, int z, Direction direction)
+    {
+        int i = (random.nextInt(4) == 0) ? 6 : 2;
 
         BoundingBox boundingbox = switch (direction) {
             case SOUTH -> new BoundingBox(-1, 0, 0, 3, i, 4);
@@ -58,7 +54,8 @@ public final class MineShaftCrossing
 
         boundingbox = boundingbox.moved(x , y , z);
 
-        return pieces.findCollisionPiece(boundingbox) != null ? null : boundingbox;
+        // It is faster to check for null rather for the opposite.
+        return pieces.findCollisionPiece(boundingbox) == null ? boundingbox : null;
     }
 
     public void addChildren(StructurePiece piece, StructurePieceAccessor pieces, RandomSource random) {
@@ -90,19 +87,19 @@ public final class MineShaftCrossing
 
         if (this.isTwoFloored) {
             if (random.nextBoolean()) {
-                MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() + 1, this.boundingBox.minY() + 3 + 1, this.boundingBox.minZ() - 1, Direction.NORTH, i);
+                MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() + 1, this.boundingBox.minY() + MineshaftPieces.DEFAULT_SHAFT_HEIGHT + 1, this.boundingBox.minZ() - 1, Direction.NORTH, i);
             }
 
             if (random.nextBoolean()) {
-                MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() - 1, this.boundingBox.minY() + 3 + 1, this.boundingBox.minZ() + 1, Direction.WEST, i);
+                MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() - 1, this.boundingBox.minY() + MineshaftPieces.DEFAULT_SHAFT_HEIGHT + 1, this.boundingBox.minZ() + 1, Direction.WEST, i);
             }
 
             if (random.nextBoolean()) {
-                MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.maxX() + 1, this.boundingBox.minY() + 3 + 1, this.boundingBox.minZ() + 1, Direction.EAST, i);
+                MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.maxX() + 1, this.boundingBox.minY() + MineshaftPieces.DEFAULT_SHAFT_HEIGHT + 1, this.boundingBox.minZ() + 1, Direction.EAST, i);
             }
 
             if (random.nextBoolean()) {
-                MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() + 1, this.boundingBox.minY() + 3 + 1, this.boundingBox.maxZ() + 1, Direction.SOUTH, i);
+                MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() + 1, this.boundingBox.minY() + MineshaftPieces.DEFAULT_SHAFT_HEIGHT + 1, this.boundingBox.maxZ() + 1, Direction.SOUTH, i);
             }
         }
 
@@ -137,7 +134,7 @@ public final class MineShaftCrossing
     }
 
     private void placeSupportPillar(WorldGenLevel level, BoundingBox box, int x, int y, int z, int maxY) {
-        if (BlockUtils.ReferentIsSolidBlock(this.getBlock(level, x, maxY + 1, z, box))) {
+        if (BlockUtils.ReferentIsSolidBlockUnsafe(this.getBlock(level, x, maxY + 1, z, box))) {
             this.generateBox(level, box, x, y, z, x, maxY, z, settings.PlanksState, CAVE_AIR, false);
         }
     }

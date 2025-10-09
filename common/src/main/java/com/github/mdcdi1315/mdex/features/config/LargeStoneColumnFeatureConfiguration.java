@@ -76,10 +76,4 @@ public final class LargeStoneColumnFeatureConfiguration
     protected void compileConfigData() {
         BlockState.Compile();
     }
-
-    @Override
-    protected void invalidateUntransformedFields() {
-        // No untransformed fields exist for this feature config
-        // Only the fields provided by BlockState are transformed.
-    }
 }

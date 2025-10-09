@@ -25,7 +25,7 @@ public final class NoiseGenerationBasedOreFeatureConfiguration
     {
         return CodecUtils.CreateCodecDirect(
                 GetBaseCodec(),
-                SingleTargetBlockState.GetCodec().listOf().fieldOf("targets").forGetter((f) -> f.TargetStates),
+                SingleTargetBlockState.GetListCodec().fieldOf("targets").forGetter((f) -> f.TargetStates),
                 IntProvider.codec(1 , 48).optionalFieldOf("size" , ConstantInt.of(12)).forGetter((f) -> f.Size),
                 IntProvider.codec(1 , 26).optionalFieldOf("y_scale" , ConstantInt.of(2)).forGetter((f) -> f.Y_Scale),
                 NormalNoise.NoiseParameters.CODEC.fieldOf("noise").forGetter((f) -> f.NoiseParameters),
@@ -54,8 +54,4 @@ public final class NoiseGenerationBasedOreFeatureConfiguration
         }
     }
 
-    @Override
-    protected void invalidateUntransformedFields() {
-
-    }
 }

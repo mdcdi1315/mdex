@@ -49,14 +49,13 @@ public abstract class RegistersSubCommandsAbstractCommand
             {
                 b = b.requires(BalmCommands.requirePermission(c));
             }
-            //permissions = null;
+            permissions = null;
         }
         for (var i : commands)
         {
             b = i.RegisterByBuilder(b); // Recursively apply the commands, if needed
         }
-        // We cannot clean up this in 1.20.1 because Minecraft calls this every time a new world is created - check whether this happens in more modern versions too.
-        // commands = null; // Aggressively clean the command array to sweep up any unused mem
+        commands = null; // Aggressively clean the command array to sweep up any unused mem
         return b;
     }
 }

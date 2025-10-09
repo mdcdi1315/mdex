@@ -13,7 +13,7 @@ object(BiomeSpawnAdditions), required, since_mod_version="1.5.0"
 {
     "biomes": either<object(TagKey<Block>), list<resourcelocation(Biome)>>, required
     "modids": list<string>, optional, can_be_empty, default_value=[]
-    "spawners": <BiomeEntitySpawnList>, required, can_be_empty
+    "spawners": either<<BiomeEntitySpawnList>, list<BiomeEntitySpawnList>>, required, can_be_empty
 }
 ~~~
 
@@ -23,7 +23,7 @@ Fields:
 |------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | biomes   | Specifies the biome ID(s) where this biome spawn addition will be applied to. The biome(s) must exist. If a biome tag, all the biomes specified in that tag are used by the object.                                                                                                                                       |
 | modids     | Defines a list of strings that represent mod ID's required in order this object entity entries can be applied to the specified biome.                                                                                                  |
-| spawners   | Defines the object for spawn entry objects. The spawn entry list object syntax is described below.                                                                                                                                             |
+| spawners   | Defines the object or a list of objects for spawn entry objects. The spawn entry list object syntax is described below. Note that the list of objects can be only used in 1.6.0 and later mod versions. |
 
 
 Syntax for a biome spawn entry object list:

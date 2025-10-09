@@ -6,8 +6,14 @@ the mod defines and/or modifies some aspects of the game itself.
 
 These alternatives are recommended due to the performance optimizations that most of them include.
 
-This is *not* a document describing how Minecraft's datapacks do work;
+> [!CAUTION]
+These documents are *not* describing how Minecraft's datapacks do work;
 For more information however, you can visit [this wiki](https://minecraft.wiki/w/Data_pack) instead.
+
+> [!WARNING]
+The JSON examples provided in some topics may not work for all Minecraft versions that the mod is provided for.
+This happens due to the fact that Minecraft's implementation details are changed frequently.
+
 
 | Topic                                       | Link                                   |
 |---------------------------------------------|----------------------------------------|

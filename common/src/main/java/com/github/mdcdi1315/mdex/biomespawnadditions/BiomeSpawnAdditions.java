@@ -1,7 +1,10 @@
 package com.github.mdcdi1315.mdex.biomespawnadditions;
 
-import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
+
+import com.github.mdcdi1315.mdex.util.Extensions;
+import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.mdex.codecs.SingleElementOrListCodec;
 
 import com.mojang.datafixers.util.Either;
 
@@ -18,7 +21,7 @@ public final class BiomeSpawnAdditions
     implements IDisposable
 {
     public List<String> ModIds;
-    public BiomeEntitySpawnList Entries;
+    public List<BiomeEntitySpawnList> Entries;
     public Either<TagKey<Biome> , List<ResourceLocation>> Biomes;
 
     public static Codec<BiomeSpawnAdditions> GetCodec()
@@ -26,12 +29,12 @@ public final class BiomeSpawnAdditions
         return CodecUtils.CreateCodecDirect(
                 Codec.STRING.listOf().optionalFieldOf("modids" , List.of()).forGetter((BiomeSpawnAdditions a) -> a.ModIds),
                 Codec.either(TagKey.hashedCodec(Registries.BIOME) , ResourceLocation.CODEC.listOf()).fieldOf("biomes").forGetter((BiomeSpawnAdditions a) -> a.Biomes),
-                BiomeEntitySpawnList.GetCodec().fieldOf("spawners").forGetter((BiomeSpawnAdditions a) -> a.Entries),
+                new SingleElementOrListCodec<>(BiomeEntitySpawnList.GetCodec()).fieldOf("spawners").forGetter((BiomeSpawnAdditions a) -> a.Entries),
                 BiomeSpawnAdditions::new
         );
     }
 
-    public BiomeSpawnAdditions(List<String> modids, Either<TagKey<Biome> , List<ResourceLocation>> b , BiomeEntitySpawnList entries)
+    public BiomeSpawnAdditions(List<String> modids, Either<TagKey<Biome> , List<ResourceLocation>> b , List<BiomeEntitySpawnList> entries)
     {
         ModIds = modids;
         Biomes = b;
@@ -44,7 +47,7 @@ public final class BiomeSpawnAdditions
         Biomes = null;
         if (Entries != null)
         {
-            Entries.Dispose();
+            Extensions.DisposeAll(Entries);
             Entries = null;
         }
     }

@@ -14,7 +14,7 @@ public final class RuleTestBasedBlockStateProviderType
     @Override
     protected MapCodec<RuleTestBasedBlockStateProvider> GetCodecInstance() {
         return CodecUtils.CreateMapCodecDirect(
-                SingleTargetBlockState.GetCodec().listOf().fieldOf("targets").forGetter((s) -> s.RuleTargets),
+                SingleTargetBlockState.GetListCodec().fieldOf("targets").forGetter((s) -> s.RuleTargets),
                 CompilableBlockState.GetCodec().fieldOf("fallback_state").forGetter((s) -> s.FallbackState),
                 RuleTestBasedBlockStateProvider::new
         );

@@ -17,22 +17,23 @@ import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 
-import java.util.Collection;
 import java.util.List;
 
 @SuppressWarnings("all")
 public final class MineShaftRoom
         extends AbstractMineshaftPiece
 {
-    private final List<BoundingBox> childEntranceBoxes = Lists.newLinkedList();
+    private final List<BoundingBox> childEntranceBoxes;
 
     public MineShaftRoom(int genDepth, RandomSource random, int x, int y, int z, CustomizableMineshaftPiecesSettings s) {
-        super(s, MineShaftRoomType.INSTANCE, genDepth, new BoundingBox(x, y, z, x + 7 + random.nextInt(6),  54 + random.nextInt(6), z + 7 + random.nextInt(6)));
+        super(s, MineShaftRoomType.INSTANCE, genDepth, new BoundingBox(x, y, z, x + 7 + random.nextInt(6),  y + 5 + random.nextInt(6), z + 7 + random.nextInt(6)));
+        childEntranceBoxes = Lists.newLinkedList();
     }
 
     public MineShaftRoom(CompoundTag tag) {
         super(MineShaftRoomType.INSTANCE, tag);
-        this.childEntranceBoxes.addAll((Collection)tag.read("Entrances", BoundingBox.CODEC.listOf()).orElse(List.of()));
+        childEntranceBoxes = Lists.newLinkedList();
+        this.childEntranceBoxes.addAll(tag.read("Entrances", BoundingBox.CODEC.listOf()).orElse(List.of()));
     }
 
     public void addChildren(StructurePiece piece, StructurePieceAccessor pieces, RandomSource random)

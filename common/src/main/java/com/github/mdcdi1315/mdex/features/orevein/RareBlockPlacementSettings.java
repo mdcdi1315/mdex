@@ -25,7 +25,7 @@ public final class RareBlockPlacementSettings
     public static Codec<RareBlockPlacementSettings> GetCodec()
     {
         return CodecUtils.CreateCodecDirect(
-                SingleTargetBlockState.GetCodec().listOf().fieldOf("targets").forGetter((RareBlockPlacementSettings r) -> r.RareTargetStates),
+                SingleTargetBlockState.GetListCodec().fieldOf("targets").forGetter((RareBlockPlacementSettings r) -> r.RareTargetStates),
                 Codec.floatRange(0f , 6f).fieldOf("noise_density_threshold").forGetter((RareBlockPlacementSettings r) -> r.NoiseDensityThreshold),
                 RareBlockPlacementSettings::new
         );

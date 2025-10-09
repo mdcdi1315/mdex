@@ -46,5 +46,6 @@ public final class FeatureTypesRegistrySubsystem
         RegisterCustomFeatureType(wg,"modded_simple_block" , () -> new ModdedSimpleBlockFeature(ModdedSimpleBlockFeatureConfiguration.GetCodec()));
         RegisterCustomFeatureType(wg,"modded_classic_ore_vein" , () -> new ModdedClassicOreVeinFeature(ModdedClassicOreVeinFeatureConfiguration.GetCodec()));
         RegisterCustomFeatureType(wg,"modded_spring" , () -> new ModdedSpringFeature(ModdedSpringFeatureConfiguration.GetCodec()));
+        RegisterCustomFeatureType(wg,"create_layered_ore" , () -> new CreateLayeredOreFeature(CreateLayeredOreFeatureConfiguration.GetCodec()));
     }
 }

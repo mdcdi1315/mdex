@@ -52,8 +52,4 @@ public final class AdvancedFloatingIslandConfiguration
         }
     }
 
-    @Override
-    protected void invalidateUntransformedFields() {
-
-    }
 }

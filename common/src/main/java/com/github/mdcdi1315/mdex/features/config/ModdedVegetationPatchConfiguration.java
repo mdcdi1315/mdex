@@ -71,8 +71,4 @@ public final class ModdedVegetationPatchConfiguration
         }
     }
 
-    @Override
-    protected void invalidateUntransformedFields() {
-
-    }
 }

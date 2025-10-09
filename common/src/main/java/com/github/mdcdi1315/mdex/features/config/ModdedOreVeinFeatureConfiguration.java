@@ -28,7 +28,7 @@ public final class ModdedOreVeinFeatureConfiguration
         return CodecUtils.CreateCodecDirect(
                 GetBaseCodec(),
                 RareBlockPlacementSettings.GetCodec().fieldOf("rare_placement").forGetter((f) -> f.RarePlacementSettings),
-                SingleTargetBlockState.GetCodec().listOf().fieldOf("targets").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.TargetStates),
+                SingleTargetBlockState.GetListCodec().fieldOf("targets").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.TargetStates),
                 NormalNoise.NoiseParameters.CODEC.fieldOf("noise").forGetter((ModdedOreVeinFeatureConfiguration f) -> f.Parameters),
                 IntProvider.codec(5 , 48).optionalFieldOf("size" , ConstantInt.of(12)).forGetter((f) -> f.Size),
                 IntProvider.codec(4 , 26).optionalFieldOf("y_scale" , ConstantInt.of(2)).forGetter((f) -> f.Y_Scale),
@@ -62,8 +62,4 @@ public final class ModdedOreVeinFeatureConfiguration
         }
     }
 
-    @Override
-    protected void invalidateUntransformedFields() {
-
-    }
 }

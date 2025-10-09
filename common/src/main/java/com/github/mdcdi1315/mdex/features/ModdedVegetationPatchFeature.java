@@ -29,12 +29,12 @@ public class ModdedVegetationPatchFeature
         RandomSource randomsource = context.random();
         int i = vegetationpatchconfiguration.xzRadius.sample(randomsource) + 1;
         int j = vegetationpatchconfiguration.xzRadius.sample(randomsource) + 1;
-        Set<BlockPos> set = this.placeGroundPatch(context, context.origin(), (state) -> state.is(vegetationpatchconfiguration.replaceable), i, j);
-        this.distributeVegetation(context, set, i, j);
+        Set<BlockPos> set = this.PlaceGroundPatch(context, context.origin(), (state) -> state.is(vegetationpatchconfiguration.replaceable), i, j);
+        this.DistributeVegetation(context, set, i, j);
         return !set.isEmpty();
     }
 
-    protected Set<BlockPos> placeGroundPatch(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, BlockPos pos, Predicate<BlockState> state, int xRadius, int zRadius)
+    protected Set<BlockPos> PlaceGroundPatch(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, BlockPos pos, Predicate<BlockState> state, int xRadius, int zRadius)
     {
         BlockPos.MutableBlockPos mutablepos = pos.mutable();
         BlockPos.MutableBlockPos mutablepos1 = mutablepos.mutable();
@@ -67,7 +67,7 @@ public class ModdedVegetationPatchFeature
                     mutablepos1.setWithOffset(mutablepos, direction);
                     if (level.isEmptyBlock(mutablepos) && level.getBlockState(mutablepos1).isFaceSturdy(level, mutablepos1, opposite)) {
                         BlockPos blockpos = mutablepos1.immutable();
-                        if (this.placeGround(context, state, mutablepos1, config.depth.sample(random) + (config.extraBottomBlockChance > 0.0F && random.nextFloat() < config.extraBottomBlockChance ? 1 : 0))) {
+                        if (this.PlaceGround(context, state, mutablepos1, config.depth.sample(random) + (config.extraBottomBlockChance > 0.0F && random.nextFloat() < config.extraBottomBlockChance ? 1 : 0))) {
                             set.add(blockpos);
                         }
                     }
@@ -78,24 +78,24 @@ public class ModdedVegetationPatchFeature
         return set;
     }
 
-    protected void distributeVegetation(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, Set<BlockPos> possiblePositions, int xRadius, int zRadius) {
+    protected void DistributeVegetation(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, Set<BlockPos> possiblePositions, int xRadius, int zRadius) {
         var random = context.random();
         float chance = context.config().vegetationChance;
         if (chance > 0.0f) {
             for (BlockPos blockpos : possiblePositions) {
                 if (random.nextFloat() < chance) {
-                    this.placeVegetation(context, blockpos);
+                    this.PlaceVegetation(context, blockpos);
                 }
             }
         }
     }
 
-    protected boolean placeVegetation(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, BlockPos pos) {
+    protected boolean PlaceVegetation(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, BlockPos pos) {
         var config = context.config();
         return (config.vegetationFeature.value()).place(context.level(), context.chunkGenerator(), context.random(), pos.relative(config.surface.getDirection().getOpposite()));
     }
 
-    protected boolean placeGround(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, Predicate<BlockState> replaceableblocks, BlockPos.MutableBlockPos mutablePos, int maxDistance)
+    protected boolean PlaceGround(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, Predicate<BlockState> replaceableblocks, BlockPos.MutableBlockPos mutablePos, int maxDistance)
     {
         var level = context.level();
         var ground_state = context.config().groundState;

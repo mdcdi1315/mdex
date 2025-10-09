@@ -34,7 +34,7 @@ public final class ModdedClassicOreVeinFeatureConfiguration
                 CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((f) -> f.DiscardChanceOnAirExposure),
                 BaseStonePlacementSettings.GetCodec().fieldOf("stone_placement").forGetter((f) -> f.StonePlacementSettings),
                 RareBlockPlacementSettings.GetCodec().fieldOf("rare_placement").forGetter((f) -> f.RarePlacementSettings),
-                SingleTargetBlockState.GetCodec().listOf().fieldOf("targets").forGetter((f) -> f.TargetStates),
+                SingleTargetBlockState.GetListCodec().fieldOf("targets").forGetter((f) -> f.TargetStates),
                 NormalNoise.NoiseParameters.CODEC.fieldOf("noise").forGetter((f) -> f.Parameters),
                 ModdedClassicOreVeinFeatureConfiguration::new
         );

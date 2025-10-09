@@ -21,6 +21,7 @@ public final class FallenTreeConfiguration
     public Block LogTypeProvider;
     public IntProvider FallenTrunkSize;
     public Holder<PlacedFeature> VegetationPatch;
+    public final float VegetationPatchPlacementProbability;
 
     public static Codec<FallenTreeConfiguration> GetCodec()
     {
@@ -29,16 +30,18 @@ public final class FallenTreeConfiguration
                 ResourceLocation.CODEC.fieldOf("log_block").forGetter((FallenTreeConfiguration ftc) -> ftc.LogTypeProviderRC),
                 IntProvider.codec(2, 18).fieldOf("fallen_logs_count").forGetter((FallenTreeConfiguration ftc) -> ftc.FallenTrunkSize),
                 PlacedFeature.CODEC.optionalFieldOf("vegetation_patch" , OptionalDirectHolder.Create(null)).forGetter((FallenTreeConfiguration ftc) -> ftc.VegetationPatch),
+                CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("vegetation_patch_placement_probability", 1f).forGetter((ftc) -> ftc.VegetationPatchPlacementProbability),
                 FallenTreeConfiguration::new
         );
     }
 
-    public FallenTreeConfiguration(List<String> modids, ResourceLocation LogTypeProvider , IntProvider FallenTrunkSize , Holder<PlacedFeature> cfgpatch)
+    public FallenTreeConfiguration(List<String> modids, ResourceLocation LogTypeProvider , IntProvider FallenTrunkSize , Holder<PlacedFeature> cfgpatch, float cfgpatchp)
     {
         super(modids);
         this.FallenTrunkSize = FallenTrunkSize;
         this.VegetationPatch = cfgpatch;
         this.LogTypeProviderRC = LogTypeProvider;
+        VegetationPatchPlacementProbability = cfgpatchp;
         Compile();
     }
 

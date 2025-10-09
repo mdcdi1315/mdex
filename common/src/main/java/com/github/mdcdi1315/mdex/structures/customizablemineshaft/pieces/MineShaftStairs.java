@@ -37,7 +37,8 @@ public final class MineShaftStairs
 
         boundingbox = boundingbox.moved(x , y , z);
 
-        return pieces.findCollisionPiece(boundingbox) != null ? null : boundingbox;
+        // It is faster to check for null rather for the opposite.
+        return pieces.findCollisionPiece(boundingbox) == null ? boundingbox : null;
     }
 
     public void addChildren(StructurePiece piece, StructurePieceAccessor pieces, RandomSource random) {

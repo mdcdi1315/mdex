@@ -166,11 +166,12 @@ public abstract class ModdedFeatureConfiguration
     protected abstract void compileConfigData();
 
     /**
-     * Must be used by your code to destroy all the un-compiled references
-     * that have been compiled and do not need additional processing.
-     * This allows to reclaim some memory for other resources that the game WILL need.
+     * Should be used by your code to destroy all the un-compiled references
+     * that have been compiled and do not need additional processing. <br />
+     * This allows to reclaim some memory for other resources that the game WILL need. <br />
+     * From 1.6.0 and onwards, this becomes optional override. By default, it falls back to an empty method implementation.
      */
-    protected abstract void invalidateUntransformedFields();
+    protected void invalidateUntransformedFields() {}
 
     /**
      * Runs the implementation of compileConfigData to compile and transforms the configuration data for a small mem footprint as possible.
@@ -204,7 +205,7 @@ public abstract class ModdedFeatureConfiguration
             try {
                 invalidateUntransformedFields();
             } catch (Exception e) {
-                MDEXBalmLayer.LOGGER.warn("DCO with hash code {} cannot destroy all the un-compiled fields due to a failure: {}\nThis might cause increased memory footprints in the game." , hashCode() , e.getMessage());
+                MDEXBalmLayer.LOGGER.warn("DCO with hash code {} cannot destroy all the un-compiled fields due to a failure: {}\nThis might cause increased memory footprints in the game." , hashCode() , e);
             }
         } catch (MDEXException e) {
             setConfigAsInvalid();

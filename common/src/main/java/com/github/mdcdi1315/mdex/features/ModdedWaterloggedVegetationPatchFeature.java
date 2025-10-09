@@ -23,14 +23,14 @@ public class ModdedWaterloggedVegetationPatchFeature
         super(codec);
     }
 
-    protected Set<BlockPos> placeGroundPatch(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, BlockPos pos, Predicate<BlockState> state, int xRadius, int zRadius)
+    protected Set<BlockPos> PlaceGroundPatch(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, BlockPos pos, Predicate<BlockState> state, int xRadius, int zRadius)
     {
         var level = context.level();
         Set<BlockPos> set = new HashSet<>();
         BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
 
-        for (BlockPos blockpos : super.placeGroundPatch(context, pos, state, xRadius, zRadius)) {
-            if (!isExposed(level, blockpos, mutable)) {
+        for (BlockPos blockpos : super.PlaceGroundPatch(context, pos, state, xRadius, zRadius)) {
+            if (!IsExposed(level, blockpos, mutable)) {
                 set.add(blockpos);
                 // OPT: Instead of iterating the found elements again, execute what we want to do here.
                 level.setBlock(blockpos, Blocks.WATER.defaultBlockState(), 2);
@@ -40,22 +40,22 @@ public class ModdedWaterloggedVegetationPatchFeature
         return set;
     }
 
-    private static boolean isExposed(BlockGetter level, BlockPos pos, BlockPos.MutableBlockPos mutablePos) {
-        return isExposedDirection(level, pos, mutablePos, Direction.NORTH) ||
-                isExposedDirection(level, pos, mutablePos, Direction.EAST) ||
-                isExposedDirection(level, pos, mutablePos, Direction.SOUTH) ||
-                isExposedDirection(level, pos, mutablePos, Direction.WEST) ||
-                isExposedDirection(level, pos, mutablePos, Direction.DOWN);
+    private static boolean IsExposed(BlockGetter level, BlockPos pos, BlockPos.MutableBlockPos mutablePos) {
+        return IsExposedDirection(level, pos, mutablePos, Direction.NORTH) ||
+                IsExposedDirection(level, pos, mutablePos, Direction.EAST) ||
+                IsExposedDirection(level, pos, mutablePos, Direction.SOUTH) ||
+                IsExposedDirection(level, pos, mutablePos, Direction.WEST) ||
+                IsExposedDirection(level, pos, mutablePos, Direction.DOWN);
     }
 
-    private static boolean isExposedDirection(BlockGetter level, BlockPos pos, BlockPos.MutableBlockPos mutablePos, Direction direction) {
+    private static boolean IsExposedDirection(BlockGetter level, BlockPos pos, BlockPos.MutableBlockPos mutablePos, Direction direction) {
         mutablePos.setWithOffset(pos, direction);
         return !level.getBlockState(mutablePos).isFaceSturdy(level, mutablePos, direction.getOpposite());
     }
 
-    protected boolean placeVegetation(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, BlockPos pos)
+    protected boolean PlaceVegetation(FeaturePlaceContext<ModdedVegetationPatchConfiguration> context, BlockPos pos)
     {
-        boolean placed = super.placeVegetation(context, pos.below());
+        boolean placed = super.PlaceVegetation(context, pos.below());
         if (placed) {
             var level = context.level();
             BlockState blockstate = level.getBlockState(pos);

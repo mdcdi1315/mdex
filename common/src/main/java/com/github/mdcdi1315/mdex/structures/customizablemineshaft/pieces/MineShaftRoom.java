@@ -6,6 +6,7 @@ import com.github.mdcdi1315.mdex.structures.customizablemineshaft.CustomizableMi
 import com.google.common.collect.Lists;
 
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,16 +24,18 @@ import java.util.List;
 public final class MineShaftRoom
         extends AbstractMineshaftPiece
 {
-    private final List<BoundingBox> childEntranceBoxes = Lists.newLinkedList();
+    private final List<BoundingBox> childEntranceBoxes;
 
     public MineShaftRoom(int genDepth, RandomSource random, int x, int y, int z, CustomizableMineshaftPiecesSettings s) {
-        super(s, MineShaftRoomType.INSTANCE, genDepth, new BoundingBox(x, y, z, x + 7 + random.nextInt(6),  54 + random.nextInt(6), z + 7 + random.nextInt(6)));
+        super(s, MineShaftRoomType.INSTANCE, genDepth, new BoundingBox(x, y, z, x + 7 + random.nextInt(6),  y + 5 + random.nextInt(6), z + 7 + random.nextInt(6)));
+        childEntranceBoxes = Lists.newLinkedList();
     }
 
     public MineShaftRoom(CompoundTag tag) {
         super(MineShaftRoomType.INSTANCE, tag);
+        childEntranceBoxes = Lists.newLinkedList();
         BoundingBox.CODEC.listOf()
-                .parse(NbtOps.INSTANCE, tag.getList("Entrances", 11))
+                .parse(NbtOps.INSTANCE, tag.getList("Entrances", Tag.TAG_INT_ARRAY))
                 .resultOrPartial(MDEXBalmLayer.LOGGER::error).ifPresent(this.childEntranceBoxes::addAll);
     }
 

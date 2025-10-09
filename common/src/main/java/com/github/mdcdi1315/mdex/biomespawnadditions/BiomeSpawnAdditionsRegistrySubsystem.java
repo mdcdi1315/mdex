@@ -9,8 +9,6 @@ import com.github.mdcdi1315.mdex.util.EntityTypeNotFoundException;
 
 import net.blay09.mods.balm.api.Balm; // Provides whether a mod is loaded or not.
 
-import com.mojang.datafixers.util.Either;
-
 import net.minecraft.tags.TagKey;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -76,62 +74,67 @@ public final class BiomeSpawnAdditionsRegistrySubsystem
             }
             if (onemodfailed) { entry.Dispose(); continue; } // Continue with the next entry, dispose this one and continue.
             try {
-                // We need to check at this point whether ALL the entities defined in the object are themselves valid.
-                if (entry.Entries.IsEmpty()) {
+                if (entry.Entries.isEmpty()) {
                     continue; // No meaning to continue with an empty list - misconfiguration maybe?
                 }
-                tempentries = new ArrayList<>(entry.Entries.entries().size());
-                for (var e : entry.Entries.entries())
+                for (var ent : entry.Entries)
                 {
-                    try {
-                        e.Compile();
-                        // NOTE: We do not need to check for IsCompiled currently, but we may need that in the future.
-                        tempentries.add(e);
-                    } catch (EntityTypeNotFoundException etnf) {
-                        MDEXBalmLayer.LOGGER.warn("Cannot find entity type {} for the current biome spawns addition object - skipping this inclusion directly." , etnf.GetExpectedLocation());
+                    // We need to check at this point whether ALL the entities defined in the object are themselves valid.
+                    if (ent.IsEmpty()) {
+                        continue; // No meaning to continue with an empty list - misconfiguration maybe?
                     }
-                }
-                // There is the rare, but possible case that all the entries have failed compilation.
-                // Do not apply them in such case.
-                if (tempentries.isEmpty()) {
-                    continue;
-                }
-                MobCategory mc = entry.Entries.category();
-                // We are into two different cases: Either having a biome tag or a list of biomes.
-                // I will check first for a biome tag.
-                Either<TagKey<Biome>, List<ResourceLocation>> either = entry.Biomes;
-                if ((biometag = either.left()).isPresent()) {
-                    for (var b : biomes.getTagOrEmpty(biometag.get())) {
-                        if (b.isBound()) // Usually the biomes returned by this will be bound, but just to be sure...
-                        {
-                            // Now load the entry.
-                            BiomeSpawnsModifier md = additionsmappings.computeIfAbsent(b.value(), BiomeSpawnAdditionsRegistrySubsystem::Create);
-                            // This modifier remembers our passed biome, just inject the data to it.
-                            md.Add(mc , tempentries);
-                            appliedbiomes++;
+                    tempentries = new ArrayList<>(ent.entries().size());
+                    for (var e : ent.entries())
+                    {
+                        try {
+                            e.Compile();
+                            // NOTE: We do not need to check for IsCompiled currently, but we may need that in the future.
+                            tempentries.add(e);
+                        } catch (EntityTypeNotFoundException etnf) {
+                            MDEXBalmLayer.LOGGER.warn("Cannot find entity type {} for the current biome spawns addition object - skipping this inclusion directly." , etnf.GetExpectedLocation());
                         }
                     }
-                } else {
-                    // We have a biome list instead.
-                    // This GET operation is safe, do not worry!
-                    Optional<Biome> t;
-                    for (var i : either.right().get()) {
-                        // We need to find it's associated biome object
-                        // If not exists, we should emit a warning.
-                        if ((t = biomes.getOptional(i)).isPresent()) {
-                            // Now load the entry.
-                            BiomeSpawnsModifier md = additionsmappings.computeIfAbsent(t.get(), BiomeSpawnAdditionsRegistrySubsystem::Create);
-                            // This modifier remembers our passed biome, just inject the data to it.
-                            md.Add(mc , tempentries);
-                            appliedbiomes++;
-                        } else {
-                            // Emit a warning.
-                            MDEXBalmLayer.LOGGER.warn("BiomeSpawnAdditions: Cannot find the biome with ID {}. Biome spawn additions will not happen for this biome object.", i);
+                    // There is the rare, but possible case that all the entries have failed compilation.
+                    // Do not apply them in such case.
+                    if (tempentries.isEmpty()) {
+                        continue;
+                    }
+                    MobCategory mc = ent.category();
+                    // We are into two different cases: Either having a biome tag or a list of biomes.
+                    // I will check first for a biome tag.
+                    if ((biometag = entry.Biomes.left()).isPresent()) {
+                        for (var b : biomes.getTagOrEmpty(biometag.get())) {
+                            if (b.isBound()) // Usually the biomes returned by this will be bound, but just to be sure...
+                            {
+                                // Now load the entry.
+                                BiomeSpawnsModifier md = additionsmappings.computeIfAbsent(b.value(), BiomeSpawnAdditionsRegistrySubsystem::Create);
+                                // This modifier remembers our passed biome, just inject the data to it.
+                                md.Add(mc , tempentries);
+                                appliedbiomes++;
+                            }
+                        }
+                    } else {
+                        // We have a biome list instead.
+                        // This GET operation is safe, do not worry!
+                        Optional<Biome> t;
+                        for (var i : entry.Biomes.right().get()) {
+                            // We need to find it's associated biome object
+                            // If not exists, we should emit a warning.
+                            if ((t = biomes.getOptional(i)).isPresent()) {
+                                // Now load the entry.
+                                BiomeSpawnsModifier md = additionsmappings.computeIfAbsent(t.get(), BiomeSpawnAdditionsRegistrySubsystem::Create);
+                                // This modifier remembers our passed biome, just inject the data to it.
+                                md.Add(mc , tempentries);
+                                appliedbiomes++;
+                            } else {
+                                // Emit a warning.
+                                MDEXBalmLayer.LOGGER.warn("BiomeSpawnAdditions: Cannot find the biome with ID {}. Biome spawn additions will not happen for this biome object.", i);
+                            }
                         }
                     }
                 }
             } finally {
-                // Dispose our entry, we are finished now.
+                // Dispose our biome spawn additions entry, we are finished now.
                 entry.Dispose();
             }
         }

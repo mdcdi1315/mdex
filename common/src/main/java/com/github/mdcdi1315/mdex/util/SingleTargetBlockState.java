@@ -7,10 +7,13 @@ import com.mojang.serialization.Codec;
 
 import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 
+import java.util.List;
+
 public final class SingleTargetBlockState
     implements Compilable
 {
     private static Codec<SingleTargetBlockState> codec;
+    private static Codec<List<SingleTargetBlockState>> list_codec;
 
     public RuleTest Target;
     public CompilableBlockState State;
@@ -34,6 +37,14 @@ public final class SingleTargetBlockState
             );
         }
         return codec;
+    }
+
+    public static Codec<List<SingleTargetBlockState>> GetListCodec()
+    {
+        if (list_codec == null) {
+            list_codec = GetCodec().listOf();
+        }
+        return list_codec;
     }
 
     public void Compile() {

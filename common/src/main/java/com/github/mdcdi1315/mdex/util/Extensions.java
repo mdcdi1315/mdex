@@ -1,6 +1,6 @@
 package com.github.mdcdi1315.mdex.util;
 
-import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
+import com.github.mdcdi1315.DotNetLayer.System.*;
 import com.github.mdcdi1315.DotNetLayer.System.Collections.Generic.KeyValuePair;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 import com.github.mdcdi1315.DotNetLayer.System.Runtime.CompilerServices.Extension;
@@ -21,8 +21,8 @@ public final class Extensions
 {
     private Extensions() {}
 
-    public static float PI = (float) Math.PI;
-    public static float TWO_PI = PI * 2;
+    public static final float PI = (float) Math.PI;
+    public static final float TWO_PI = PI * 2;
 
     @Extension
     public static Direction GetRandomDirectionExcludingUpDown(RandomSource rs)
@@ -74,7 +74,7 @@ public final class Extensions
 
     public static float InvertedSquareRoot(float d)
     {
-        return 1.0f / (float) Math.sqrt(d);
+        return (float) (1.0d / Math.sqrt(d));
     }
 
     public static int Ceiling(float value) {
@@ -236,6 +236,32 @@ public final class Extensions
     }
 
     /**
+     * Attempts to dispose all the elements defined in an iterable.
+     * @param iterable The iterable to dispose all it's elements.
+     * @param <T> The type of the elements contained in the iterable and are to be disposed of.
+     * @throws ArgumentNullException {@code iterable} was {@code null}.
+     * @throws AggregateException One or more exceptions occurred while calling {@linkplain T#Dispose()}.
+     * @since 1.6.0
+     */
+    public static <T extends IDisposable> void DisposeAll(Iterable<T> iterable)
+            throws ArgumentNullException, AggregateException
+    {
+        ArgumentNullException.ThrowIfNull(iterable , "iterable");
+        var exceptions = new com.github.mdcdi1315.DotNetLayer.System.Collections.Generic.List<com.github.mdcdi1315.DotNetLayer.System.Exception>();
+        for (T i : iterable)
+        {
+            try {
+                i.Dispose();
+            } catch (com.github.mdcdi1315.DotNetLayer.System.Exception e) {
+                exceptions.Add(e);
+            }
+        }
+        if (exceptions.getCount() > 0) {
+            throw new AggregateException("One or more elements failed to be disposed of.", exceptions);
+        }
+    }
+
+    /**
      * Compiles all the specified compilable objects, or fails.<br />
      * The method will additionally throw the exception directly, if any exception occurs from {@link Compilable#Compile()} calls.
      * @param elements The elements to compile. This is a variable argument array.
@@ -326,6 +352,16 @@ public final class Extensions
     public static float ToNormalRange(float v, float min, float max) { return Math.abs(v - min) / Math.abs(min - max); }
 
     public static double ToNormalRange(double v, double min, double max) { return Math.abs(v - min) / Math.abs(min - max); }
+
+    public static double MapToRange(double input, double inputlowerbound, double inputupperbound, double outputlowerbound, double outputupperbound)
+    {
+        return (ToNormalRange(input, inputlowerbound, inputupperbound) * (outputupperbound - outputlowerbound)) + outputlowerbound;
+    }
+
+    public static float MapToRange(float input, float inputlowerbound, float inputupperbound, float outputlowerbound, float outputupperbound)
+    {
+        return (ToNormalRange(input, inputlowerbound, inputupperbound) * (outputupperbound - outputlowerbound)) + outputlowerbound;
+    }
 
     public static double ClampedMapToRange(double input, double inputlowerbound, double inputupperbound, double outputlowerbound, double outputupperbound)
     {

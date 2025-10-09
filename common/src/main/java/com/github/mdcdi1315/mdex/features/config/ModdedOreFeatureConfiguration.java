@@ -27,7 +27,7 @@ public final class ModdedOreFeatureConfiguration
     {
         return CodecUtils.CreateCodecDirect(
                 GetBaseCodec(),
-                SingleTargetBlockState.GetCodec().listOf().fieldOf("targets").forGetter((ModdedOreFeatureConfiguration f) -> f.TargetStates),
+                SingleTargetBlockState.GetListCodec().fieldOf("targets").forGetter((ModdedOreFeatureConfiguration f) -> f.TargetStates),
                 CodecUtils.ByteRange(0 , 64).optionalFieldOf("size" , (byte)12).forGetter((ModdedOreFeatureConfiguration f) -> f.Size),
                 CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((ModdedOreFeatureConfiguration f) -> f.DiscardChanceOnAirExposure),
                 ModdedOreFeatureConfiguration::new
@@ -43,8 +43,4 @@ public final class ModdedOreFeatureConfiguration
         }
     }
 
-    @Override
-    protected void invalidateUntransformedFields() {
-
-    }
 }

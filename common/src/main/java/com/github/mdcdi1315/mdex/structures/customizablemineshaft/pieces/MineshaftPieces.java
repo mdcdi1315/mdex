@@ -32,6 +32,8 @@ public final class MineshaftPieces
             int genDepth ,
             CustomizableMineshaftPiecesSettings settings
     ) {
+        // NOTE: orientation parameter is marked as MaybeNull, but findCrossing , findStairs and findCorridorSize report that they do need that to be non-null.
+        // Check whether this would cause NPE to them.
         BoundingBox boundingbox;
         int i = random.nextInt(100);
         if (i > 79) {

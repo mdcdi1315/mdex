@@ -73,8 +73,4 @@ public final class SimpleFloatingIslandConfiguration
         }
     }
 
-    @Override
-    protected void invalidateUntransformedFields() {
-
-    }
 }

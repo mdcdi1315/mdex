@@ -92,8 +92,4 @@ public final class ModdedGeodeConfiguration
         }
     }
 
-    @Override
-    protected void invalidateUntransformedFields() {
-
-    }
 }

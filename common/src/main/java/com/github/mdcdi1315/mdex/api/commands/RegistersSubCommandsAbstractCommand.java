@@ -49,14 +49,13 @@ public abstract class RegistersSubCommandsAbstractCommand
             {
                 b = b.requires(BalmCommands.requirePermission(c));
             }
-            // permissions = null;
+            permissions = null;
         }
         for (var i : commands)
         {
             b = i.RegisterByBuilder(b); // Recursively apply the commands, if needed
         }
-        // Found to cause issues, do not clean the array
-        // commands = null; // Aggressively clean the command array to sweep up any unused mem
+        commands = null; // Aggressively clean the command array to sweep up any unused mem
         return b;
     }
 }

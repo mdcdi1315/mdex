@@ -18,7 +18,6 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
@@ -26,6 +25,8 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSeriali
 public abstract class AbstractMineshaftPiece
     extends AbstractStructurePiece
 {
+    public static final String SETTINGS_NAME_OBJECT = "SETTINGS";
+
     protected final CustomizableMineshaftPiecesSettings settings;
 
     protected AbstractMineshaftPiece(CustomizableMineshaftPiecesSettings s, AbstractStructurePieceType type, int genDepth, BoundingBox boundingBox) {
@@ -35,8 +36,8 @@ public abstract class AbstractMineshaftPiece
 
     public AbstractMineshaftPiece(AbstractStructurePieceType type, CompoundTag tag) {
         super(type, tag);
-        if (tag.contains("SETTINGS" , Tag.TAG_COMPOUND)) {
-            settings = CustomizableMineshaftPiecesSettings.GetCodec().decode(NbtOps.INSTANCE , tag.getCompound("SETTINGS")).getOrThrow().getFirst();
+        if (tag.contains(SETTINGS_NAME_OBJECT , Tag.TAG_COMPOUND)) {
+            settings = CustomizableMineshaftPiecesSettings.GetCodec().decode(NbtOps.INSTANCE , tag.getCompound(SETTINGS_NAME_OBJECT)).getOrThrow().getFirst();
         } else {
             settings = null;
         }
@@ -51,7 +52,7 @@ public abstract class AbstractMineshaftPiece
     {
         DataResult<Tag> t = CustomizableMineshaftPiecesSettings.GetCodec().encode(settings , NbtOps.INSTANCE , tag);
         try {
-            tag.put("SETTINGS", t.getOrThrow());
+            tag.put(SETTINGS_NAME_OBJECT, t.getOrThrow());
         } catch (Exception e) {
             throw new MDEXException("Internal error occured while trying to save mineshaft data: " + e.getMessage());
         }
@@ -114,7 +115,7 @@ public abstract class AbstractMineshaftPiece
         }
     }
 
-    protected final void SetPlanksBlock(WorldGenLevel level, BoundingBox box, int x, int y, int z)
+    protected final void SetPlanksBlock(LevelAccessor level, BoundingBox box, int x, int y, int z)
     {
         if (this.isInterior(level, x, y, z, box))
         {

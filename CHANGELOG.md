@@ -1,21 +1,26 @@
-Now releasing 1.5.0:
+Now releasing 1.6.0:
 
--> Added two new modded feature types, the Modded Spring and the Modded Classic ore feature.
--> The biome spawn additions subsystem had a code re-write allowing for more simple, flexible and consistent definitions.
--> Added additional debugging options in the config. 
+-> Added one new feature type, the Create mod layered ore feature. This is useful for referencing it without the Create mod is necessarily installed in your instance.
+
+-> The biome spawn additions object can now either accept a single spawner object or multiple ones wrapped into a list. 
+Compatibility with 1.5.0 version of the mod is thus maintained.
+
+-> The fallen tree feature is now officially published (after last changes were done).
 
 Bugfixes and performance optimizations were done, such as:
 
--> Weight utilities defined only for the 1.21.5 flavor of the mod is now backported.
+-> Fixed an issue with the placement of the central room of the customizable mineshaft structure. 
+The room should now work as it is expected.
 
--> The custom placement modifiers were not effectively using the Distributed Compilation Object logic. Now they do, and they are now considered as a public and shipped feature of the mod.
+-> The mod's commands should now be able to be created and deleted each time a Minecraft world is created.
+This allows for reduced memory footprint while on the title screen.
 
--> Simplified the process how the Block State Providers registry codec is loaded.
+-> All the features of the mod that were using the SingleTargetBlockState class as a list, 
+they are now replaced with a properly allocated and persistent codec. 
+That codec is now the only instance that exists as a list codec.
 
--> Some recipes were not unlocked to the player as appropriate, now they do.
+-> Optimized the FeaturePlacementUtils.SafeSetBlock method.
 
--> Fixed some texture glitches and storage, especially for the tools.
+-> The publicly available constants provided through Extensions class could be modified externally and that could be a security threat. It is properly addressed now.
 
--> Cleaned the code for how the biome spawn additions subsystem works.
-
--> Performance fixes for Modded Vegetation Patch feature types
+-> Some textures that were still using 64 bits per pixel are now scaled down to 32 bits for textures needing alpha channel and 24 bits for those that do not need alpha channel. 

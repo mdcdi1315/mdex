@@ -35,6 +35,7 @@ public final class CreateLayeredOreFeatureConfiguration
         Size = size;
         this.patterns = patterns;
         DiscardChanceOnAirExposure = discard_chance;
+        Compile();
     }
 
     @Override

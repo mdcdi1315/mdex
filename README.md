@@ -13,3 +13,7 @@ An overview of how creating a data pack for the mod is roughly described [here](
 
 A good and prime example is also to see the [Default MD Experience Pack](https://github.com/mdcdi1315/mdex_default_experience_pack) code as an additional learning source for how things are done.
 
+### Mod development status
+
+If you want to check until when the mod will be supported for the Minecraft version you use in your modpack, check out [this document](./Development-Status.md).
+It thoroughly describes which Minecraft versions, mod loaders and mod versions will be or are supported and until when.

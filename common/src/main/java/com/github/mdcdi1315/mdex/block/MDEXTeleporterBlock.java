@@ -1,26 +1,24 @@
 package com.github.mdcdi1315.mdex.block;
 
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
-import com.github.mdcdi1315.mdex.MDEXModConfig;
 import com.github.mdcdi1315.mdex.api.MDEXModAPI;
-import com.github.mdcdi1315.mdex.api.TeleportRequestState;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
+import com.github.mdcdi1315.mdex.api.TeleportRequestState;
 import com.github.mdcdi1315.mdex.block.entity.TeleporterTileEntity;
+
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.BlockHitResult;
-
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public class MDEXTeleporterBlock
         extends MDEXBaseBlock
@@ -76,28 +74,12 @@ public class MDEXTeleporterBlock
             return false;
         }
 
-        Level sl = sp.level();
-        ResourceLocation destination;
-        ResourceLocation dimid = sl.dimension().location();
-        if (dimid.equals(MDEXBalmLayer.MINING_DIM_IDENTIFIER)) {
-            // Player must return to it's home
-            destination = MDEXModConfig.getActive().HomeDimension;
-        } else {
-            // Player now goes to the Mining Dimension
-            destination = MDEXBalmLayer.MINING_DIM_IDENTIFIER;
-        }
-        if (destination == null) {
-            sp.displayClientMessage(Component.translatable("mdex.errormsg.wrong_travelling_dimension"), true);
-            return false;
-        }
         TeleportingManager manager = MDEXModAPI.getMethodImplementation().GetTeleportingManager();
-        manager.SetTargetDimension(destination);
         TeleportRequestState state = manager.Teleport(sp , bps);
         if (state == TeleportRequestState.SCHEDULED) {
             sp.displayClientMessage(Component.translatable("mdex.teleportmanager.msg.teleport_scheduled") , true);
         }
         return state != TeleportRequestState.FAILED;
-        //return MDEXModAPI.getMethodImplementation().ChangeDimension(sp , destination , new MDEXTeleporterImplementation(bps)) != null;
     }
 
     @Override

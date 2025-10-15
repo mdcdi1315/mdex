@@ -1,10 +1,12 @@
 package com.github.mdcdi1315.mdex.util.weight;
 
+import com.github.mdcdi1315.DotNetLayer.System.ArgumentOutOfRangeException;
+
+import com.github.mdcdi1315.mdex.util.StringSupplier;
 import com.github.mdcdi1315.mdex.codecs.PrimitiveCodec;
+
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-
-import com.github.mdcdi1315.DotNetLayer.System.ArgumentOutOfRangeException;
 import com.mojang.serialization.DynamicOps;
 
 /**
@@ -32,19 +34,20 @@ public final class Weight
     private static class InternalCodec
         extends PrimitiveCodec<Weight>
     {
+        private static DataResult<Weight> ErrorMapper(DataResult.PartialResult<Number> pr) {
+            return DataResult.error(pr::message);
+        }
+
         private static DataResult<Weight> ValidateAndReturn(Number n)
         {
             int decoded = n.intValue();
-            if (decoded < 0) {
-                String s = String.format("Weight must be more than or equal to zero.\nActual value: %d" , decoded);
-                return DataResult.error(() -> s);
-            } else if (decoded == 0) {
-                return DataResult.success(Weight.ZERO);
-            } else if (decoded == 1) {
-                return DataResult.success(Weight.ONE);
-            } else {
-                return DataResult.success(new Weight(decoded));
-            }
+            return (decoded < 0) ?
+                    DataResult.error(
+                            new StringSupplier(String.format("Weight must be more than or equal to zero.\nActual value: %d" , decoded))
+                    ) :
+                    DataResult.success(
+                            (decoded == 0) ? Weight.ZERO : ((decoded == 1) ? Weight.ONE : new Weight(decoded))
+                    );
         }
 
         @Override
@@ -53,7 +56,7 @@ public final class Weight
             DataResult<Number> n = ops.getNumberValue(input);
             var e = n.error();
             return e.<DataResult<Weight>>
-                    map(error -> DataResult.error(error::message))
+                    map(InternalCodec::ErrorMapper)
                     .orElse(ValidateAndReturn(n.result().get())); // Either we will have an error or a result, not both
         }
 
@@ -75,12 +78,8 @@ public final class Weight
     {
         if (wt < 0) {
             throw new ArgumentOutOfRangeException("wt" , "Weight must be more than or equal to zero.");
-        } else if (wt == 0) {
-            return ZERO;
-        } else if (wt == 1) {
-            return ONE;
         } else {
-            return new Weight(wt);
+            return (wt == 0) ? Weight.ZERO : ((wt == 1) ? Weight.ONE : new Weight(wt));
         }
     }
 

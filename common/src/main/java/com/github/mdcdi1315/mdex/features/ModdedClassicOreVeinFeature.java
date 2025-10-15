@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.features;
 
+import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
 import com.github.mdcdi1315.mdex.features.config.ModdedClassicOreVeinFeatureConfiguration;
 
@@ -35,21 +36,20 @@ public final class ModdedClassicOreVeinFeature
                 rareplacement = fpc.config().RarePlacementSettings.NoiseDensityThreshold,
                 stoneplacement = fpc.config().StonePlacementSettings.NoiseDensityThreshold,
                 stoneplacementp = fpc.config().StonePlacementSettings.PlacementProbability;
-        BlockState stonestate = fpc.config().StonePlacementSettings.StoneState.BlockState, current = null;
+        BlockState stonestate = fpc.config().StonePlacementSettings.StoneState.BlockState, current;
         double density;
 
         List<SingleTargetBlockState> states = null;
 
-        for (BlockPos temp : FeaturePlacementUtils.GetRectangularArea(fpc.origin().offset(-fs , 0 , -fs), new BlockPos(fs , fpc.config().Y_Scale.sample(rs) , fs)))
+        for (BlockPos temp : FeaturePlacementUtils.GetRectangularArea(fpc.origin().offset(-(fs / 2) , 0 , -(fs / 2)), new BlockPos(fs , fpc.config().Y_Scale.sample(rs) , fs)))
         {
             density = n.getValue(temp.getX() , temp.getY() , temp.getZ());
+            current = wgl.getBlockState(temp);
             if (density > rareplacement) {
-                current = wgl.getBlockState(temp);
                 states = fpc.config().RarePlacementSettings.RareTargetStates;
-            } else if (density > stoneplacement && rs.nextFloat() < stoneplacementp) {
+            } else if (density > stoneplacement && BlockUtils.ReferentIsSolidBlockUnsafe(current) && rs.nextFloat() < stoneplacementp) {
                 wgl.setBlock(temp , stonestate , 2);
             } else if (density > 0d) {
-                current = wgl.getBlockState(temp);
                 states = fpc.config().TargetStates;
             }
             if (states != null)
@@ -63,7 +63,6 @@ public final class ModdedClassicOreVeinFeature
                     }
                 }
                 states = null;
-                current = null; // This field will also not be null upon entering this if branch.
             }
         }
 

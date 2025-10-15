@@ -16,7 +16,7 @@ public final class StableItemStackCodec
 {
     private StableItemStackCodec() {}
 
-    public static Codec<ItemStack> INSTANCE =
+    public static final Codec<ItemStack> INSTANCE =
             CodecUtils.CreateCodecDirect(
                     BuiltInRegistries.ITEM.byNameCodec().fieldOf("item").forGetter(ItemStack::getItem),
                     CodecUtils.ZERO_OR_POSITIVE_INTEGER.fieldOf("count").forGetter(ItemStack::getCount),

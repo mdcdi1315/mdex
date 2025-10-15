@@ -5,7 +5,6 @@ import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.DataResult;
 
 import java.util.List;
 
@@ -14,23 +13,7 @@ public final class SimpleWeightedEntryList<TE>
 {
     public static <TE> Codec<SimpleWeightedEntryList<TE>> CreateSimpleWeightedEntryList(MapCodec<TE> elementcodec)
     {
-        return SimpleWeightedEntryList_Entry.CreateCodec(elementcodec).listOf().flatXmap(SimpleWeightedEntryList::CreateWeightedEntryList , SimpleWeightedEntryList::DecomposeWeightedEntryList);
-    }
-
-    private static <TE> DataResult<SimpleWeightedEntryList<TE>> CreateWeightedEntryList(List<SimpleWeightedEntryList_Entry<TE>> elements)
-    {
-        if (elements == null) {
-            return DataResult.error(() -> "The specified list was a null reference.");
-        }
-        return DataResult.success(new SimpleWeightedEntryList<>(elements));
-    }
-
-    private static <TE> DataResult<List<SimpleWeightedEntryList_Entry<TE>>> DecomposeWeightedEntryList(SimpleWeightedEntryList<TE> entlist)
-    {
-        if (entlist == null) {
-            return DataResult.error(() -> "The specified weighted entry list was null.");
-        }
-        return DataResult.success(entlist.GetUnderlying());
+        return new SimpleWeightedEntryListCodec<>(elementcodec);
     }
 
     public SimpleWeightedEntryList(int capacity) {

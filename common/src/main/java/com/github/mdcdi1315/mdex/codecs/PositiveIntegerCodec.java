@@ -1,5 +1,7 @@
 package com.github.mdcdi1315.mdex.codecs;
 
+import com.github.mdcdi1315.mdex.util.StringSupplier;
+
 import com.mojang.serialization.DataResult;
 
 public final class PositiveIntegerCodec
@@ -12,10 +14,8 @@ public final class PositiveIntegerCodec
 
     @Override
     protected DataResult<Integer> Validate(Integer number) {
-        if (number < 1) {
-            String s = String.format("Integer not positive: %d" , number);
-            return DataResult.error(() -> s);
-        }
-        return DataResult.success(number);
+        return (number < 1) ?
+            DataResult.error(new StringSupplier(String.format("Integer not positive: %d" , number))) :
+            DataResult.success(number);
     }
 }

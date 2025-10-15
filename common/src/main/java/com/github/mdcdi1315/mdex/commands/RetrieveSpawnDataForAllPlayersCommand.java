@@ -5,18 +5,21 @@ import com.github.mdcdi1315.DotNetLayer.System.Collections.Generic.KeyValuePair;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.api.commands.AbstractCommand;
 import com.github.mdcdi1315.mdex.api.teleporter.TeleporterSpawnData;
+import com.github.mdcdi1315.mdex.api.teleporter.PlayerPlacementInformation;
+import com.github.mdcdi1315.mdex.api.saveddata.PerDimensionWorldDataManager;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.DimensionArgument;
 
@@ -42,24 +45,17 @@ public final class RetrieveSpawnDataForAllPlayersCommand
             throws CommandSyntaxException
     {
         ServerLevel sl = DimensionArgument.getDimension(c , "dimension");
-        TeleporterSpawnData d = sl.getDataStorage().get(RetrieveSpawnDataForAllPlayersCommand::LDR , TeleportingManager.TELEPORTER_DATA_DIMFILE_NAME);
+        TeleporterSpawnData d = new PerDimensionWorldDataManager(sl).Get(TeleportingManager.TELEPORTER_DATA_DIMFILE_NAME , TeleporterSpawnData::new);
         if (d == null) {
             c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location()));
             return 10;
         }
-        Component cp = Component.literal(ListSpawnData(sl , d.GetSpawnPositionsForAllPlayers()));
+        Component cp = Component.literal(ListSpawnData(sl , d.GetSpawnInfos()));
         c.getSource().sendSuccess(() -> cp , true);
         return 0;
     }
 
-    private static TeleporterSpawnData LDR(CompoundTag ct)
-    {
-        TeleporterSpawnData t = new TeleporterSpawnData();
-        t.FromDeserialized(ct);
-        return t;
-    }
-
-    private static String ListSpawnData(ServerLevel level , List<KeyValuePair<UUID , BlockPos>> list)
+    private static String ListSpawnData(ServerLevel level , List<KeyValuePair<UUID , PlayerPlacementInformation>> list)
     {
         StringBuilder sb = new StringBuilder(1024);
         sb.append(Component.translatable("mdex.commands.msg.getspdatacmd.list.header" , list.size() , level.dimension().location()).getString());
@@ -68,20 +64,41 @@ public final class RetrieveSpawnDataForAllPlayersCommand
         int plc = 0;
         for (var i : list)
         {
-            BlockPos p = i.getValue();
+            PlayerPlacementInformation p = i.getValue();
             if (p == null) { continue; }
             ServerPlayer sp = s.getPlayerList().getPlayer(i.getKey());
-            sb.append(
-                    Component.translatable("mdex.commands.msg.getspdatacmd.list.entry" ,
-                            i.getKey() ,
-                            sp == null ?
-                                    Component.translatable("mdex.commands.msg.getspdatacmd.list.entry.playername.unidentified").getString() :
-                                    sp.getName().getString() ,
-                            p.getX(),
-                            p.getY(),
-                            p.getZ()
-                    ).getString()
-            );
+            BlockPos position = p.GetTeleporterPosition();
+            Vec3 sourcedimspawn = p.GetSourceDimensionPosition();
+            ResourceLocation sourcedim = p.GetSourceDimension();
+            if (sourcedimspawn != null && sourcedim != null) {
+                sb.append(
+                        Component.translatable("mdex.commands.msg.getspdatacmd.list.entry.detailed" ,
+                                i.getKey() ,
+                                sp == null ?
+                                        Component.translatable("mdex.commands.msg.getspdatacmd.list.entry.playername.unidentified").getString() :
+                                        sp.getName().getString() ,
+                                position.getX(),
+                                position.getY(),
+                                position.getZ(),
+                                sourcedim.toString(),
+                                sourcedimspawn.x(),
+                                sourcedimspawn.y(),
+                                sourcedimspawn.z()
+                        ).getString()
+                );
+            } else {
+                sb.append(
+                        Component.translatable("mdex.commands.msg.getspdatacmd.list.entry" ,
+                                i.getKey() ,
+                                sp == null ?
+                                        Component.translatable("mdex.commands.msg.getspdatacmd.list.entry.playername.unidentified").getString() :
+                                        sp.getName().getString() ,
+                                position.getX(),
+                                position.getY(),
+                                position.getZ()
+                        ).getString()
+                );
+            }
             sb.append('\n');
             plc++;
         }

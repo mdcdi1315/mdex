@@ -28,7 +28,7 @@ public final class NoiseGenerationBasedOreFeature
         boolean generated = false;
         float discardchance = fpc.config().DiscardChanceOnAirExposure;
 
-        for (BlockPos temp : FeaturePlacementUtils.GetRectangularArea(fpc.origin().offset(-fs, 0, -fs) , new BlockPos(fs , fpc.config().Y_Scale.sample(rs) , fs)))
+        for (BlockPos temp : FeaturePlacementUtils.GetRectangularArea(fpc.origin().offset(-(fs / 2), 0, -(fs / 2)) , new BlockPos(fs , fpc.config().Y_Scale.sample(rs) , fs)))
         {
             if (n.getValue(temp.getX() , temp.getY() , temp.getZ()) > 0d)
             {

@@ -25,4 +25,7 @@ runs
 runserver
 logs
 
+# Visual Studio (Used in developing Docs branch)
+.vs
+
 common/src/generated/resources/.cache

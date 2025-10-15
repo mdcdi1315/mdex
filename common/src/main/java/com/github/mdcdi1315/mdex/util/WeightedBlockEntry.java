@@ -49,7 +49,7 @@ public class WeightedBlockEntry
     {
         return CodecUtils.CreateCodecDirect(
                 ResourceLocation.CODEC.fieldOf("id").forGetter((WeightedBlockEntry e) -> e.BlockID),
-                Weight.CODEC.optionalFieldOf("weight" , Weight.Of(1)).forGetter((WeightedBlockEntry e) -> e.weight),
+                Weight.CODEC.optionalFieldOf("weight" , Weight.ONE).forGetter((WeightedBlockEntry e) -> e.weight),
                 WeightedBlockEntry::new
         );
     }

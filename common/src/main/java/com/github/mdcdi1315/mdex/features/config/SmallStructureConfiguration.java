@@ -27,7 +27,7 @@ public final class SmallStructureConfiguration
         );
     }
 
-    public boolean TemplatesAreCompiled;
+    public volatile boolean TemplatesAreCompiled;
     public HolderSet<PlacedFeature> AdditionalFeatures;
     public final List<StructureElementConfig> Structures;
     public Holder<StructureProcessorList> StructuresProcessors;

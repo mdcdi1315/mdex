@@ -3,15 +3,15 @@ package com.github.mdcdi1315.mdex.commands;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentException;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.api.commands.AbstractCommand;
+import com.github.mdcdi1315.mdex.api.saveddata.PerDimensionWorldDataManager;
 import com.github.mdcdi1315.mdex.api.teleporter.TeleporterSpawnData;
 import com.github.mdcdi1315.mdex.api.teleporter.StarterChestPlacementInfo;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.nbt.CompoundTag;
+
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -37,7 +37,7 @@ public final class ResetStarterChestPlacementCommand
             throws CommandSyntaxException
     {
         ServerLevel sl = DimensionArgument.getDimension(c , "dimension");
-        var ds = sl.getDataStorage().get(ResetStarterChestPlacementCommand::LDR , TeleportingManager.TELEPORTER_DATA_DIMFILE_NAME);
+        var ds = new PerDimensionWorldDataManager(sl).Get(TeleportingManager.TELEPORTER_DATA_DIMFILE_NAME , TeleporterSpawnData::new);
         if (ds == null) {
             c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location()));
             return -1;
@@ -53,12 +53,5 @@ public final class ResetStarterChestPlacementCommand
             throw new CommandSyntaxException(new SimpleCommandExceptionType(Component.literal("Error")) , Component.literal(String.format("Cannot execute the reset command: %s" , e.getMessage())));
         }
         return 0;
-    }
-
-    private static TeleporterSpawnData LDR(CompoundTag ct)
-    {
-        TeleporterSpawnData t = new TeleporterSpawnData();
-        t.FromDeserialized(ct);
-        return t;
     }
 }

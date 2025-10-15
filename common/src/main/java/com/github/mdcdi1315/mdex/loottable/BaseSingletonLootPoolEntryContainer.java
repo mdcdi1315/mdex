@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.loottable;
 
+import com.github.mdcdi1315.mdex.codecs.ListCodec;
 import com.github.mdcdi1315.mdex.util.Extensions;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 
@@ -138,12 +139,12 @@ public abstract class BaseSingletonLootPoolEntryContainer
         return instance.group(
                 CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("weight" , DEFAULT_WEIGHT).forGetter((TB b) -> b.weight),
                 CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("quality" , DEFAULT_QUALITY).forGetter((TB b) -> b.quality),
-                KeyDispatchCodec.unsafe("function" , // Using this hacky unsafe context allows us to magically pass the JsonElement to read directly , and thus read the function object on the fly.
+                new ListCodec<>(KeyDispatchCodec.unsafe("function" , // Using this hacky unsafe context allows us to magically pass the JsonElement to read directly , and thus read the function object on the fly.
                         BuiltInRegistries.LOOT_FUNCTION_TYPE.byNameCodec() ,
                         (LootItemFunction f) -> DataResult.success(f.getType()),
                         (LootItemFunctionType f) -> DataResult.success(new LootItemFunctionTypeDecoder<>(f)), // For decoders only, we need the type reference itself so that we can use the underlying serializer and kick in.
                         (LootItemFunction f) -> DataResult.success(new LootItemFunctionTypeEncoder<>())
-                ).codec().listOf().optionalFieldOf("functions", List.of()).forGetter((TB b) -> b.functions)
+                ).codec()).optionalFieldOf("functions", List.of()).forGetter((TB b) -> b.functions)
         );
     }
 }

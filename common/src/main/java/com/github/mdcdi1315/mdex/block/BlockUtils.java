@@ -83,7 +83,7 @@ public final class BlockUtils
      */
     @Extension
     public static boolean ReferentIsSolidBlock(BlockState bs) {
-        return bs != null && !bs.isAir();
+        return bs != null && ReferentIsSolidBlockUnsafe(bs);
     }
 
     /**
@@ -93,8 +93,8 @@ public final class BlockUtils
      * @since 1.5.0
      */
     @Extension
-    public static boolean ReferentIsSolidBlockUnsafe(BlockState bs) {
-        return !bs.isAir();
+    public static boolean ReferentIsSolidBlockUnsafe(@DisallowNull BlockState bs) {
+        return !(bs.isAir() || bs.is(Blocks.WATER) || bs.is(Blocks.LAVA));
     }
 
     /**
@@ -252,7 +252,9 @@ public final class BlockUtils
         if (position == null) {
             position = new BlockPos(0 , 0 , 0);
         }
-        return !level.getBlockState(position).isAir() && level.getBlockState(position.above()).isAir();
+        return !level.getBlockState(position).isAir() &&
+                level.getFluidState(position).is(Fluids.EMPTY) && // We need this check to truly find whether the block position is solid block.
+                level.getBlockState(position.above()).isAir();
     }
 
     /**
@@ -269,7 +271,9 @@ public final class BlockUtils
         if (position == null) {
             position = new BlockPos(0 , 0 , 0);
         }
-        return level.getBlockState(position).isAir() && !level.getBlockState(position.above()).isAir();
+        return level.getBlockState(position).isAir() &&
+                level.getFluidState(position.above()).is(Fluids.EMPTY) && // We need this check to truly find whether the block position is solid block.
+                !level.getBlockState(position.above()).isAir();
     }
 
     /**

@@ -1,9 +1,10 @@
 package com.github.mdcdi1315.mdex.api.client;
 
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
-import net.blay09.mods.balm.api.client.keymappings.BalmKeyMappings;
+
 import net.blay09.mods.balm.api.event.BalmEvents;
 import net.blay09.mods.balm.api.client.module.BalmClientModule;
+import net.blay09.mods.balm.api.client.keymappings.BalmKeyMappings;
 
 import net.minecraft.resources.ResourceLocation;
 

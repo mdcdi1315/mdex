@@ -25,5 +25,7 @@ runs
 runserver
 logs
 
-# Any /src/generated/resources/ should be excluded
-*/src/generated/resources/
+# Visual Studio (Used in developing Docs branch)
+.vs
+
+common/src/generated/resources/

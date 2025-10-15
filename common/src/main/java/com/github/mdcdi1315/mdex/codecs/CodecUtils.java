@@ -50,13 +50,13 @@ public final class CodecUtils
             throws ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(codec , "codec");
-        var c = new NonEmptyListChecker<T>();
+        var c = new NonEmptyListChecker<T>(); // We do still need the checker for this case
         return codec.flatXmap(c , c);
     }
 
     /**
      * Constructs a list codec from the specified element codec, plus verifying that the list returned will be always non-empty.
-     * @param elementcodec The codec that can de/serialize {@code T}.
+     * @param elementcodec The codec that can de/serialize {@link T}.
      * @return A list codec capable of checking that the list is not empty. The elements are de/serialized by the provided {@code elementcodec} parameter.
      * @param <T> The type of the list's elements, it is also the type of the {@code elementcodec} parameter.
      * @throws ArgumentNullException {@code elementcodec} is {@code null}.
@@ -64,9 +64,9 @@ public final class CodecUtils
     public static <T> Codec<List<T>> NonEmptyListFromElementCodec(Codec<T> elementcodec)
             throws ArgumentNullException
     {
-        ArgumentNullException.ThrowIfNull(elementcodec , "elementcodec");
-        var c = new NonEmptyListChecker<T>();
-        return elementcodec.listOf().flatXmap(c , c);
+        // For API parity reasons use the non-empty strict list codec.
+        // It behaves the same as the DFU's ListCodec class does.
+        return new NonEmptyStrictListCodec<>(elementcodec);
     }
 
     /**

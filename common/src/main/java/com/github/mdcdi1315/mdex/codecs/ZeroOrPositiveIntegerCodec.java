@@ -1,5 +1,7 @@
 package com.github.mdcdi1315.mdex.codecs;
 
+import com.github.mdcdi1315.mdex.util.StringSupplier;
+
 import com.mojang.serialization.DataResult;
 
 public final class ZeroOrPositiveIntegerCodec
@@ -13,10 +15,8 @@ public final class ZeroOrPositiveIntegerCodec
 
     @Override
     protected DataResult<Integer> Validate(Integer integer) {
-        if (integer < 0) {
-            String s = String.format("Integer not positive or zero: %d" , integer);
-            return DataResult.error(() -> s , integer);
-        }
-        return DataResult.success(integer);
+        return (integer < 0) ?
+            DataResult.error(new StringSupplier(String.format("Integer not positive or zero: %d" , integer)), integer) :
+            DataResult.success(integer);
     }
 }

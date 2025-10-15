@@ -1,7 +1,8 @@
 package com.github.mdcdi1315.mdex.util;
 
-import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
+
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.weight.Weight;
 
@@ -40,7 +41,7 @@ public class WeightedCountedEntityEntry
     {
         return CodecUtils.CreateCodecDirect(
                 ResourceLocation.CODEC.fieldOf("id").forGetter((WeightedCountedEntityEntry e) -> e.EntityID),
-                Weight.CODEC.optionalFieldOf("weight" , Weight.Of(1)).forGetter((WeightedCountedEntityEntry e) -> e.weight),
+                Weight.CODEC.optionalFieldOf("weight" , Weight.ONE).forGetter((WeightedCountedEntityEntry e) -> e.weight),
                 IntProvider.codec(1 , 32).optionalFieldOf("count" , ConstantInt.of(1)).forGetter((WeightedCountedEntityEntry e) -> e.Count),
                 WeightedCountedEntityEntry::new
         );

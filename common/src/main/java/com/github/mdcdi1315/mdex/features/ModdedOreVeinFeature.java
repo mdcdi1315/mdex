@@ -35,7 +35,7 @@ public final class ModdedOreVeinFeature
                 rareplacement = fpc.config().RarePlacementSettings.NoiseDensityThreshold;
         double density;
 
-        for (BlockPos temp : FeaturePlacementUtils.GetRectangularArea(fpc.origin().offset(-fs, 0 , -fs) , new BlockPos(fs , fpc.config().Y_Scale.sample(rs) , fs)))
+        for (BlockPos temp : FeaturePlacementUtils.GetRectangularArea(fpc.origin().offset(-(fs / 2), 0 , -(fs / 2)) , new BlockPos(fs , fpc.config().Y_Scale.sample(rs) , fs)))
         {
             BlockState current = wgl.getBlockState(temp);
             density = n.getValue(temp.getX() , temp.getY() , temp.getZ());

@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.features.config;
 
+import com.github.mdcdi1315.mdex.util.Extensions;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
 
@@ -15,10 +16,10 @@ import java.util.List;
 public final class NoiseGenerationBasedOreFeatureConfiguration
     extends ModdedFeatureConfiguration
 {
-    public List<SingleTargetBlockState> TargetStates;
     public IntProvider Size;
     public IntProvider Y_Scale;
     public final float DiscardChanceOnAirExposure;
+    public List<SingleTargetBlockState> TargetStates;
     public Holder<NormalNoise.NoiseParameters> NoiseParameters;
 
     public static Codec<NoiseGenerationBasedOreFeatureConfiguration> GetCodec()
@@ -48,9 +49,8 @@ public final class NoiseGenerationBasedOreFeatureConfiguration
     @Override
     protected void compileConfigData()
     {
-        for (var i : TargetStates)
-        {
-            i.Compile();
+        if (!Extensions.CompileAllOrFail(TargetStates)) {
+            setConfigAsInvalid();
         }
     }
 

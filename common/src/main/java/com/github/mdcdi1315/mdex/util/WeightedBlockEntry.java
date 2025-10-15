@@ -1,15 +1,17 @@
 package com.github.mdcdi1315.mdex.util;
 
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
+
 import com.github.mdcdi1315.mdex.MDEXBalmLayer;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
-import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
-import com.mojang.serialization.Codec;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import com.github.mdcdi1315.mdex.util.weight.Weight;
+import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
+
+import com.mojang.serialization.Codec;
+
 import net.minecraft.world.level.block.Block;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.Optional;
 
@@ -29,12 +31,11 @@ public class WeightedBlockEntry
 
     public void Compile()
     {
-        Holder.Reference<Block> ref;
-        Optional<Holder.Reference<Block>> g = BuiltInRegistries.BLOCK.get(BlockID);
-        if (g.isEmpty() || !(ref = g.get()).isBound()) {
-            MDEXBalmLayer.LOGGER.error("Cannot load weighted block entry because the block with ID '{}' does not exist." , BlockID);
+        Optional<Block> g = BuiltInRegistries.BLOCK.getOptional(BlockID);
+        if (g.isEmpty()) {
+            MDEXBalmLayer.LOGGER.warn("Cannot load weighted block entry because the block with ID '{}' does not exist." , BlockID);
         } else {
-            this.Block = ref.value();
+            this.Block = g.get();
         }
         BlockID = null;
     }
@@ -48,7 +49,7 @@ public class WeightedBlockEntry
     {
         return CodecUtils.CreateCodecDirect(
                 ResourceLocation.CODEC.fieldOf("id").forGetter((WeightedBlockEntry e) -> e.BlockID),
-                Weight.CODEC.optionalFieldOf("weight" , Weight.Of(1)).forGetter((WeightedBlockEntry e) -> e.weight),
+                Weight.CODEC.optionalFieldOf("weight" , Weight.ONE).forGetter((WeightedBlockEntry e) -> e.weight),
                 WeightedBlockEntry::new
         );
     }

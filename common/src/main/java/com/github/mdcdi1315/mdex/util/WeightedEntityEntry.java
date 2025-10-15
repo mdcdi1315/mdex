@@ -10,7 +10,6 @@ import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
 
 import com.mojang.serialization.Codec;
 
-import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -36,12 +35,11 @@ public class WeightedEntityEntry
 
     public void Compile()
     {
-        Holder.Reference<EntityType<?>> ref;
-        Optional<Holder.Reference<EntityType<?>>> g = BuiltInRegistries.ENTITY_TYPE.get(EntityID);
-        if (g.isEmpty() || !(ref = g.get()).isBound()) {
+        Optional<EntityType<?>> ent = BuiltInRegistries.ENTITY_TYPE.getOptional(EntityID);
+        if (ent.isEmpty()) {
             MDEXBalmLayer.LOGGER.error("Cannot register an entity entry with ID '{}' because it does not exist." , EntityID);
         } else {
-            this.Entity = ref.value();
+            Entity = ent.get();
         }
         EntityID = null;
     }
@@ -55,7 +53,7 @@ public class WeightedEntityEntry
     {
         return CodecUtils.CreateCodecDirect(
                 ResourceLocation.CODEC.fieldOf("id").forGetter((WeightedEntityEntry e) -> e.EntityID),
-                Weight.CODEC.optionalFieldOf("weight" , Weight.Of(1)).forGetter((WeightedEntityEntry e) -> e.weight),
+                Weight.CODEC.optionalFieldOf("weight" , Weight.ONE).forGetter((WeightedEntityEntry e) -> e.weight),
                 WeightedEntityEntry::new
         );
     }

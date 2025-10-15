@@ -2,6 +2,8 @@ package com.github.mdcdi1315.mdex.codecs;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 
+import com.github.mdcdi1315.mdex.util.StringSupplier;
+
 import com.mojang.datafixers.util.Pair;
 
 import com.mojang.serialization.Codec;
@@ -47,6 +49,7 @@ public final class SingleElementOrListCodec<TElement>
     }
 
     @Override
+    @SuppressWarnings("all")
     public <T> DataResult<Pair<List<TElement>, T>> decode(DynamicOps<T> ops, T input)
     {
         DataResult<Pair<TElement , T>> single = elementcodec.decode(ops , input);
@@ -59,13 +62,9 @@ public final class SingleElementOrListCodec<TElement>
 
             var e2 = list.error();
 
-            if (e2.isPresent()) {
-                String s = String.format("Deserialization failed. \nSingle element codec failed with: %s \nList codec failed with: %s \n" , e.get().message() , e2.get().message());
-                return DataResult.error(() -> s);
-            } else {
-                // Decode successful, return the list.
-                return list;
-            }
+            return e2.isPresent() ?
+                    DataResult.error(new StringSupplier(String.format("Deserialization failed. \nSingle element codec failed with: %s \nList codec failed with: %s \n" , e.get().message() , e2.get().message()))):
+                    list;
         } else {
             // Single element decode successful, return the element wrapped in an immutable list.
             // It is OK to call get() on the data result, since either an error or a valid result will only exist, not both.

@@ -1,8 +1,9 @@
 package com.github.mdcdi1315.mdex.neoforge.api;
 
-import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.block.ModBlocks;
-import net.minecraft.core.BlockPos;
+import com.github.mdcdi1315.mdex.api.TeleportingManager;
+import com.github.mdcdi1315.mdex.api.teleporter.PlayerRotationInformation;
+
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -25,7 +26,11 @@ public final class NeoForgeTeleportingManager
     }
 
     @Override
-    protected boolean TeleportImpl(ServerPlayer player, ServerLevel target, BlockPos teleporterposition, boolean playteleportsound) {
-        return player.teleport(new TeleportTransition(target , new Vec3(teleporterposition.getX() , teleporterposition.getY() , teleporterposition.getZ()) , Vec3.ZERO , 0f , 0f, playteleportsound ? TeleportTransition.PLAY_PORTAL_SOUND : TeleportTransition.DO_NOTHING)) != null;
+    protected boolean TeleportImpl(ServerPlayer player, ServerLevel target, Vec3 placement_position, PlayerRotationInformation rot_info, boolean play_teleport_sound) {
+        if (rot_info == null) {
+            return player.teleport(new TeleportTransition(target , placement_position , Vec3.ZERO , 0f , 0f, play_teleport_sound ? TeleportTransition.PLAY_PORTAL_SOUND : TeleportTransition.DO_NOTHING)) != null;
+        } else {
+            return player.teleport(new TeleportTransition(target , placement_position , Vec3.ZERO , rot_info.GetYRotation(), rot_info.GetXRotation(), play_teleport_sound ? TeleportTransition.PLAY_PORTAL_SOUND : TeleportTransition.DO_NOTHING)) != null;
+        }
     }
 }

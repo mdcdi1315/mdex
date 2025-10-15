@@ -1,11 +1,10 @@
 package com.github.mdcdi1315.mdex.commands;
 
-import com.github.mdcdi1315.mdex.api.MDEXModAPI;
+import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.api.commands.AbstractCommand;
+import com.github.mdcdi1315.mdex.api.saveddata.PerDimensionWorldDataManager;
 import com.github.mdcdi1315.mdex.api.teleporter.TeleporterSpawnData;
 
-import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.core.BlockPos;
@@ -14,8 +13,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.commands.CommandSourceStack;
+import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.DimensionArgument;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 
 public final class RetrieveSpawnDataForPlayerCommand
     extends AbstractCommand
@@ -41,17 +42,18 @@ public final class RetrieveSpawnDataForPlayerCommand
     {
         ServerPlayer sp = EntityArgument.getPlayer(c , "player");
         ServerLevel sl = DimensionArgument.getDimension(c, "dimension");
-        TeleporterSpawnData d = sl.getDataStorage().get(MDEXModAPI.getMethodImplementation().GetTeleportingManager().GetSavedTeleporterDataFactory());
+        TeleporterSpawnData d = new PerDimensionWorldDataManager(sl).Get(TeleportingManager.TELEPORTER_DATA_DIMFILE_NAME, TeleporterSpawnData::new);
         if (d == null) {
-            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location().toString()));
+            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location()));
             return -10;
         }
-        BlockPos p = d.GetLastSpawnPosition(sp);
-        if (p == null) {
+        var p = d.GetLastSpawnInfo(sp);
+        BlockPos pos = p.GetTeleporterPosition();
+        if (p == null || pos == null) {
             c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.getspdatacmdp.nodataforplayer"));
             return -12;
         }
-        var cmp = Component.translatable("mdex.commands.msg.getspdatacmdp.success" , sp.getName().getString() , sl.dimension().location().toString() , p.getX() , p.getY() , p.getZ());
+        var cmp = Component.translatable("mdex.commands.msg.getspdatacmdp.success" , sp.getName().getString() , sl.dimension().location() , pos.getX() , pos.getY() , pos.getZ());
         c.getSource().sendSuccess(() -> cmp , true);
         return 0;
     }

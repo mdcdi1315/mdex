@@ -47,10 +47,17 @@ public class MDEXModConfig
     public boolean ShouldSpawnPortalInDeep = false;
 
     @Comment(
-            "Whether the starter's chest should be placed after all when going to the Mining Dimension for the first time.\n" +
-            "Useful for cases where the datapack has defined a starter chest to be placed, but server admins do not need it."
+            "Defines a value whether the starter's chest should be placed after all when going to the Mining Dimension for the first time.\n" +
+            "Useful for cases where the datapack has defined a starter chest to be placed, but server administrators do not need it."
     )
     public boolean ShouldPlaceStarterChestAtFirstTime = true;
+
+    @Comment(
+            "Defines a value whether teleportation to the Mining Dimension is disabled.\n" +
+            "Useful for those server administrators that want to temporarily disable teleportation to the Mining Dimension.\n" +
+            "Players that are still into the Mining Dimension after this is enabled will remain there, however, and will be able to return to their home dimension."
+    )
+    public boolean DisableTeleportations = false;
 
     public static void Initialize(BalmConfig cfg)
     {

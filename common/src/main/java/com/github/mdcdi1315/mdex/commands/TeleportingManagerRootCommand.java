@@ -6,6 +6,8 @@ public final class TeleportingManagerRootCommand
     extends RegistersSubCommandsAbstractCommand
 {
     public TeleportingManagerRootCommand() {
-        super("teleporting_manager" , new TeleportUsingTeleportingManagerCommand());
+        super("teleporting_manager" ,
+                new TeleportUsingTeleportingManagerCommand(),
+                new TeleportingManagerEvacuateAllCommandFromMiningDim());
     }
 }

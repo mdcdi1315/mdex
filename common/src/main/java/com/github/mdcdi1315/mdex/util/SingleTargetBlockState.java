@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.util;
 
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
+import com.github.mdcdi1315.mdex.codecs.StrictListCodec;
 import com.github.mdcdi1315.mdex.structures.AbstractModdedRuleTest;
 
 import com.mojang.serialization.Codec;
@@ -42,7 +43,8 @@ public final class SingleTargetBlockState
     public static Codec<List<SingleTargetBlockState>> GetListCodec()
     {
         if (list_codec == null) {
-            list_codec = GetCodec().listOf();
+            // Enforce strict parsing for lists
+            list_codec = new StrictListCodec<>(GetCodec());
         }
         return list_codec;
     }

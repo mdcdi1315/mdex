@@ -41,6 +41,7 @@ public final class BiomeEntitySpawnEntry
     {
         Entity = null;
         costs = null;
+        weight = null; // We can null out the weight value as well. Wondering why did not included it.
     }
 
     @Override

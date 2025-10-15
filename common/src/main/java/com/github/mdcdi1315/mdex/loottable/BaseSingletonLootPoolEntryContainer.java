@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.loottable;
 
 import com.github.mdcdi1315.mdex.util.Extensions;
+import com.github.mdcdi1315.mdex.codecs.ListCodec;
 import com.github.mdcdi1315.mdex.codecs.CodecUtils;
 
 import com.mojang.datafixers.Products;
@@ -138,7 +139,7 @@ public abstract class BaseSingletonLootPoolEntryContainer
                 CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("weight" , DEFAULT_WEIGHT).forGetter((TB b) -> b.weight),
                 CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("quality" , DEFAULT_QUALITY).forGetter((TB b) -> b.quality)
         ).and(CommonFields(instance).t1()).and(
-                LootItemFunctions.ROOT_CODEC.listOf().optionalFieldOf("functions", List.of()).forGetter((TB b) -> b.functions)
+                new ListCodec<>(LootItemFunctions.ROOT_CODEC).optionalFieldOf("functions", List.of()).forGetter((TB b) -> b.functions)
         );
     }
 }

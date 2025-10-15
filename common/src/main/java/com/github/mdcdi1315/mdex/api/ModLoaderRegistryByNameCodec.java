@@ -2,6 +2,8 @@ package com.github.mdcdi1315.mdex.api;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 
+import com.github.mdcdi1315.mdex.util.StringSupplier;
+
 import com.mojang.datafixers.util.Pair;
 
 import com.mojang.serialization.Codec;
@@ -48,23 +50,18 @@ public final class ModLoaderRegistryByNameCodec<TElement>
 
         var err = ld.error();
 
-        if (err.isPresent())
-        {
+        if (err.isPresent()) {
             Supplier<String> m = err.get()::message;
             return DataResult.error(m);
+        } else {
+            var result = ld.result().get();
+
+            Optional<TElement> opt = registry.GetElementValue(result.getFirst());
+
+            return opt.isEmpty() ?
+                    DataResult.error(new StringSupplier(String.format("Cannot find element %s in registry %s because it does not exist." , result.getFirst() , registry.GetRegistryKey()))) :
+                    DataResult.success(Pair.of(opt.get() , result.getSecond()));
         }
-
-        var result = ld.result().get();
-
-        Optional<TElement> opt = registry.GetElementValue(result.getFirst());
-
-        if (opt.isEmpty())
-        {
-            String s = String.format("Cannot find element %s in registry %s because it does not exist." , result.getFirst() , registry.GetRegistryKey());
-            return DataResult.error(() -> s);
-        }
-
-        return DataResult.success(Pair.of(opt.get() , result.getSecond()));
     }
 
     @Override
@@ -72,12 +69,8 @@ public final class ModLoaderRegistryByNameCodec<TElement>
     {
         Optional<ResourceKey<TElement>> r = registry.GetResourceKey(input);
 
-        if (r.isEmpty())
-        {
-            String s = String.format("Cannot find the element in the registry %s. Element: %s Hash code: %d" , registry.GetRegistryKey() , input , input.hashCode());
-            return DataResult.error(() -> s);
-        }
-
-        return ResourceLocation.CODEC.encode(r.get().location() , ops , prefix);
+        return r.isEmpty() ?
+                DataResult.error(new StringSupplier(String.format("Cannot find the element in the registry %s. Element: %s Hash code: %d" , registry.GetRegistryKey() , input , input.hashCode()))) :
+                ResourceLocation.CODEC.encode(r.get().location() , ops , prefix);
     }
 }

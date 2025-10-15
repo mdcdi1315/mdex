@@ -53,7 +53,7 @@ public class WeightedEntityEntry
     {
         return CodecUtils.CreateCodecDirect(
                 ResourceLocation.CODEC.fieldOf("id").forGetter((WeightedEntityEntry e) -> e.EntityID),
-                Weight.CODEC.optionalFieldOf("weight" , Weight.Of(1)).forGetter((WeightedEntityEntry e) -> e.weight),
+                Weight.CODEC.optionalFieldOf("weight" , Weight.ONE).forGetter((WeightedEntityEntry e) -> e.weight),
                 WeightedEntityEntry::new
         );
     }

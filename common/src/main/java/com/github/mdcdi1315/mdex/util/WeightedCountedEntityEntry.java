@@ -41,8 +41,8 @@ public class WeightedCountedEntityEntry
     {
         return CodecUtils.CreateCodecDirect(
                 ResourceLocation.CODEC.fieldOf("id").forGetter((WeightedCountedEntityEntry e) -> e.EntityID),
-                Weight.CODEC.fieldOf("weight").orElse(Weight.Of(1)).forGetter((WeightedCountedEntityEntry e) -> e.weight),
-                IntProvider.codec(1 , 32).fieldOf("count").orElse(ConstantInt.of(1)).forGetter((WeightedCountedEntityEntry e) -> e.Count),
+                Weight.CODEC.optionalFieldOf("weight" , Weight.ONE).forGetter((WeightedCountedEntityEntry e) -> e.weight),
+                IntProvider.codec(1 , 32).optionalFieldOf("count" , ConstantInt.of(1)).forGetter((WeightedCountedEntityEntry e) -> e.Count),
                 WeightedCountedEntityEntry::new
         );
     }

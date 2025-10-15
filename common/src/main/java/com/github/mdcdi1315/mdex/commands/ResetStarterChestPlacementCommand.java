@@ -1,10 +1,10 @@
 package com.github.mdcdi1315.mdex.commands;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentException;
-
-import com.github.mdcdi1315.mdex.api.MDEXModAPI;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.api.commands.AbstractCommand;
+import com.github.mdcdi1315.mdex.api.saveddata.PerDimensionWorldDataManager;
+import com.github.mdcdi1315.mdex.api.teleporter.TeleporterSpawnData;
 import com.github.mdcdi1315.mdex.api.teleporter.StarterChestPlacementInfo;
 
 import com.mojang.brigadier.context.CommandContext;
@@ -37,13 +37,13 @@ public final class ResetStarterChestPlacementCommand
             throws CommandSyntaxException
     {
         ServerLevel sl = DimensionArgument.getDimension(c , "dimension");
-        var ds = sl.getDataStorage().get(MDEXModAPI.getMethodImplementation().GetTeleportingManager().GetSavedTeleporterDataFactory() , TeleportingManager.TELEPORTER_DATA_DIMFILE_NAME);
+        var ds = new PerDimensionWorldDataManager(sl).Get(TeleportingManager.TELEPORTER_DATA_DIMFILE_NAME , TeleporterSpawnData::new);
         if (ds == null) {
-            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location().toString()));
+            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location()));
             return -1;
         }
         if (ds.GetPlacementInfo() == StarterChestPlacementInfo.IRRELEVANT) {
-            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.starterchestplacement.irrelevant_placement" , sl.dimension().location().toString()));
+            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.starterchestplacement.irrelevant_placement" , sl.dimension().location()));
             return -2;
         }
         try {

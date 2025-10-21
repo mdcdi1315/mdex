@@ -24,3 +24,4 @@ This happens due to the fact that Minecraft's implementation details are changed
 | The Biome Spawn Additions datapack registry | [Link](./BiomeSpawnAdditions/Index.md) |
 | Mod-provided structure types                | [Link](./StructureTypes/Index.md)      |
 | Mod-provided feature placement modifiers | [Link](./FeaturePlacementModifierTypes/Index.md) |
+| Mod-provided loot table helpers                  | [Link](./LootTableHelpers/Index.md) |

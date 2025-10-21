@@ -12,7 +12,7 @@ allowing them to only load when specific mods are loaded, if required.
 | Customizable Monster Room | [Link](CustomizableMonsterRoom.md)                                                                                                                              |
 | Floating Island                     | [Simple](SimpleFloatingIsland.md) [Advanced](AdvancedFloatingIsland.md)                                                                                         |
 | Modded Geode					   | [Link](ModdedGeode.md)                                                                                                                                          |
-| Modded Ore                           | [Simple](ModdedOre.md) [Legacy](ModdedLegacyOre.md) [Scattered](ModdedScatteredOre.md) [Ore Vein](OreVein.md) [Noise-Based Generation Ore](NoiseGenBasedOre.md) [Create mod Layered Ore](CreateLayeredOre.md) |
+| Modded Ore                           | [Simple](ModdedOre.md) [Legacy](ModdedLegacyOre.md) [Scattered](ModdedScatteredOre.md) [Ore Vein](OreVein.md) [Noise-Based Generation Ore](NoiseGenBasedOre.md) [Create mod Layered Ore](CreateLayeredOre.md) [Classic Ore Vein](./ModdedClassicOreVein.md) |
 | Modded Spring                      | [Link](ModdedSpring.md) |
 | Modded Vegetation Patch     | [Link](ModdedVegetationPatch.md) |
 | Modded Fallen Tree              | [Link](ModdedFallenTree.md) |

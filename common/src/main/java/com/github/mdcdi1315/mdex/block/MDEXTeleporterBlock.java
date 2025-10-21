@@ -24,9 +24,9 @@ public class MDEXTeleporterBlock
         extends MDEXBaseBlock
         implements EntityBlock
 {
-    public MDEXTeleporterBlock(Properties properties , String descid)
+    public MDEXTeleporterBlock(Properties properties)
     {
-        super(properties , descid);
+        super(properties);
         this.registerDefaultState(this.stateDefinition.any());
     }
 

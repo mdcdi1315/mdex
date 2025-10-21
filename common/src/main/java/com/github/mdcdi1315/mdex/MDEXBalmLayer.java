@@ -1,5 +1,7 @@
 package com.github.mdcdi1315.mdex;
 
+import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
+
 // Mod interfaces
 import com.github.mdcdi1315.mdex.item.ModItems;
 import com.github.mdcdi1315.mdex.api.MDEXModAPI;
@@ -111,6 +113,7 @@ public final class MDEXBalmLayer
         LOGGER.info("Mining Dimension: EX Initial bootstrapping succeeded in {} seconds." , (System.nanoTime() - time) / 1000000000d);
     }
 
+    @MaybeNull
     public static ResourceLocation id(String path) {
         return ResourceLocation.tryBuild(MODID, path);
     }

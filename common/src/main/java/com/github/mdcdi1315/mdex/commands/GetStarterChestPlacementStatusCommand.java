@@ -35,18 +35,19 @@ public final class GetStarterChestPlacementStatusCommand
     {
         ServerLevel sl = DimensionArgument.getDimension(c , "dimension");
         var ds = new PerDimensionWorldDataManager(sl).Get(TeleportingManager.TELEPORTER_DATA_DIMFILE_NAME , TeleporterSpawnData::new);
+        String dim_name = sl.dimension().location().toString();
         if (ds == null) {
-            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location()));
+            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , dim_name));
             return -1;
         }
         switch (ds.GetPlacementInfo())
         {
             case PLACED -> {
-                Component co = Component.translatable("mdex.commands.msg.getstarterchestplacement.success.placed" , sl.dimension().location());
+                Component co = Component.translatable("mdex.commands.msg.getstarterchestplacement.success.placed" ,  dim_name);
                 c.getSource().sendSuccess(() -> co , true);
             }
             case NOT_PLACED -> {
-                Component co = Component.translatable("mdex.commands.msg.getstarterchestplacement.success.not_placed" , sl.dimension().location());
+                Component co = Component.translatable("mdex.commands.msg.getstarterchestplacement.success.not_placed" , dim_name);
                 c.getSource().sendSuccess(() -> co , true);
             }
             case IRRELEVANT -> c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.getstarterchestplacement.irrelevant"));

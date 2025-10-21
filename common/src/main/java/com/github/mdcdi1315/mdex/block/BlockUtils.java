@@ -365,6 +365,7 @@ public final class BlockUtils
         return false;
     }
 
+    @Deprecated(since = "1.7.1" , forRemoval = true)
     public static String ConstructExactDescriptionID(String namespace, String path)
     {
         ArgumentNullException.ThrowIfNull(namespace , "namespace");
@@ -372,6 +373,7 @@ public final class BlockUtils
         return Util.makeDescriptionId("block" , ResourceLocation.tryBuild(namespace , path));
     }
 
+    @Deprecated(since = "1.7.1" , forRemoval = true)
     public static String ConstructExactDescriptionID(String pathonly)
     {
         ArgumentNullException.ThrowIfNull(pathonly , "pathonly");

@@ -71,14 +71,18 @@ public final class Layer
     public void Compile()
     {
         try {
-            ArrayList<List<SingleTargetBlockState>> finaltargets = new ArrayList<>(targets);
+            ArrayList<List<SingleTargetBlockState>> finaltargets = new ArrayList<>(targets.size());
+            for (var l : targets) {
+                finaltargets.add(new ArrayList<>(l));
+            }
+            targets = null; // Cleanup targets list, we have saved it to the local variable
             for (int I = 0; I < finaltargets.size(); I++)
             {
                 SingleTargetBlockState entry;
                 List<SingleTargetBlockState> inner = finaltargets.get(I);
                 for (int J = 0; J < inner.size(); J++)
                 {
-                    entry = inner.get(I);
+                    entry = inner.get(J);
                     try {
                         entry.Compile();
                         if (!entry.IsCompiled()) {

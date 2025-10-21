@@ -71,14 +71,17 @@ public final class Layer
     public void Compile()
     {
         try {
-            ArrayList<List<SingleTargetBlockState>> finaltargets = new ArrayList<>(targets);
+            ArrayList<List<SingleTargetBlockState>> finaltargets = new ArrayList<>(targets.size());
+            for (var i : targets) {
+                finaltargets.add(new ArrayList<>(i));
+            }
             for (int I = 0; I < finaltargets.size(); I++)
             {
                 SingleTargetBlockState entry;
                 List<SingleTargetBlockState> inner = finaltargets.get(I);
                 for (int J = 0; J < inner.size(); J++)
                 {
-                    entry = inner.get(I);
+                    entry = inner.get(J);
                     try {
                         entry.Compile();
                         if (!entry.IsCompiled()) {

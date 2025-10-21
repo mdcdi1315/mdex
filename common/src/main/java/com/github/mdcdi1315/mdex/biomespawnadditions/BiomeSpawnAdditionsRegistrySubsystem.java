@@ -143,6 +143,7 @@ public final class BiomeSpawnAdditionsRegistrySubsystem
         {
             try {
                 i.ApplyChanges();
+                applied++;
             } catch (Exception e) {
                 MDEXBalmLayer.LOGGER.error("BiomeSpawnAdditions: Cannot apply new entities due to a runtime error. This error will be logged only once.", e);
             }

@@ -9,7 +9,6 @@ import com.github.mdcdi1315.mdex.util.BlockNotFoundException;
 import com.github.mdcdi1315.mdex.util.FluidNotFoundException;
 import com.github.mdcdi1315.mdex.util.BlockPropertyNotFoundException;
 
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
@@ -365,17 +364,38 @@ public final class BlockUtils
         return false;
     }
 
+    /**
+     * Constructs a description ID for the specified block, and returns it as a string.
+     * @param location The resource location of the block to use.
+     * @return The constructed description ID.
+     * @throws ArgumentNullException {@code location} was {@code null}.
+     * @since 1.7.1
+     */
+    public static String ConstructExactDescriptionID(ResourceLocation location)
+            throws ArgumentNullException
+    {
+        ArgumentNullException.ThrowIfNull(location , "location");
+        String namespace = location.getNamespace();
+        if (namespace.isEmpty()) {
+            return String.format("block.UNKNOWN.%s", location.getPath().replace('/' , '.'));
+        } else {
+            return String.format("block.%s.%s" , namespace , location.getPath().replace('/' , '.'));
+        }
+    }
+
+    @Deprecated(since = "1.7.1" , forRemoval = true)
     public static String ConstructExactDescriptionID(String namespace, String path)
     {
         ArgumentNullException.ThrowIfNull(namespace , "namespace");
         ArgumentNullException.ThrowIfNull(path, "path");
-        return Util.makeDescriptionId("block" , ResourceLocation.tryBuild(namespace , path));
+        return ConstructExactDescriptionID(ResourceLocation.tryBuild(namespace , path));
     }
 
+    @Deprecated(since = "1.7.1" , forRemoval = true)
     public static String ConstructExactDescriptionID(String pathonly)
     {
         ArgumentNullException.ThrowIfNull(pathonly , "pathonly");
-        return Util.makeDescriptionId("block" , ResourceLocation.tryBuild("" , pathonly));
+        return ConstructExactDescriptionID(ResourceLocation.tryBuild("" , pathonly));
     }
 
     // Generic declaration for returning the property comparison value from compareTo contexts

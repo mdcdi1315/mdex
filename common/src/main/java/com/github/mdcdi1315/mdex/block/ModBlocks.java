@@ -43,7 +43,7 @@ public final class ModBlocks
                             .sound(SoundType.METAL)
                             .requiresCorrectToolForDrops()
                             .mapColor(MapColor.METAL),
-                    "teleporter"
+                    identifier
             ),
             ModBlocks::GetBlockItem ,
             MDEXBalmLayer.BlockID("teleporter") ,
@@ -56,6 +56,7 @@ public final class ModBlocks
 
     private static void InitializeHardstoneBlockFamily(BalmBlocks blocks)
     {
+        ResourceLocation creativebuildblockstab = ResourceLocation.tryParse(CREATIVE_BUILDING_BLOCKS_TAB);
         ResourceLocation naturalblockstab = ResourceLocation.tryParse(CREATIVE_NATURAL_BLOCKS_TAB);
 
         blocks.register(
@@ -65,7 +66,7 @@ public final class ModBlocks
                                 .sound(SoundType.STONE)
                                 .requiresCorrectToolForDrops()
                                 .mapColor(MapColor.STONE),
-                        "hardstone"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem ,
                 MDEXBalmLayer.BlockID("hardstone") ,
@@ -79,11 +80,11 @@ public final class ModBlocks
                                 .sound(SoundType.STONE)
                                 .requiresCorrectToolForDrops()
                                 .mapColor(MapColor.STONE),
-                        "hardstone_bricks"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("hardstone_bricks"),
-                ResourceLocation.tryParse(CREATIVE_BUILDING_BLOCKS_TAB)
+                creativebuildblockstab
         );
 
         blocks.register(
@@ -99,11 +100,11 @@ public final class ModBlocks
                                 .sound(SoundType.STONE)
                                 .requiresCorrectToolForDrops()
                                 .mapColor(MapColor.STONE),
-                        "hardstone_brick_stairs"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("hardstone_brick_stairs"),
-                ResourceLocation.tryParse(CREATIVE_BUILDING_BLOCKS_TAB)
+                creativebuildblockstab
         );
 
         blocks.register(
@@ -113,11 +114,11 @@ public final class ModBlocks
                                 .sound(SoundType.STONE)
                                 .requiresCorrectToolForDrops()
                                 .mapColor(MapColor.STONE),
-                        "hardstone_brick_slab"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("hardstone_brick_slab"),
-                ResourceLocation.tryParse(CREATIVE_BUILDING_BLOCKS_TAB)
+                creativebuildblockstab
         );
 
         InitializeHardstoneOres(blocks , naturalblockstab);
@@ -132,7 +133,7 @@ public final class ModBlocks
                                 .sound(SoundType.STONE)
                                 .requiresCorrectToolForDrops()
                                 .mapColor(MapColor.STONE),
-                        "granite"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("granite"),
@@ -146,7 +147,7 @@ public final class ModBlocks
                                 .sound(SoundType.STONE)
                                 .requiresCorrectToolForDrops()
                                 .mapColor(MapColor.STONE),
-                        "polished_granite"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("polished_granite"),
@@ -163,7 +164,7 @@ public final class ModBlocks
                                 .sound(SoundType.STONE)
                                 .requiresCorrectToolForDrops()
                                 .mapColor(MapColor.STONE),
-                        "polished_granite_stairs"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("polished_granite_stairs"),
@@ -177,7 +178,7 @@ public final class ModBlocks
                                 .sound(SoundType.STONE)
                                 .requiresCorrectToolForDrops()
                                 .mapColor(MapColor.STONE),
-                        "polished_granite_slab"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("polished_granite_slab"),
@@ -197,8 +198,8 @@ public final class ModBlocks
                             .lightLevel(BlockUtils.GetBlockLightEmissionWhenLit(9))
                             .requiresCorrectToolForDrops()
                             .strength(4.27F, 3.45F)
-                            .setId(ResourceKey.create(Registries.BLOCK , MDEXBalmLayer.BlockID("hardstone_redstone_ore")))
-                            .overrideDescription(BlockUtils.ConstructExactDescriptionID(MDEXBalmLayer.MODID , "hardstone_redstone_ore"))
+                            .setId(ResourceKey.create(Registries.BLOCK , identifier))
+                            .overrideDescription(BlockUtils.ConstructExactDescriptionID(identifier))
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("hardstone_redstone_ore"),
@@ -210,7 +211,7 @@ public final class ModBlocks
                         BlockBehaviour.Properties.of()
                                 .requiresCorrectToolForDrops()
                                 .strength(4.18F , 3.45f),
-                        "hardstone_iron_ore"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("hardstone_iron_ore"),
@@ -222,7 +223,7 @@ public final class ModBlocks
                         BlockBehaviour.Properties.of()
                                 .requiresCorrectToolForDrops()
                                 .strength(4.1745F , 3.45f),
-                        "hardstone_copper_ore"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("hardstone_copper_ore"),
@@ -234,7 +235,7 @@ public final class ModBlocks
                         BlockBehaviour.Properties.of()
                                 .requiresCorrectToolForDrops()
                                 .strength(4.7774F , 3.45F),
-                        "hardstone_emerald_ore"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("hardstone_emerald_ore"),
@@ -246,7 +247,7 @@ public final class ModBlocks
                         BlockBehaviour.Properties.of()
                                 .requiresCorrectToolForDrops()
                                 .strength(4.19008484f , 3.45f),
-                        "hardstone_gold_ore"
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 MDEXBalmLayer.BlockID("hardstone_gold_ore"),
@@ -258,7 +259,7 @@ public final class ModBlocks
                         BlockBehaviour.Properties.of()
                                 .requiresCorrectToolForDrops()
                                 .strength(4.8f , 3.45f),
-                        "hardstone_diamond_ore",
+                        identifier,
                         UniformInt.of(3 , 7)
                 ),
                 ModBlocks::GetBlockItem,
@@ -271,7 +272,7 @@ public final class ModBlocks
                         BlockBehaviour.Properties.of()
                                 .requiresCorrectToolForDrops()
                                 .strength(4.612f , 3.45f),
-                        "hardstone_lapis_ore",
+                        identifier,
                         UniformInt.of(2 , 5)
                 ),
                 ModBlocks::GetBlockItem,

@@ -7,6 +7,7 @@ import com.github.mdcdi1315.mdex.api.TeleportRequestState;
 import com.github.mdcdi1315.mdex.block.entity.TeleporterTileEntity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.InteractionHand;
@@ -24,9 +25,9 @@ public class MDEXTeleporterBlock
         extends MDEXBaseBlock
         implements EntityBlock
 {
-    public MDEXTeleporterBlock(Properties properties , String descid)
+    public MDEXTeleporterBlock(Properties properties , ResourceLocation location)
     {
-        super(properties , descid);
+        super(properties , location);
         this.registerDefaultState(this.stateDefinition.any());
     }
 

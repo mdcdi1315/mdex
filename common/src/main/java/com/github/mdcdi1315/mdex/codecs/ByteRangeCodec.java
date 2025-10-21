@@ -1,5 +1,7 @@
 package com.github.mdcdi1315.mdex.codecs;
 
+import com.github.mdcdi1315.mdex.util.StringSupplier;
+
 import com.mojang.serialization.DataResult;
 
 public final class ByteRangeCodec
@@ -20,10 +22,13 @@ public final class ByteRangeCodec
 
     @Override
     protected DataResult<Byte> Validate(Byte number) {
-        if (number >= min_value && number <= max_value) {
-            return DataResult.success(number);
-        }
-        String s = String.format("Value %d outside of range [%d..%d]" , number , min_value , max_value);
-        return DataResult.error(() -> s, number);
+        return (number >= min_value && number <= max_value) ?
+                DataResult.success(number) :
+                DataResult.error(
+                        new StringSupplier(
+                                String.format("Value %d outside of range [%d..%d]" , number , min_value , max_value)
+                        ),
+                        number
+                );
     }
 }

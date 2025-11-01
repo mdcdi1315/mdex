@@ -15,14 +15,14 @@ configurations {
 }
 
 dependencies {
-    compileOnly(project(':common')) {
+    compileOnly(project(':platform_agnostic')) {
         capabilities {
             requireCapability "$group:${mod_id.replace('_', '-')}"
         }
     }
-    commonJava project(path: ':common', configuration: 'commonJava')
-    commonResources project(path: ':common', configuration: 'commonResources')
-    commonGeneratedResources project(path: ':common', configuration: 'commonGeneratedResources')
+    commonJava project(path: ':platform_agnostic', configuration: 'commonJava')
+    commonResources project(path: ':platform_agnostic', configuration: 'commonResources')
+    commonGeneratedResources project(path: ':platform_agnostic', configuration: 'commonGeneratedResources')
 }
 
 tasks.named('compileJava', JavaCompile) {

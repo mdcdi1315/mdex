@@ -28,8 +28,8 @@ versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
 [[dependencies.${mod_id}]]
-modId="balm"
+modId="mdcdi1315_base_mods_lib"
 mandatory=true
-versionRange="${balm_version_range}"
-ordering="NONE"
+versionRange="[${base_mods_lib_version},)"
+ordering="AFTER"
 side="BOTH"

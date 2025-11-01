@@ -28,4 +28,7 @@ logs
 # Visual Studio (Used in developing Docs branch)
 .vs
 
+# Subfolders created in deps directory must be excluded
+deps/*/
+
 common/src/generated/resources/.cache

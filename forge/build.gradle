@@ -1,8 +1,10 @@
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
+
 plugins {
     id 'multiloader-loader'
-    id 'net.neoforged.moddev.legacyforge'
+    id 'com.modrinth.minotaur'
     id 'net.darkhax.curseforgegradle'
-    id "com.modrinth.minotaur"
+    id 'net.neoforged.moddev.legacyforge'
 }
 
 mixin {
@@ -13,16 +15,12 @@ mixin {
     config("${mod_id}.forge.mixins.json")
 }
 
-base {
-    archivesName = "${mod_id}-Forge-${minecraft_version}-${release_cycle}"
-}
-
 legacyForge {
     version = "${minecraft_version}-${forge_version}"
 
     validateAccessTransformers = true
 
-    def at = project(':common').file('src/main/resources/META-INF/accesstransformer.cfg')
+    def at = project(':platform_agnostic').file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
         accessTransformers = ["src/main/resources/META-INF/accesstransformer.cfg"]
     }
@@ -34,7 +32,6 @@ legacyForge {
 
     runs {
         client {
-
             client()
         }
         server {
@@ -67,7 +64,7 @@ jar {
 apply from: rootProject.file('repositories.gradle')
 apply from: 'dependencies.gradle'
 
-task curseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+task curseforge(type: TaskPublishCurseForge) {
     dependsOn('build')
     description = 'Publishes the Forge build to CurseForge.'
     group = 'publishing'
@@ -81,7 +78,7 @@ task curseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
     if (projectId) {
         def mainFile = upload(findProperty("curseforge_project_id"), file("${project.buildDir}/libs/${base.archivesName}-${version}.jar"))
         mainFile.changelog = rootProject.file('CHANGELOG.md').text
-        mainFile.addRequirement("balm")
+        mainFile.addRequirement("mdcdi1315_base_mods_lib")
         project.minecraft_versions.split(',').toList().each { mainFile.addGameVersion(it) }
         mainFile.releaseType = "release"
     }
@@ -98,6 +95,6 @@ modrinth {
     syncBodyFrom = rootProject.file("modpage.md").text
     loaders = ['forge']
     dependencies {
-        required.project "balm"
+        required.project "mdcdi1315_base_mods_lib"
     }
 }

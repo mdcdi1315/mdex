@@ -1,0 +1,23 @@
+
+// Archived dependencies resolver script - resolves additional Jar dependencies.
+// This is applied for each sub-project.
+
+dependencies {
+    var rp = project.rootProject;
+    if (rp != null)
+    {
+        Directory d = rp.layout.projectDirectory.dir("deps");
+        File rt = d.getAsFile();
+        if (rt.exists() && (rt = d.dir(project.name).getAsFile()).exists())
+        {
+            String name = rt.getName();
+            var ft = fileTree(rt) { include '*.jar' };
+            logger.info("Applying %d dependencies from deps directory!" , ft.getFiles().size());
+            if (name.equals("fabric")) {
+                project.dependencies.modImplementation ft;
+            } else {
+                project.dependencies.implementation ft;
+            }
+        }
+    }
+}

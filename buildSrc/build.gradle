@@ -1,3 +1,13 @@
 plugins {
+    id 'java-gradle-plugin'
     id 'groovy-gradle-plugin'
+}
+
+gradlePlugin {
+    plugins {
+        archive_expander_plugin {
+            id = 'com.github.mdcdi1315.mods.infrastructure.archive_expander'
+            implementationClass = "com.github.mdcdi1315.multiloader_infrastructure.ArchiveExpander"
+        }
+    }
 }

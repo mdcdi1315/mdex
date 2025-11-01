@@ -1,8 +1,9 @@
 plugins {
     id 'fabric-loom' version '1.9-SNAPSHOT' apply(false)
+    id 'com.modrinth.minotaur' version '2.+' apply(false)
     id 'net.neoforged.moddev' version '2.0.107' apply(false)
+    id 'com.github.mdcdi1315.mods.infrastructure.archive_expander'
     id 'net.darkhax.curseforgegradle' version '1.1.26' apply(false)
-    id "com.modrinth.minotaur" version "2.+" apply(false)
 }
 
 subprojects {

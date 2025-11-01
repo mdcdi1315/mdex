@@ -1,6 +1,0 @@
-{
-	"parent": "minecraft:item/generated",
-	"textures": {
-		"layer0": "mdcdi1315_md:item/fused_copper_and_iron_ingot"
-	}
-}

@@ -1,8 +1,0 @@
-{
-	"parent": "mdcdi1315_md:slab_block_texsideis16by8",
-	"textures": {
-		"bottom": "mdcdi1315_md:block/polished_granite",
-		"side": "mdcdi1315_md:block/polished_granite_side",
-		"top": "mdcdi1315_md:block/polished_granite"
-	}
-}

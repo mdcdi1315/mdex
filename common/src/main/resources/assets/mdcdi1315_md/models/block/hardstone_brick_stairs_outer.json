@@ -1,8 +1,0 @@
-{
-	"parent": "minecraft:block/outer_stairs",
-	"textures": {
-		"bottom": "mdcdi1315_md:block/hardstone_bricks",
-		"side": "mdcdi1315_md:block/hardstone_bricks",
-		"top": "mdcdi1315_md:block/hardstone_bricks"
-	}
-}

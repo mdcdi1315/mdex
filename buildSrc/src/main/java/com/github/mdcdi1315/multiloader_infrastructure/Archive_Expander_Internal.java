@@ -49,8 +49,23 @@ public final class Archive_Expander_Internal
 
     private static boolean DirectoryFileFilterImpl(File t) { return t.isDirectory(); }
 
+    private static void ExtractFileTo(File from, File to)
+            throws IOException
+    {
+        try (
+                var source = new FileInputStream(from);
+                var dest = new FileOutputStream(to);
+        ) {
+            int rb;
+            byte[] bytes = new byte[2048];
+            while ((rb = source.read(bytes)) > -1) {
+                dest.write(bytes, 0 , rb);
+            }
+        }
+    }
+
     public static void ExpandArchives(Project p, Logger logger, boolean update)
-            throws java.io.IOException
+            throws IOException
     {
         var root_dir = p.getLayout().getProjectDirectory().dir("deps");
 
@@ -114,6 +129,22 @@ public final class Archive_Expander_Internal
                 continue;
             }
 
+            String jdocs = properties_map.get("javadoc");
+
+            if (jdocs != null)
+            {
+                var dir = root_dir.dir("java_docs");
+                File other = dir.getAsFile();
+                if (!other.exists()) { other.mkdir(); }
+                for (File fo : ft)
+                {
+                    if (fo.getName().equals(jdocs)) {
+                        ExtractFileTo(fo , dir.file(jdocs).getAsFile());
+                        break;
+                    }
+                }
+            }
+
             String k, v;
             int mapping_index;
             Directory base_dir;
@@ -127,16 +158,7 @@ public final class Archive_Expander_Internal
                     for (File zf : ft)
                     {
                         if (zf.getName().equals(v)) {
-                            try (
-                                    var dest = new FileOutputStream(base_dir.file(v).getAsFile());
-                                    var source = new FileInputStream(zf);
-                            ) {
-                                int rb;
-                                byte[] bytes = new byte[2048];
-                                while ((rb = source.read(bytes)) > -1) {
-                                    dest.write(bytes, 0 , rb);
-                                }
-                            }
+                            ExtractFileTo(zf , base_dir.file(v).getAsFile());
                             break;
                         }
                     }

@@ -1,0 +1,9 @@
+{
+    "replace": false,
+    "values": [
+		"mdex:hardstone_iron_ore",
+		"mdex:hardstone_copper_ore",
+        "mdex:teleporter",
+        "mdex:granite"
+    ]
+}

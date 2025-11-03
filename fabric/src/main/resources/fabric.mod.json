@@ -26,10 +26,12 @@
 	"license": "${license}",
 	"environment": "*",
 	"entrypoints": {
-		"main": [
-			"${group}.${mod_id}.fabric.MDEXFabricEntryPoint"
+		"mdcdi1315_basemodslib_server": [
+			"${group}.${mod_id}.MDEXModInstance"
 		],
-		"client": [],
+		"mdcdi1315_basemodslib_client": [
+			"${group}.${mod_id}.MDEXClientModInstance"
+		],
 		"fabric-datagen": []
 	},
 	"mixins": [

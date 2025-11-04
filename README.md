@@ -1,4 +1,6 @@
 
+# This mod version has been now RETIRED. No further updates will be added to the V1 version of the mod.
+
 ## Mining Dimension: EX
 
 This is another [Minecraft: Java Edition](https://minecraft.net/en-us) mining dimension mod that is based on Max Henkel's

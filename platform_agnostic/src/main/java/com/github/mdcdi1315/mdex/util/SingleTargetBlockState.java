@@ -4,7 +4,7 @@ import com.github.mdcdi1315.mdex.dco_logic.Compilable;
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 import com.github.mdcdi1315.basemodslib.codecs.StrictListCodec;
-// import com.github.mdcdi1315.mdex.structures.AbstractModdedRuleTest;
+import com.github.mdcdi1315.mdex.structures.AbstractModdedRuleTest;
 
 import com.mojang.serialization.Codec;
 
@@ -53,7 +53,6 @@ public final class SingleTargetBlockState
 
     public void Compile() {
         State.Compile();
-        /*
         if (State.IsCompiled())
         {
             if (Target instanceof AbstractModdedRuleTest amrt) {
@@ -62,7 +61,7 @@ public final class SingleTargetBlockState
             } else {
                 compiled = true;
             }
-        }*/
+        }
     }
 
     @Override

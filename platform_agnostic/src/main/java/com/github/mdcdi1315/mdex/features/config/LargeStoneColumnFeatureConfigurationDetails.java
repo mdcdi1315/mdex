@@ -5,6 +5,8 @@ import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.util.valueproviders.FloatProvider;
 
@@ -26,10 +28,10 @@ public final class LargeStoneColumnFeatureConfigurationDetails
     public final byte minRadiusForWind;
     public final float minBluntnessForWind;
 
-    public static Codec<LargeStoneColumnFeatureConfigurationDetails> GetCodec()
+    public static MapCodec<LargeStoneColumnFeatureConfigurationDetails> GetCodec()
     {
         Codec<FloatProvider> FP_FROMZEROPOINTONE_TOTEN = FloatProvider.codec(0.1F, 10.0F);
-        return CodecUtils.CreateCodecDirect(
+        return CodecUtils.CreateMapCodecDirect(
                 CompilableBlockState.GetCodec().fieldOf("block_state").forGetter((LargeStoneColumnFeatureConfigurationDetails p) -> p.BlockState),
                 CodecUtils.ShortRange(1, 512).optionalFieldOf("floor_to_ceiling_search_range" , (short)30).forGetter((LargeStoneColumnFeatureConfigurationDetails c) -> c.floorToCeilingSearchRange),
                 IntProvider.codec(1, 60).fieldOf("column_radius").forGetter((LargeStoneColumnFeatureConfigurationDetails c) -> c.columnRadius),

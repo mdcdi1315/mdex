@@ -9,6 +9,7 @@ import com.github.mdcdi1315.mdex.block.blockstateproviders.AbstractBlockStatePro
 import com.github.mdcdi1315.mdex.features.customizablemonsterroom.ChestPlacementConfig;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.ConstantInt;
@@ -21,10 +22,10 @@ import java.util.ArrayList;
 public final class CustomizableMonsterRoomConfigurationDetails
     implements IModdedFeatureConfigurationDetails
 {
-    public static Codec<CustomizableMonsterRoomConfigurationDetails> GetCodec()
+    public static MapCodec<CustomizableMonsterRoomConfigurationDetails> GetCodec()
     {
         Codec<List<WeightedEntityEntry>> e = new StrictListCodec<>(WeightedEntityEntry.GetCodec());
-        return CodecUtils.CreateCodecDirect(
+        return CodecUtils.CreateMapCodecDirect(
                 ResourceLocation.CODEC.fieldOf("spawner_block").forGetter((CustomizableMonsterRoomConfigurationDetails cfg) -> cfg.SpawnerBlock_I),
                 AbstractBlockStateProvider.CODEC.fieldOf("stone_block_provider").forGetter((CustomizableMonsterRoomConfigurationDetails cfg) -> cfg.StoneBlockProvider),
                 ChestPlacementConfig.GetCodec().optionalFieldOf("reward_chest_placement", new ChestPlacementConfig(BuiltInLootTables.SIMPLE_DUNGEON , ConstantInt.of(6))).forGetter((CustomizableMonsterRoomConfigurationDetails cfg) -> cfg.ChestConfiguration),

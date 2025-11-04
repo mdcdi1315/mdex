@@ -19,7 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import java.util.List;
 import java.util.ArrayList;
 
-public final class ModdedSpringFeatureConfiguration
+public final class ModdedSpringFeatureConfigurationDetails
     implements IModdedFeatureConfigurationDetails
 {
     public static final byte
@@ -32,7 +32,7 @@ public final class ModdedSpringFeatureConfiguration
     public List<Block> ValidBlocks;
     private List<ResourceLocation> ValidBlocksInternal;
 
-    public static MapCodec<ModdedSpringFeatureConfiguration> GetCodec()
+    public static MapCodec<ModdedSpringFeatureConfigurationDetails> GetCodec()
     {
         var COMMON_COUNT = CodecUtils.ByteRange(0 , 5);
         return CodecUtils.CreateMapCodecDirect(
@@ -41,11 +41,11 @@ public final class ModdedSpringFeatureConfiguration
                 COMMON_COUNT.optionalFieldOf("rock_count", DEFAULT_ROCK_COUNT).forGetter((sf) -> sf.RockCount),
                 COMMON_COUNT.optionalFieldOf("hole_count", DEFAULT_HOLE_COUNT).forGetter((sf) -> sf.HoleCount),
                 ResourceLocation.CODEC.listOf().fieldOf("valid_blocks").forGetter((sf) -> sf.ValidBlocksInternal),
-                ModdedSpringFeatureConfiguration::new
+                ModdedSpringFeatureConfigurationDetails::new
         );
     }
 
-    public ModdedSpringFeatureConfiguration(
+    public ModdedSpringFeatureConfigurationDetails(
             CompilableFluidState fluid,
             boolean requiresblockbelow,
             byte rc,

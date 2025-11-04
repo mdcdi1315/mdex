@@ -7,8 +7,6 @@ import com.github.mdcdi1315.mdex.MDEXModInstance;
 import com.github.mdcdi1315.mdex.api.teleporter.*;
 import com.github.mdcdi1315.mdex.features.config.*;
 
-import com.mojang.serialization.Codec;
-
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
@@ -26,27 +24,25 @@ public final class FeatureTypesRegistrySubsystem
     public static void RegisterFeatureTypes(IWorldGenRegistrar wg)
     {
         RegisterCustomFeatureType(wg,"base_teleporter_placement", () -> new BaseTeleporterPlacementFeatureType(BaseTeleporterPlacementFeatureConfiguration.GetCodec()));
-        /*
-        Codec<ModdedVegetationPatchConfiguration> vegpconfig = ModdedVegetationPatchConfiguration.GetCodec();
-        Codec<ModdedOreFeatureConfigurationDetails> mc = ModdedOreFeatureConfigurationDetails.GetCodec();
-        RegisterCustomFeatureType(wg,"fallen_tree" , () -> new FallenTreeFeature(FallenTreeConfigurationDetails.GetCodec()));
-        RegisterCustomFeatureType(wg,"small_structure" , () -> new SmallStructureFeature(SmallStructureConfiguration.GetCodec()));
-        RegisterCustomFeatureType(wg,"customizable_monster_room" , () -> new CustomizableMonsterRoomFeature(CustomizableMonsterRoomConfigurationDetails.GetCodec()));
+        var vegpconfig = ModdedFeatureConfiguration.GetCodec(ModdedVegetationPatchConfigurationDetails.GetCodec());
+        var mc = ModdedFeatureConfiguration.GetCodec(ModdedOreFeatureConfigurationDetails.GetCodec());
+        RegisterCustomFeatureType(wg,"fallen_tree" , () -> new FallenTreeFeature(ModdedFeatureConfiguration.GetCodec(FallenTreeConfigurationDetails.GetCodec())));
+        RegisterCustomFeatureType(wg,"small_structure" , () -> new SmallStructureFeature(ModdedFeatureConfiguration.GetCodec(SmallStructureConfigurationDetails.GetCodec())));
+        RegisterCustomFeatureType(wg,"customizable_monster_room" , () -> new CustomizableMonsterRoomFeature(ModdedFeatureConfiguration.GetCodec(CustomizableMonsterRoomConfigurationDetails.GetCodec())));
         RegisterCustomFeatureType(wg,"modded_ore" , () -> new ModdedOreFeature(mc));
-        RegisterCustomFeatureType(wg,"large_stone_column" , () -> new LargeStoneColumnFeature(LargeStoneColumnFeatureConfigurationDetails.GetCodec()));
-        RegisterCustomFeatureType(wg,"modded_geode" , () -> new ModdedGeodeFeature(ModdedGeodeConfigurationDetails.GetCodec()));
+        RegisterCustomFeatureType(wg,"large_stone_column" , () -> new LargeStoneColumnFeature(ModdedFeatureConfiguration.GetCodec(LargeStoneColumnFeatureConfigurationDetails.GetCodec())));
+        RegisterCustomFeatureType(wg,"modded_geode" , () -> new ModdedGeodeFeature(ModdedFeatureConfiguration.GetCodec(ModdedGeodeConfigurationDetails.GetCodec())));
         RegisterCustomFeatureType(wg,"modded_scattered_ore" , () -> new ModdedScatteredOreFeature(mc));
-        RegisterCustomFeatureType(wg,"simple_floating_layered_island" , () -> new SimpleFloatingIslandFeature(SimpleFloatingIslandConfigurationDetails.GetCodec()));
-        RegisterCustomFeatureType(wg,"advanced_floating_layered_island" , () -> new AdvancedFloatingIslandFeature(AdvancedFloatingIslandConfigurationDetails.GetCodec()));
-        RegisterCustomFeatureType(wg,"noise_generation_based_ore" , () -> new NoiseGenerationBasedOreFeature(NoiseGenerationBasedOreFeatureConfiguration.GetCodec()));
-        RegisterCustomFeatureType(wg,"modded_ore_vein" , () -> new ModdedOreVeinFeature(ModdedOreVeinFeatureConfigurationDetails.GetCodec()));
+        RegisterCustomFeatureType(wg,"simple_floating_layered_island" , () -> new SimpleFloatingIslandFeature(ModdedFeatureConfiguration.GetCodec(SimpleFloatingIslandConfigurationDetails.GetCodec())));
+        RegisterCustomFeatureType(wg,"advanced_floating_layered_island" , () -> new AdvancedFloatingIslandFeature(ModdedFeatureConfiguration.GetCodec(AdvancedFloatingIslandConfigurationDetails.GetCodec())));
+        RegisterCustomFeatureType(wg,"noise_generation_based_ore" , () -> new NoiseGenerationBasedOreFeature(ModdedFeatureConfiguration.GetCodec(NoiseGenerationBasedOreFeatureConfigurationDetails.GetCodec())));
+        RegisterCustomFeatureType(wg,"modded_ore_vein" , () -> new ModdedOreVeinFeature(ModdedFeatureConfiguration.GetCodec(ModdedOreVeinFeatureConfigurationDetails.GetCodec())));
         RegisterCustomFeatureType(wg,"modded_legacy_ore" , () -> new ModdedLegacyOreFeature(mc));
         RegisterCustomFeatureType(wg,"modded_vegetation_patch" , () -> new ModdedVegetationPatchFeature(vegpconfig));
         RegisterCustomFeatureType(wg,"modded_waterlogged_vegetation_patch" , () -> new ModdedWaterloggedVegetationPatchFeature(vegpconfig));
-        RegisterCustomFeatureType(wg,"modded_simple_block" , () -> new ModdedSimpleBlockFeature(ModdedSimpleBlockFeatureConfigurationDetails.GetCodec()));
-        RegisterCustomFeatureType(wg,"modded_classic_ore_vein" , () -> new ModdedClassicOreVeinFeature(ModdedClassicOreVeinFeatureConfigurationDetails.GetCodec()));
-        RegisterCustomFeatureType(wg,"modded_spring" , () -> new ModdedSpringFeature(ModdedSpringFeatureConfiguration.GetCodec()));
-        RegisterCustomFeatureType(wg,"create_layered_ore" , () -> new CreateLayeredOreFeature(CreateLayeredOreFeatureConfigurationDetails.GetCodec()));
-         */
+        RegisterCustomFeatureType(wg,"modded_simple_block" , () -> new ModdedSimpleBlockFeature(ModdedFeatureConfiguration.GetCodec(ModdedSimpleBlockFeatureConfigurationDetails.GetCodec())));
+        RegisterCustomFeatureType(wg,"modded_classic_ore_vein" , () -> new ModdedClassicOreVeinFeature(ModdedFeatureConfiguration.GetCodec(ModdedClassicOreVeinFeatureConfigurationDetails.GetClassicOreVeinCodec())));
+        RegisterCustomFeatureType(wg,"modded_spring" , () -> new ModdedSpringFeature(ModdedFeatureConfiguration.GetCodec(ModdedSpringFeatureConfigurationDetails.GetCodec())));
+        RegisterCustomFeatureType(wg,"create_layered_ore" , () -> new CreateLayeredOreFeature(ModdedFeatureConfiguration.GetCodec(CreateLayeredOreFeatureConfigurationDetails.GetCodec())));
     }
 }

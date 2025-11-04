@@ -13,7 +13,7 @@ import net.minecraft.world.level.levelgen.synth.NormalNoise;
 
 import java.util.List;
 
-public final class NoiseGenerationBasedOreFeatureConfiguration
+public final class NoiseGenerationBasedOreFeatureConfigurationDetails
     implements IModdedFeatureConfigurationDetails
 {
     public IntProvider Size;
@@ -22,7 +22,7 @@ public final class NoiseGenerationBasedOreFeatureConfiguration
     public List<SingleTargetBlockState> TargetStates;
     public Holder<NormalNoise.NoiseParameters> NoiseParameters;
 
-    public static MapCodec<NoiseGenerationBasedOreFeatureConfiguration> GetCodec()
+    public static MapCodec<NoiseGenerationBasedOreFeatureConfigurationDetails> GetCodec()
     {
         return CodecUtils.CreateMapCodecDirect(
                 SingleTargetBlockState.GetListCodec().fieldOf("targets").forGetter((f) -> f.TargetStates),
@@ -30,11 +30,11 @@ public final class NoiseGenerationBasedOreFeatureConfiguration
                 IntProvider.codec(1 , 26).optionalFieldOf("y_scale" , ConstantInt.of(2)).forGetter((f) -> f.Y_Scale),
                 NormalNoise.NoiseParameters.CODEC.fieldOf("noise").forGetter((f) -> f.NoiseParameters),
                 CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("discard_chance_on_air_exposure" , 0.48f).forGetter((f) -> f.DiscardChanceOnAirExposure),
-                NoiseGenerationBasedOreFeatureConfiguration::new
+                NoiseGenerationBasedOreFeatureConfigurationDetails::new
         );
     }
 
-    public NoiseGenerationBasedOreFeatureConfiguration(List<SingleTargetBlockState> states , IntProvider size , IntProvider y_scale , Holder<NormalNoise.NoiseParameters> params , float discardChanceOnAirExposure)
+    public NoiseGenerationBasedOreFeatureConfigurationDetails(List<SingleTargetBlockState> states , IntProvider size , IntProvider y_scale , Holder<NormalNoise.NoiseParameters> params , float discardChanceOnAirExposure)
     {
         TargetStates = states;
         Size = size;

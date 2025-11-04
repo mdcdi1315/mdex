@@ -5,8 +5,9 @@ import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.api.OptionalDirectHolder;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.Holder;
-import com.mojang.serialization.Codec;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.valueproviders.IntProvider;
@@ -22,9 +23,9 @@ public final class FallenTreeConfigurationDetails
     public Holder<PlacedFeature> VegetationPatch;
     public final float VegetationPatchPlacementProbability;
 
-    public static Codec<FallenTreeConfigurationDetails> GetCodec()
+    public static MapCodec<FallenTreeConfigurationDetails> GetCodec()
     {
-        return CodecUtils.CreateCodecDirect(
+        return CodecUtils.CreateMapCodecDirect(
                 ResourceLocation.CODEC.fieldOf("log_block").forGetter((FallenTreeConfigurationDetails ftc) -> ftc.LogTypeProviderRC),
                 IntProvider.codec(2, 18).fieldOf("fallen_logs_count").forGetter((FallenTreeConfigurationDetails ftc) -> ftc.FallenTrunkSize),
                 PlacedFeature.CODEC.optionalFieldOf("vegetation_patch" , OptionalDirectHolder.Create(null)).forGetter((FallenTreeConfigurationDetails ftc) -> ftc.VegetationPatch),

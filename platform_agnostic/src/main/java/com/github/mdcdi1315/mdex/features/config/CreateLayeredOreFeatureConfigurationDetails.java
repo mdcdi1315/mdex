@@ -3,11 +3,11 @@ package com.github.mdcdi1315.mdex.features.config;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
-
 import com.github.mdcdi1315.basemodslib.codecs.StrictListCodec;
+
 import com.github.mdcdi1315.mdex.features.createlayeredore.LayerPattern;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.util.RandomSource;
 
@@ -21,9 +21,9 @@ public final class CreateLayeredOreFeatureConfigurationDetails
     public List<LayerPattern> patterns;
     public final float DiscardChanceOnAirExposure;
 
-    public static Codec<CreateLayeredOreFeatureConfigurationDetails> GetCodec()
+    public static MapCodec<CreateLayeredOreFeatureConfigurationDetails> GetCodec()
     {
-        return CodecUtils.CreateCodecDirect(
+        return CodecUtils.CreateMapCodecDirect(
                 new StrictListCodec<>(LayerPattern.GetCodec()).fieldOf("layer_patterns").forGetter((lo) -> lo.patterns),
                 CodecUtils.ByteRange(0 , 48).fieldOf("size").forGetter((lo) -> lo.Size),
                 CodecUtils.FLOAT_PROBABILITY.fieldOf("discard_chance_on_air_exposure").forGetter((lo) -> lo.DiscardChanceOnAirExposure),

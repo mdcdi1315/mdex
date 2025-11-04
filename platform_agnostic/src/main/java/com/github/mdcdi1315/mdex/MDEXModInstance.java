@@ -1,27 +1,43 @@
 package com.github.mdcdi1315.mdex;
 
+// Base Mods Library
 import com.github.mdcdi1315.basemodslib.BaseModsLib;
+import com.github.mdcdi1315.basemodslib.item.IItemRegistrar;
 import com.github.mdcdi1315.basemodslib.config.ConfigManager;
 import com.github.mdcdi1315.basemodslib.block.IBlockRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.EventManager;
 import com.github.mdcdi1315.basemodslib.mods.IServerModInstance;
 import com.github.mdcdi1315.basemodslib.world.IWorldGenRegistrar;
+import com.github.mdcdi1315.basemodslib.commands.ICommandRegistrar;
 import com.github.mdcdi1315.basemodslib.registries.IRegistryRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.server.ServerStartedEvent;
 import com.github.mdcdi1315.basemodslib.block.entity.IBlockEntityRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.server.ServerStoppingEvent;
 import com.github.mdcdi1315.basemodslib.eventapi.mods.ModLoadingCompleteEvent;
 
+// Mod interfaces
+import com.github.mdcdi1315.mdex.item.ModItems;
 import com.github.mdcdi1315.mdex.block.ModBlocks;
+import com.github.mdcdi1315.mdex.tag.ModBlockTags;
 import com.github.mdcdi1315.mdex.api.OperationsTasker;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
+import com.github.mdcdi1315.mdex.commands.MDEXBaseCommand;
 import com.github.mdcdi1315.mdex.api.TeleportingManagerConfiguration;
+
+// Registry subsystems
+import com.github.mdcdi1315.mdex.loottable.LootTableRegistrySubsystem;
+import com.github.mdcdi1315.mdex.structures.RuleTestsRegistrySubsystem;
+import com.github.mdcdi1315.mdex.structures.StructuresRegistrySubsystem;
 import com.github.mdcdi1315.mdex.features.FeatureTypesRegistrySubsystem;
+import com.github.mdcdi1315.mdex.structures.StructureProcessorsRegistrySubsystem;
+import com.github.mdcdi1315.mdex.biomespawnadditions.BiomeSpawnAdditionsRegistrySubsystem;
 import com.github.mdcdi1315.mdex.block.blockstateproviders.CustomBlockStateProviderRegistrySubsystem;
 
+// Minecraft stuff
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceLocation;
 
+// SLF4J logging
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +74,7 @@ public final class MDEXModInstance
         LOGGER.info("Now initializing the Mining Dimension: EX mod!");
         TASKER = new OperationsTasker();
         MINING_DIM_IDENTIFIER = ResourceLocation.tryBuild(COMPATIBILITY_NAMESPACE , "mining_dim");
+        ModBlockTags.Initialize();
     }
 
     private static void FabricTeleporterImplementation(ServerStartedEvent sse)
@@ -89,6 +106,11 @@ public final class MDEXModInstance
             // We need to create the Fabric teleporter mechanism.
             manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::FabricTeleporterImplementation);
         }
+        manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::OnServerStarted);
+    }
+
+    private static void OnServerStarted(ServerStartedEvent sse) {
+        BiomeSpawnAdditionsRegistrySubsystem.ApplyCurrentBiomeSpawnAdditions(sse.server());
     }
 
     private static void OnServerStopping(ServerStoppingEvent sse)
@@ -130,12 +152,27 @@ public final class MDEXModInstance
 
     @Override
     public void RegisterRegistryItems(IRegistryRegistrar registrar) {
+        LootTableRegistrySubsystem.Initialize(registrar);
+        StructuresRegistrySubsystem.RegisterEntries(registrar);
+        RuleTestsRegistrySubsystem.RegisterRuleTests(registrar);
+        BiomeSpawnAdditionsRegistrySubsystem.InitializeRegistry(registrar);
         CustomBlockStateProviderRegistrySubsystem.InitializeRegistry(registrar);
+        StructureProcessorsRegistrySubsystem.RegisterStructureProcessors(registrar);
     }
 
     @Override
     public void RegisterWorldGenItems(IWorldGenRegistrar registrar) {
         FeatureTypesRegistrySubsystem.RegisterFeatureTypes(registrar);
+    }
+
+    @Override
+    public void RegisterItems(IItemRegistrar registrar) {
+        ModItems.Initialize(registrar);
+    }
+
+    @Override
+    public void RegisterCommands(ICommandRegistrar registrar) {
+        registrar.RegisterByCommand(MDEXBaseCommand::new);
     }
 
     @Override

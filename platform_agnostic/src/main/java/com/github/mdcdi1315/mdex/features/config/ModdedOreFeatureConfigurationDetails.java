@@ -19,7 +19,6 @@ public class ModdedOreFeatureConfigurationDetails
         TargetStates = states;
         Size = size;
         DiscardChanceOnAirExposure = discardChanceOnAirExposure;
-        Compile();
     }
 
     public static MapCodec<ModdedOreFeatureConfigurationDetails> GetCodec()

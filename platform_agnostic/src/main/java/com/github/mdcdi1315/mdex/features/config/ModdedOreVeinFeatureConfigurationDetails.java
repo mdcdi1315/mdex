@@ -46,7 +46,6 @@ public class ModdedOreVeinFeatureConfigurationDetails
         Size = size;
         Y_Scale = yscale;
         DiscardChanceOnAirExposure = discardChanceOnAirExposure;
-        Compile();
     }
 
     @Override

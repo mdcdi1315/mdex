@@ -69,7 +69,7 @@ public class ModdedFeatureConfiguration<TD extends IModdedFeatureConfigurationDe
     {
         ArgumentNullException.ThrowIfNull(map_codec, "map_codec");
         return CodecUtils.CreateCodecDirect(
-                new ListCodec<>(Codec.STRING).fieldOf("modids").forGetter((cfg) -> cfg.ModIds),
+                new ListCodec<>(Codec.STRING).optionalFieldOf("modids", List.of()).forGetter((cfg) -> cfg.ModIds),
                 map_codec.forGetter((cfg) -> cfg.Details),
                 ModdedFeatureConfiguration::new
         );
@@ -205,6 +205,7 @@ public class ModdedFeatureConfiguration<TD extends IModdedFeatureConfigurationDe
         if (STATE_HasFlag(STATE_IS_INVALID)) { return; }
         STATE_AddFlag(STATE_IS_INVALID);
         STATE_RemoveFlag(STATE_IS_COMPILED);
+        String cn = Details == null ? "<UNKNOWN>" : Details.getClass().getName();
         if (MDEXModInstance.LoggingFlags.Feature()) {
             StringBuilder sb = StackWalker.getInstance().walk((Stream<StackWalker.StackFrame> s) -> {
                 StringBuilder sbi = new StringBuilder(2048);
@@ -216,9 +217,9 @@ public class ModdedFeatureConfiguration<TD extends IModdedFeatureConfigurationDe
                 );
                 return sbi;
             });
-            MDEXModInstance.LOGGER.info("IsInvalid was run for feature configuration object {}. Stack Trace: \n{}" , getClass().getName() , sb);
+            MDEXModInstance.LOGGER.info("IsInvalid was run for feature configuration object {}. Stack Trace: \n{}" , cn , sb);
         } else {
-            MDEXModInstance.LOGGER.info("IsInvalid was run for feature configuration object {}. To get stack trace information, set the DebugFeatureConfigurations to true." , getClass().getName());
+            MDEXModInstance.LOGGER.info("IsInvalid was run for feature configuration object {}. To get stack trace information, set the DebugFeatureConfigurations to true." , cn);
         }
         Details = null;
     }

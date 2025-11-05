@@ -22,7 +22,6 @@ public final class ModdedSimpleBlockFeatureConfigurationDetails
     public ModdedSimpleBlockFeatureConfigurationDetails(AbstractBlockStateProvider provider)
     {
         ToPlace = provider;
-        Compile();
     }
 
     @Override

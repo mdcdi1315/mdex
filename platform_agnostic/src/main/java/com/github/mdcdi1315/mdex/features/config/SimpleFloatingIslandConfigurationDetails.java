@@ -61,7 +61,7 @@ public final class SimpleFloatingIslandConfigurationDetails
         }
         for (var g : FeaturesToGenerateOnTop)
         {
-            if (g.value().feature().value().config() instanceof ModdedFeatureConfiguration mfc)
+            if (g.value().feature().value().config() instanceof ModdedFeatureConfiguration<?> mfc)
             {
                 mfc.Compile();
                 if (mfc.IsCompiled() == false) {

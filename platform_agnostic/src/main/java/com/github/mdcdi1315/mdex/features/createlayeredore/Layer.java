@@ -51,7 +51,10 @@ public final class Layer
     }
 
     public Layer(List<List<SingleTargetBlockState>> targets, short minSize, short maxSize, Weight weight) {
-        this.targets = targets;
+        this.targets = new ArrayList<>(targets.size());
+        for (List<SingleTargetBlockState> ts : targets) {
+            this.targets.add(new ArrayList<>(ts));
+        }
         this.min_size = minSize;
         this.max_size = maxSize;
         this.weight = weight;
@@ -72,11 +75,10 @@ public final class Layer
     public void Compile()
     {
         try {
-            ArrayList<List<SingleTargetBlockState>> finaltargets = new ArrayList<>(targets);
-            for (int I = 0; I < finaltargets.size(); I++)
+            for (int I = 0; I < targets.size(); I++)
             {
                 SingleTargetBlockState entry;
-                List<SingleTargetBlockState> inner = finaltargets.get(I);
+                List<SingleTargetBlockState> inner = targets.get(I);
                 for (int J = 0; J < inner.size(); J++)
                 {
                     entry = inner.get(I);
@@ -92,11 +94,9 @@ public final class Layer
                     }
                 }
                 if (inner.isEmpty()) {
-                    finaltargets.remove(I--);
+                    targets.remove(I--);
                 }
             }
-            finaltargets.trimToSize();
-            targets = finaltargets;
         } catch (Exception e) {
             // Compilation failed, clean everything and throw back
             Cleanup();

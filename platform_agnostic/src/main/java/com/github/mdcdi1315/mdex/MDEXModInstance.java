@@ -30,6 +30,7 @@ import com.github.mdcdi1315.mdex.structures.RuleTestsRegistrySubsystem;
 import com.github.mdcdi1315.mdex.structures.StructuresRegistrySubsystem;
 import com.github.mdcdi1315.mdex.features.FeatureTypesRegistrySubsystem;
 import com.github.mdcdi1315.mdex.structures.StructureProcessorsRegistrySubsystem;
+import com.github.mdcdi1315.mdex.features.placement.PlacementModifierRegistrySubsystem;
 import com.github.mdcdi1315.mdex.biomespawnadditions.BiomeSpawnAdditionsRegistrySubsystem;
 import com.github.mdcdi1315.mdex.block.blockstateproviders.CustomBlockStateProviderRegistrySubsystem;
 
@@ -163,6 +164,7 @@ public final class MDEXModInstance
     @Override
     public void RegisterWorldGenItems(IWorldGenRegistrar registrar) {
         FeatureTypesRegistrySubsystem.RegisterFeatureTypes(registrar);
+        PlacementModifierRegistrySubsystem.RegisterPlacementModifiers(registrar);
     }
 
     @Override

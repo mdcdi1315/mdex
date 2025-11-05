@@ -35,7 +35,6 @@ public final class AdvancedFloatingIslandConfigurationDetails
         Layers = layers;
         FeaturesToGenerateOnTop = featuresOnTop;
         MaxDistanceFromGround = distance;
-        Compile();
     }
 
     @Override

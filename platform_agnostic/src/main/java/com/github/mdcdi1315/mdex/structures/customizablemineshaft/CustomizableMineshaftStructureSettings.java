@@ -33,7 +33,7 @@ public final class CustomizableMineshaftStructureSettings
                 CompilableBlockState.GetCodec().fieldOf("fence_state").forGetter(s -> s.FenceState),
                 CompilableBlockState.GetCodec().fieldOf("torch_state").forGetter(s -> s.TorchState),
                 CompilableBlockState.GetCodec().fieldOf("wood_state").forGetter(s -> s.WoodState),
-                ResourceLocation.CODEC.optionalFieldOf("minecart_loot_table" , BuiltInLootTables.ABANDONED_MINESHAFT).forGetter(s -> s.MinecartsLootTable),
+                ResourceLocation.CODEC.optionalFieldOf("minecart_loot_table" , BuiltInLootTables.ABANDONED_MINESHAFT.location()).forGetter(s -> s.MinecartsLootTable),
                 HeightProvider.CODEC.optionalFieldOf("starting_y_level" , ConstantHeight.of(VerticalAnchor.absolute(MineshaftPieces.MAGIC_START_Y))).forGetter((s) -> s.Starting_Y_Level),
                 CodecUtils.FLOAT_PROBABILITY.optionalFieldOf("minecart_placement_probability" , 0.01f).forGetter(s -> s.MinecartPlacementProbability),
                 CustomizableMineshaftStructureSettings::new

@@ -1,13 +1,16 @@
 package com.github.mdcdi1315.mdex.structures;
 
+import com.github.mdcdi1315.mdex.block.BlockUtils;
+
 import com.github.mdcdi1315.basemodslib.utils.Extensions;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.resources.ResourceLocation;
-import com.github.mdcdi1315.mdex.block.BlockUtils;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
@@ -52,8 +55,8 @@ public final class LootTableAppenderProcessor
             {
                 BlockEntity ent = level.getBlockEntity(rbipos);
                 if (ent instanceof RandomizableContainerBlockEntity rdcbe) {
-                    rdcbe.setLootTable(LootTable , rs.nextLong());
-                    return new StructureTemplate.StructureBlockInfo(rbipos , bs , rdcbe.saveWithFullMetadata());
+                    rdcbe.setLootTable(ResourceKey.create(Registries.LOOT_TABLE , LootTable) , rs.nextLong());
+                    return new StructureTemplate.StructureBlockInfo(rbipos , bs , rdcbe.saveWithFullMetadata(level.registryAccess()));
                 } else {
                     return relativeBlockInfo;
                 }

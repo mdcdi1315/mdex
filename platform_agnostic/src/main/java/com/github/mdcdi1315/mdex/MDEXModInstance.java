@@ -1,7 +1,6 @@
 package com.github.mdcdi1315.mdex;
 
 // Base Mods Library
-import com.github.mdcdi1315.basemodslib.BaseModsLib;
 import com.github.mdcdi1315.basemodslib.item.IItemRegistrar;
 import com.github.mdcdi1315.basemodslib.config.ConfigManager;
 import com.github.mdcdi1315.basemodslib.block.IBlockRegistrar;
@@ -22,7 +21,7 @@ import com.github.mdcdi1315.mdex.tag.ModBlockTags;
 import com.github.mdcdi1315.mdex.api.OperationsTasker;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.commands.MDEXBaseCommand;
-import com.github.mdcdi1315.mdex.api.TeleportingManagerConfiguration;
+import com.github.mdcdi1315.mdex.api.MDEXDefaultTeleportingManager;
 
 // Registry subsystems
 import com.github.mdcdi1315.mdex.loottable.LootTableRegistrySubsystem;
@@ -35,7 +34,6 @@ import com.github.mdcdi1315.mdex.biomespawnadditions.BiomeSpawnAdditionsRegistry
 import com.github.mdcdi1315.mdex.block.blockstateproviders.CustomBlockStateProviderRegistrySubsystem;
 
 // Minecraft stuff
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.resources.ResourceLocation;
 
 // SLF4J logging
@@ -78,13 +76,8 @@ public final class MDEXModInstance
         ModBlockTags.Initialize();
     }
 
-    private static void FabricTeleporterImplementation(ServerStartedEvent sse)
-    {
-        try {
-            MANAGER = (TeleportingManager) Class.forName("com.github.mdcdi1315.mdex.fabric.FabricTeleportingManager").getConstructor(MinecraftServer.class , TeleportingManagerConfiguration.class).newInstance(sse.server() , new TeleportingManagerConfiguration(CONFIG));
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    private static void TeleporterImplementation(ServerStartedEvent sse) {
+        MANAGER = new MDEXDefaultTeleportingManager(sse.server());
     }
 
     @Override
@@ -101,13 +94,10 @@ public final class MDEXModInstance
 
     @Override
     public void RegisterEvents(EventManager manager) {
-        manager.AddEventListener(ModLoadingCompleteEvent.class, ModBlocks::OnModLoadingComplete);
-        manager.AddEventListener(ServerStoppingEvent.class, MDEXModInstance::OnServerStopping);
-        if (BaseModsLib.GetModLoaderBranding().equals("Fabric")) {
-            // We need to create the Fabric teleporter mechanism.
-            manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::FabricTeleporterImplementation);
-        }
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::OnServerStarted);
+        manager.AddEventListener(ServerStoppingEvent.class, MDEXModInstance::OnServerStopping);
+        manager.AddEventListener(ModLoadingCompleteEvent.class, ModBlocks::OnModLoadingComplete);
+        manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::TeleporterImplementation);
     }
 
     private static void OnServerStarted(ServerStartedEvent sse) {

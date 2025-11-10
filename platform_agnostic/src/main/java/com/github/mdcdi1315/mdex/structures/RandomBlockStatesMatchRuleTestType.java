@@ -1,6 +1,6 @@
 package com.github.mdcdi1315.mdex.structures;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 
@@ -12,9 +12,9 @@ public final class RandomBlockStatesMatchRuleTestType
     public static final RandomBlockStatesMatchRuleTestType INSTANCE = new RandomBlockStatesMatchRuleTestType();
 
     @Override
-    protected Codec<RandomBlockStatesMatchRuleTest> GetCodecInstance()
+    protected MapCodec<RandomBlockStatesMatchRuleTest> GetCodecInstance()
     {
-        return CodecUtils.CreateCodecDirect(
+        return CodecUtils.CreateMapCodecDirect(
                 CompilableBlockState.GetCodec().listOf().fieldOf("random_states").forGetter((RandomBlockStatesMatchRuleTest r) -> r.RandomStates),
                 CodecUtils.FLOAT_PROBABILITY.fieldOf("probability").forGetter((RandomBlockStatesMatchRuleTest r) -> r.probability),
                 RandomBlockStatesMatchRuleTest::new

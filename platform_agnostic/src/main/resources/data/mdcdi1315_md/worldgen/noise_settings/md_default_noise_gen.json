@@ -1,26 +1,26 @@
 {
-    "sea_level": -48,
-    "disable_mob_generation": false,
-    "aquifers_enabled": true,
-    "ore_veins_enabled": true,
-    "legacy_random_source": false,
-    "default_block": {
-      	"Name": "minecraft:stone",
+	"sea_level": -48,
+	"disable_mob_generation": false,
+	"aquifers_enabled": true,
+	"ore_veins_enabled": true,
+	"legacy_random_source": false,
+	"default_block": {
+		"Name": "minecraft:stone",
 		"Properties": {}
-    },
-    "default_fluid": {
+	},
+	"default_fluid": {
 		"Name": "minecraft:water",
 		"Properties": {
 			"level": "0"
 		}
-    },
-    "noise": {
+	},
+	"noise": {
 		"height": 176,
 		"min_y": -64,
 		"size_horizontal": 1,
 		"size_vertical": 2
-    },
-    "noise_router": {
+	},
+	"noise_router": {
 		"barrier": {
 			"type": "minecraft:noise",
 			"noise": "minecraft:aquifer_barrier",
@@ -77,22 +77,22 @@
 			}
 		},
 		"fluid_level_floodedness": {
-		  "type": "minecraft:noise",
-		  "noise": "minecraft:aquifer_fluid_level_floodedness",
-		  "xz_scale": 1.0,
-		  "y_scale": 0.67
+			"type": "minecraft:noise",
+			"noise": "minecraft:aquifer_fluid_level_floodedness",
+			"xz_scale": 1.0,
+			"y_scale": 0.67
 		},
 		"fluid_level_spread": {
-		  "type": "minecraft:noise",
-		  "noise": "minecraft:aquifer_fluid_level_spread",
-		  "xz_scale": 1.0,
-		  "y_scale": 0.7142857142857143
+			"type": "minecraft:noise",
+			"noise": "minecraft:aquifer_fluid_level_spread",
+			"xz_scale": 1.0,
+			"y_scale": 0.7142857142857143
 		},
 		"lava": {
 			"type": "minecraft:noise",
 			"noise": "minecraft:aquifer_lava",
 			"xz_scale": 1.0,
-			"y_scale": 1.0 
+			"y_scale": 1.0
 		},
 		"temperature": {
 			"type": "minecraft:shifted_noise",
@@ -158,8 +158,8 @@
 			}
 		},
 		"vein_toggle": {
-		  	"type": "minecraft:interpolated",
-		  	"argument": {
+			"type": "minecraft:interpolated",
+			"argument": {
 				"type": "minecraft:range_choice",
 				"input": "minecraft:y",
 				"max_exclusive": 51.0,
@@ -171,12 +171,12 @@
 					"y_scale": 1.5
 				},
 				"when_out_of_range": 0.0
-		  	}
+			}
 		}
-    },
+	},
 	"surface_rule": {
-      	"type": "minecraft:sequence",
-      	"sequence": [
+		"type": "minecraft:sequence",
+		"sequence": [
 			{
 				"type": "minecraft:condition",
 				"if_true": {
@@ -260,9 +260,9 @@
 					}
 				}
 			}
-      	]
-    },
-    "spawn_target": [
+		]
+	},
+	"spawn_target": [
 		{
 			"offset": 0,
 			"depth": [ -1, 2 ],
@@ -272,5 +272,5 @@
 			"humidity": [ -1, 1 ],
 			"continentalness": [ -1, 1 ]
 		}
-    ]
+	]
 }

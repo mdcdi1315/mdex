@@ -34,7 +34,7 @@ public final class Weight
     private static class InternalCodec
         extends PrimitiveCodec<Weight>
     {
-        private static DataResult<Weight> ErrorMapper(DataResult.PartialResult<Number> pr) {
+        private static DataResult<Weight> ErrorMapper(DataResult.Error<Number> pr) {
             return DataResult.error(pr::message);
         }
 

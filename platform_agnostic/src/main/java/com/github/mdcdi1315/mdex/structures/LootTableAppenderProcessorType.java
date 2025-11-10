@@ -2,7 +2,7 @@ package com.github.mdcdi1315.mdex.structures;
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.resources.ResourceLocation;
 
@@ -12,9 +12,9 @@ public final class LootTableAppenderProcessorType
     public static final LootTableAppenderProcessorType INSTANCE = new LootTableAppenderProcessorType();
 
     @Override
-    protected Codec<LootTableAppenderProcessor> GetCodecInstance()
+    protected MapCodec<LootTableAppenderProcessor> GetCodecInstance()
     {
-        return CodecUtils.CreateCodecDirect(
+        return CodecUtils.CreateMapCodecDirect(
                 GetBaseCodec(),
                 ResourceLocation.CODEC.fieldOf("containerid").forGetter((LootTableAppenderProcessor p) -> p.ContainerBlockID),
                 ResourceLocation.CODEC.fieldOf("loot_table").forGetter((LootTableAppenderProcessor p) -> p.LootTable),

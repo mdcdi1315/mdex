@@ -14,6 +14,7 @@ import com.github.mdcdi1315.mdex.util.BlockPropertyNotFoundException;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.CreativeModeTab;
@@ -342,7 +343,7 @@ public final class BlockUtils
     {
         BlockEntity blockentity = level.getBlockEntity(pos);
         if (blockentity instanceof RandomizableContainerBlockEntity e) {
-            e.setLootTable(lootTable, random.nextLong());
+            e.setLootTable(ResourceKey.create(Registries.LOOT_TABLE , lootTable), random.nextLong());
             return true;
         }
         return false;
@@ -361,12 +362,13 @@ public final class BlockUtils
     {
         BlockEntity blockentity = level.getBlockEntity(pos);
         if (blockentity instanceof RandomizableContainerBlockEntity e) {
-            e.setLootTable(lootTable.location(), random.nextLong());
+            e.setLootTable(lootTable, random.nextLong());
             return true;
         }
         return false;
     }
 
+    @Deprecated(since = "1.7.1" , forRemoval = true)
     public static String ConstructExactDescriptionID(String namespace, String path)
     {
         ArgumentNullException.ThrowIfNull(namespace , "namespace");
@@ -374,6 +376,7 @@ public final class BlockUtils
         return Util.makeDescriptionId("block" , ResourceLocation.tryBuild(namespace , path));
     }
 
+    @Deprecated(since = "1.7.1" , forRemoval = true)
     public static String ConstructExactDescriptionID(String pathonly)
     {
         ArgumentNullException.ThrowIfNull(pathonly , "pathonly");

@@ -42,11 +42,11 @@ public final class ModItems
                 tools_and_utils
         ));
         items.Register("copper_sword", new ItemRegistrationInformation(
-                (id) -> COPPER_SWORD = new SwordItem(COPPER_TIER_DEFAULT , 3, -2.4F , new Item.Properties()),
+                (id) -> COPPER_SWORD = new SwordItem(COPPER_TIER_DEFAULT , new Item.Properties().attributes(SwordItem.createAttributes(COPPER_TIER_DEFAULT , 3, -2.4F))),
                 combat
         ));
         items.Register("copper_shovel", new ItemRegistrationInformation(
-                (id) -> COPPER_SHOVEL = new ShovelItem(COPPER_TIER_DEFAULT , 1.5F, -3F , new Item.Properties()),
+                (id) -> COPPER_SHOVEL = new ShovelItem(COPPER_TIER_DEFAULT , new Item.Properties().attributes(ShovelItem.createAttributes(COPPER_TIER_DEFAULT , 1.5F, -3F))),
                 tools_and_utils
         ));
         items.Register("copper_axe", new ItemRegistrationInformation(

@@ -3,7 +3,7 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 import com.github.mdcdi1315.mdex.util.weight.SimpleWeightedEntryList;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.DataResult;
 
 public final class WeightedStateProviderType
@@ -28,11 +28,11 @@ public final class WeightedStateProviderType
     }
 
     @Override
-    protected Codec<WeightedStateProvider> GetCodecInstance() {
+    protected MapCodec<WeightedStateProvider> GetCodecInstance() {
         return SimpleWeightedEntryList.CreateSimpleWeightedEntryList(CompilableBlockState.GetMapCodec())
                 .fieldOf("entries").flatXmap(
                         WeightedStateProviderType::Create,
                         WeightedStateProviderType::Decompose
-                ).codec();
+                );
     }
 }

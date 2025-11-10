@@ -1,0 +1,16 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "${mod_id}.mdex.neoforge.mixin",
+	"refmap": "${mod_id}.refmap.json",
+	"compatibilityLevel": "JAVA_17",
+	"client": [
+
+	],
+	"mixins": [
+
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

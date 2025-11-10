@@ -1,8 +1,6 @@
 package com.github.mdcdi1315.mdex.features.placement;
 
-import com.github.mdcdi1315.basemodslib.codecs.LazyUnitCodec;
-
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 public final class IsValidSurfacePlacementModifierType
     extends AbstractModdedPlacementModifierType<IsValidSurfacePlacementModifier>
@@ -10,7 +8,7 @@ public final class IsValidSurfacePlacementModifierType
     public static IsValidSurfacePlacementModifierType INSTANCE = new IsValidSurfacePlacementModifierType();
 
     @Override
-    protected Codec<IsValidSurfacePlacementModifier> GetCodecInstance() {
-        return new LazyUnitCodec<>(IsValidSurfacePlacementModifier::new);
+    protected MapCodec<IsValidSurfacePlacementModifier> GetCodecInstance() {
+        return MapCodec.unit(IsValidSurfacePlacementModifier::new);
     }
 }

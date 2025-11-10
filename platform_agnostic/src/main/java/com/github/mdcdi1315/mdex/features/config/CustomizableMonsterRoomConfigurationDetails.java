@@ -28,7 +28,7 @@ public final class CustomizableMonsterRoomConfigurationDetails
         return CodecUtils.CreateMapCodecDirect(
                 ResourceLocation.CODEC.fieldOf("spawner_block").forGetter((CustomizableMonsterRoomConfigurationDetails cfg) -> cfg.SpawnerBlock_I),
                 AbstractBlockStateProvider.CODEC.fieldOf("stone_block_provider").forGetter((CustomizableMonsterRoomConfigurationDetails cfg) -> cfg.StoneBlockProvider),
-                ChestPlacementConfig.GetCodec().optionalFieldOf("reward_chest_placement", new ChestPlacementConfig(BuiltInLootTables.SIMPLE_DUNGEON , ConstantInt.of(6))).forGetter((CustomizableMonsterRoomConfigurationDetails cfg) -> cfg.ChestConfiguration),
+                ChestPlacementConfig.GetCodec().optionalFieldOf("reward_chest_placement", new ChestPlacementConfig(BuiltInLootTables.SIMPLE_DUNGEON.location() , ConstantInt.of(6))).forGetter((CustomizableMonsterRoomConfigurationDetails cfg) -> cfg.ChestConfiguration),
                 e.fieldOf("additional_spawns").forGetter((CustomizableMonsterRoomConfigurationDetails cfg) -> cfg.AdditionalEntities),
                 e.optionalFieldOf("spawner_block_entity_candidates" , List.of()).forGetter((CustomizableMonsterRoomConfigurationDetails cfg) -> cfg.SpawnerEntityCandidates),
                 CustomizableMonsterRoomConfigurationDetails::new

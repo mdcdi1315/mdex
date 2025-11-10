@@ -94,7 +94,7 @@ javadoc {
 processResources {
     var expandProps = [
             'version'                      : version,
-            'group'                        : project.group, //Else we target the task's group.
+            'group'                        : project.group, // Else we target the task's group.
             'minecraft_version'            : minecraft_version,
             'minecraft_version_range'      : minecraft_version_range,
             'fabric_version'               : fabric_version,
@@ -113,11 +113,10 @@ processResources {
             "forge_version_range"          : forge_version_range,
             "forge_loader_version_range"   : forge_loader_version_range,
             "credits"                      : credits,
-            "java_version"                 : java_version
-
-            // The below 2 properties are for NFG support, which is after 1.21.1 ...
-            // 'neoforge_version'             : neoforge_version,
-            // 'neoforge_loader_version_range': neoforge_loader_version_range,
+            "java_version"                 : java_version,
+            'neoforge_version'             : neoforge_version,
+            'neoforge_version_range'       : neoforge_version_range,
+            'neoforge_loader_version_range': neoforge_loader_version_range
     ]
 
     var jsonExpandProps = expandProps.collectEntries {

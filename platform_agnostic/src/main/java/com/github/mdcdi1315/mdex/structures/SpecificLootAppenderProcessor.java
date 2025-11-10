@@ -58,7 +58,7 @@ public final class SpecificLootAppenderProcessor
                             }
                         }
                     }
-                    return new StructureTemplate.StructureBlockInfo(rbipos, bs, cbe.saveWithFullMetadata());
+                    return new StructureTemplate.StructureBlockInfo(rbipos, bs, cbe.saveWithFullMetadata(level.registryAccess()));
                 } else {
                     return relativeBlockInfo;
                 }

@@ -5,8 +5,8 @@ repositories {
             includeGroup 'curse.maven'
         }
     }
-
-    maven {
+	
+	maven {
         // Mod menu integration, imported in by my library.
         name = "Terraformers"
         url = "https://maven.terraformersmc.com/"

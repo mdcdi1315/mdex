@@ -1,6 +1,8 @@
 package com.github.mdcdi1315.mdex.loottable;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.DataResult;
+
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
@@ -8,17 +10,18 @@ import net.minecraft.world.level.storage.loot.entries.LootPoolEntryType;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public final class LootPoolEntryContainerPlaceholder<TBase extends BaseLootPoolEntryContainer>
-    extends LootPoolEntryContainer
+        extends LootPoolEntryContainer
 {
     private final LootPoolEntryType entrytype;
     private final TBase container;
 
-    public LootPoolEntryContainerPlaceholder(LootItemCondition[] conditions , TBase container , Codec<TBase> codec) {
+    public LootPoolEntryContainerPlaceholder(List<LootItemCondition> conditions , TBase container , MapCodec<TBase> codec) {
         super(conditions);
-        entrytype = new LootPoolEntryType(new ByCodecLootPoolSerializer<>(codec));
+        entrytype = new LootPoolEntryType(codec.flatXmap((TBase b) -> DataResult.success(new LootPoolEntryContainerPlaceholder<>(conditions , b , codec)) , (LootPoolEntryContainerPlaceholder<TBase> b) -> DataResult.success(b.GetContainer())));
         this.container = container;
     }
 

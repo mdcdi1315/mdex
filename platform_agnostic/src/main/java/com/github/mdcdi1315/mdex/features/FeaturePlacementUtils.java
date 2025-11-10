@@ -10,6 +10,7 @@ import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
 import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
 import com.github.mdcdi1315.mdex.features.config.ModdedFeatureConfiguration;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
@@ -257,7 +258,7 @@ public final class FeaturePlacementUtils
                 RandomSource rs = level.getRandom();
                 var attr = m.getAttribute(Attributes.FOLLOW_RANGE);
                 if (attr != null) {
-                    attr.addPermanentModifier(new AttributeModifier("Random spawn bonus", rs.triangle(0.0D, 0.11485000000000001), AttributeModifier.Operation.MULTIPLY_BASE));
+                    attr.addPermanentModifier(new AttributeModifier(ResourceLocation.tryParse(Attributes.SPAWN_REINFORCEMENTS_CHANCE.getRegisteredName()), rs.triangle(0.0D, 0.11485000000000001), AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
                 }
                 m.setLeftHanded(rs.nextFloat() < 0.05F);
             }

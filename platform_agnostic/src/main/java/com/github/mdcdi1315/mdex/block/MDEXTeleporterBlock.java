@@ -22,9 +22,9 @@ public class MDEXTeleporterBlock
         extends MDEXBaseBlock
         implements EntityBlock
 {
-    public MDEXTeleporterBlock(Properties properties , String descid)
+    public MDEXTeleporterBlock(Properties properties)
     {
-        super(properties , descid);
+        super(properties);
         this.registerDefaultState(this.stateDefinition.any());
     }
 
@@ -54,8 +54,9 @@ public class MDEXTeleporterBlock
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (hand == InteractionHand.MAIN_HAND)
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult)
+    {
+        if (player.getUsedItemHand() == InteractionHand.MAIN_HAND)
         {
             if (TransferPlayer(player, pos)) {
                 return InteractionResult.SUCCESS;

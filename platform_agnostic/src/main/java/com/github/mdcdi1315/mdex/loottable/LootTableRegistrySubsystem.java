@@ -3,9 +3,11 @@ package com.github.mdcdi1315.mdex.loottable;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 
 import com.github.mdcdi1315.basemodslib.registries.IRegistryRegistrar;
+
 import com.github.mdcdi1315.basemodslib.registries.RegistryObjectSupplier;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.DataResult;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -19,24 +21,34 @@ public final class LootTableRegistrySubsystem
         Register(registries , "optional_item" , LootTableItemEntry.GetCodec());
     }
 
-    public static <LPEC extends BaseLootPoolEntryContainer> void Register(IRegistryRegistrar registries , String location , Codec<LPEC> sercodec)
-    {
-        ArgumentNullException.ThrowIfNull(registries , "registries");
-        ArgumentNullException.ThrowIfNull(location , "location");
-        ArgumentNullException.ThrowIfNull(sercodec , "sercodec");
-        registries.RegisterObject(Registries.LOOT_POOL_ENTRY_TYPE , location, new LootPoolEntryObject<>(sercodec));
-    }
-
-    private static final class LootPoolEntryObject<T extends BaseLootPoolEntryContainer>
+    private static final class LootPoolEntryTypeObjectSupplier
         extends RegistryObjectSupplier<LootPoolEntryType>
     {
-        private final Codec<T> codec;
+        private final MapCodec<? extends BaseLootPoolEntryContainer> sercodec;
 
-        public LootPoolEntryObject(Codec<T> cdc) { codec = cdc; }
+        public LootPoolEntryTypeObjectSupplier(MapCodec<? extends BaseLootPoolEntryContainer> map_codec) {
+            sercodec = map_codec;
+        }
 
         @Override
         protected LootPoolEntryType Get(ResourceLocation resourceLocation) {
-            return new LootPoolEntryType(new ByCodecLootPoolSerializer<>(codec));
+            return new LootPoolEntryType(CreateProxyObject(sercodec));
         }
+    }
+
+    public static <LPEC extends BaseLootPoolEntryContainer> void Register(IRegistryRegistrar registries , String name , MapCodec<LPEC> sercodec)
+    {
+        ArgumentNullException.ThrowIfNull(name , "name");
+        ArgumentNullException.ThrowIfNull(registries , "registries");
+        ArgumentNullException.ThrowIfNull(sercodec , "sercodec");
+        registries.RegisterObject(Registries.LOOT_POOL_ENTRY_TYPE , name , new LootPoolEntryTypeObjectSupplier(sercodec));
+    }
+
+    private static <TActual extends BaseLootPoolEntryContainer> MapCodec<LootPoolEntryContainerPlaceholder<TActual>> CreateProxyObject(MapCodec<TActual> actual)
+    {
+        return actual.flatXmap(
+                (obj) -> DataResult.success(new LootPoolEntryContainerPlaceholder<>(obj.conditions , obj , actual)),
+                (LootPoolEntryContainerPlaceholder<TActual> b) -> DataResult.success(b.GetContainer())
+        );
     }
 }

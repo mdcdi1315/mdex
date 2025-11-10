@@ -29,8 +29,6 @@ public abstract class AbstractMineshaftPiece
 
     protected final CustomizableMineshaftPiecesSettings settings;
 
-    private static void OnErrorEmptyMethod(String s) {}
-
     protected AbstractMineshaftPiece(CustomizableMineshaftPiecesSettings s, AbstractStructurePieceType type, int genDepth, BoundingBox boundingBox) {
         super(type, genDepth, boundingBox);
         settings = s;
@@ -39,7 +37,7 @@ public abstract class AbstractMineshaftPiece
     public AbstractMineshaftPiece(AbstractStructurePieceType type, CompoundTag tag) {
         super(type, tag);
         if (tag.contains(SETTINGS_NAME_OBJECT , Tag.TAG_COMPOUND)) {
-            settings = CustomizableMineshaftPiecesSettings.GetCodec().decode(NbtOps.INSTANCE , tag.getCompound(SETTINGS_NAME_OBJECT)).getOrThrow(false , AbstractMineshaftPiece::OnErrorEmptyMethod).getFirst();
+            settings = CustomizableMineshaftPiecesSettings.GetCodec().decode(NbtOps.INSTANCE , tag.getCompound(SETTINGS_NAME_OBJECT)).getOrThrow().getFirst();
         } else {
             settings = null;
         }
@@ -54,7 +52,7 @@ public abstract class AbstractMineshaftPiece
     {
         DataResult<Tag> t = CustomizableMineshaftPiecesSettings.GetCodec().encode(settings , NbtOps.INSTANCE , tag);
         try {
-            tag.put(SETTINGS_NAME_OBJECT, t.getOrThrow(false, AbstractMineshaftPiece::OnErrorEmptyMethod));
+            tag.put(SETTINGS_NAME_OBJECT, t.getOrThrow());
         } catch (Exception e) {
             throw new MDEXException("Internal error occured while trying to save mineshaft data: " + e.getMessage());
         }

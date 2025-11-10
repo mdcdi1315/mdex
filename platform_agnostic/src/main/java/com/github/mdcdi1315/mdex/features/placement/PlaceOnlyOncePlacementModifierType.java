@@ -1,8 +1,6 @@
 package com.github.mdcdi1315.mdex.features.placement;
 
-import com.github.mdcdi1315.basemodslib.codecs.LazyUnitCodec;
-
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 public final class PlaceOnlyOncePlacementModifierType
     extends AbstractModdedPlacementModifierType<PlaceOnlyOncePlacementModifier>
@@ -10,7 +8,7 @@ public final class PlaceOnlyOncePlacementModifierType
     public static PlaceOnlyOncePlacementModifierType INSTANCE = new PlaceOnlyOncePlacementModifierType();
 
     @Override
-    protected Codec<PlaceOnlyOncePlacementModifier> GetCodecInstance() {
-        return new LazyUnitCodec<>(PlaceOnlyOncePlacementModifier::new);
+    protected MapCodec<PlaceOnlyOncePlacementModifier> GetCodecInstance() {
+        return MapCodec.unit(PlaceOnlyOncePlacementModifier::new);
     }
 }

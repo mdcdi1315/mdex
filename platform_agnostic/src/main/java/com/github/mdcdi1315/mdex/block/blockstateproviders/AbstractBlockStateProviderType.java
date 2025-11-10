@@ -3,11 +3,11 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 
 public abstract class AbstractBlockStateProviderType<T extends AbstractBlockStateProvider>
 {
-    private final Codec<T> codec;
+    private final MapCodec<T> codec;
 
     public AbstractBlockStateProviderType()
     {
@@ -17,10 +17,10 @@ public abstract class AbstractBlockStateProviderType<T extends AbstractBlockStat
         }
     }
 
-    protected abstract Codec<T> GetCodecInstance();
+    protected abstract MapCodec<T> GetCodecInstance();
 
     @NotNull
-    public final Codec<T> Codec() {
+    public final MapCodec<T> Codec() {
         return codec;
     }
 }

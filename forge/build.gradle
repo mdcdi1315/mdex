@@ -1,49 +1,78 @@
 import net.darkhax.curseforgegradle.TaskPublishCurseForge
 
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
+
 plugins {
     id 'multiloader-loader'
     id 'com.modrinth.minotaur'
     id 'net.darkhax.curseforgegradle'
-    id 'net.neoforged.moddev.legacyforge'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
 }
 
+def refmapfilename = "${mod_id}.refmap.json";
+
 mixin {
-    def refmapfile = "${mod_id}.refmap.json"
-    add(sourceSets.main, refmapfile)
+    add(sourceSets.main, refmapfilename)
 
     config("${mod_id}.mixins.json")
     config("${mod_id}.forge.mixins.json")
 }
 
-legacyForge {
-    version = "${minecraft_version}-${forge_version}"
+minecraft {
+    mappings channel: 'official', version: minecraft_version
 
-    validateAccessTransformers = true
+    reobf = false
 
-    def at = project(':platform_agnostic').file('src/main/resources/META-INF/accesstransformer.cfg')
+    copyIdeResources = true
+
+    // Automatically enable forge AccessTransformers if the file exists
+    def at = file('src/main/resources/META-INF/accesstransformer.cfg')
     if (at.exists()) {
-        accessTransformers = ["src/main/resources/META-INF/accesstransformer.cfg"]
-    }
-
-    parchment {
-        minecraftVersion = parchment_minecraft
-        mappingsVersion = parchment_version
+        accessTransformer = at
     }
 
     runs {
         client {
-            client()
+            workingDirectory file('runs/client')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName "Client"
+
+            property 'forge.enabledGameTestNamespaces', mod_id
+
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                }
+            }
         }
+
         server {
-            server()
+            workingDirectory file('runs/server')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName "Server"
+
+            property 'forge.enabledGameTestNamespaces', mod_id
+
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                }
+            }
         }
+
         data {
-            data()
-        }
-    }
-    mods {
-        "${mod_id}" {
-            sourceSet sourceSets.main
+            workingDirectory file('runs/data')
+            ideaModule "${rootProject.name}.${project.name}.main"
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+            taskName "Data"
+
+            mods {
+                modDataRun {
+                    source sourceSets.main
+                }
+            }
         }
     }
 }
@@ -51,11 +80,30 @@ legacyForge {
 sourceSets.main.resources.srcDir 'src/generated/resources'
 
 dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 }
 
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
+}
+
+processResources {
+    doFirst {
+        File refmapping_file = file("build/tmp/compileJava/${refmapfilename}");
+        if (refmapping_file.exists()) {
+            String work_dir = "build/tmp/build_working";
+            Directory dir = project.layout.projectDirectory.dir(work_dir);
+            dir.getAsFile().mkdir();
+            Files.copy(refmapping_file.toPath() , dir.file(refmapfilename).getAsFile().toPath() , StandardCopyOption.REPLACE_EXISTING);
+            sourceSets.main.resources.srcDir(work_dir);
+        }
+    }
+}
+
 jar {
-    finalizedBy('reobfJar')
     manifest.attributes([
             "MixinConfigs": "${mod_id}.mixins.json,${mod_id}.forge.mixins.json"
     ])
@@ -64,30 +112,25 @@ jar {
 apply from: rootProject.file('repositories.gradle')
 apply from: 'dependencies.gradle'
 
-task curseforge(type: TaskPublishCurseForge) {
-    dependsOn('build')
+tasks.register('curseforge', TaskPublishCurseForge) {
+    dependsOn(jar)
     description = 'Publishes the Forge build to CurseForge.'
     group = 'publishing'
 
     apiToken = project.findProperty("curseforge.api_key") ?: System.getenv("CURSEFORGE_TOKEN") ?: "none"
 
-    def projectId = findProperty("curseforge_project_id")
-    onlyIf {
-        projectId != null
-    }
-    if (projectId) {
-        def mainFile = upload(findProperty("curseforge_project_id"), file("${project.buildDir}/libs/${base.archivesName}-${version}.jar"))
-        mainFile.changelog = rootProject.file('CHANGELOG.md').text
-        mainFile.addRequirement("mdcdi1315_base_mods_lib")
-        project.minecraft_versions.split(',').toList().each { mainFile.addGameVersion(it) }
-        mainFile.releaseType = "release"
-    }
+    def mainFile = it.upload(curseforge_project_id, project.layout.buildDirectory.file("libs/${base.archivesName.get()}-${version}.jar").get().getAsFile())
+    mainFile.changelog = rootProject.file('CHANGELOG.md').text
+    mainFile.addRequirement("mdcdi1315_base_mods_lib")
+    project.minecraft_versions.split(',').toList().each { mainFile.addGameVersion(it) }
+    mainFile.releaseType = curseforge_release_type
+    mainFile.addModLoader("Forge")
 }
 
 modrinth {
-    token = project.findProperty("modrinth.token") ?: System.getenv("MODRINTH_TOKEN") ?: "none"
-    projectId = findProperty("modrinth_project_id")
-    versionType = "release"
+    //token = project.findProperty("modrinth.token") ?: System.getenv("MODRINTH_TOKEN") ?: "none"
+    projectId = modrinth_project_id
+    versionType = modrinth_release_type
     versionNumber = project.version + "+forge-" + project.minecraft_version
     uploadFile = jar
     changelog = rootProject.file("CHANGELOG.md").text
@@ -98,3 +141,5 @@ modrinth {
         required.project "mdcdi1315_base_mods_lib"
     }
 }
+
+tasks.modrinth.dependsOn(jar)

@@ -4,6 +4,8 @@ import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 import com.github.mdcdi1315.mdex.structures.customizablemineshaft.CustomizableMineshaftPiecesSettings;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -173,13 +175,13 @@ public final class MineShaftCorridor
         }
     }
 
-    protected boolean createChest(WorldGenLevel level, BoundingBox box, RandomSource random, int x, int y, int z, ResourceLocation lootTable)
+    private boolean createChest(WorldGenLevel level, BoundingBox box, RandomSource random, int x, int y, int z, ResourceLocation lootTable)
     {
         BlockPos blockpos = this.getWorldPos(x, y, z);
         if (box.isInside(blockpos) && BlockUtils.BlockIsSolidAndAboveIsAir(level , blockpos.below())) {
             this.placeBlock(level, Blocks.RAIL.defaultBlockState().setValue(RailBlock.SHAPE, random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST), x, y, z, box);
             MinecartChest minecartchest = new MinecartChest(level.getLevel(), blockpos.getX() + 0.5d, blockpos.getY() + 0.5d, blockpos.getZ() + 0.5d);
-            minecartchest.setLootTable(lootTable, random.nextLong());
+            minecartchest.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable), random.nextLong());
             level.addFreshEntity(minecartchest);
             return true;
         } else {

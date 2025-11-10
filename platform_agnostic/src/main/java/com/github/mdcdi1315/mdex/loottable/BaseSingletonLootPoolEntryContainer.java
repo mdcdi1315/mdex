@@ -5,17 +5,15 @@ import com.github.mdcdi1315.basemodslib.codecs.ListCodec;
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 
 import com.mojang.datafixers.Products;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.codecs.KeyDispatchCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntry;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
+import net.minecraft.world.level.storage.loot.functions.LootItemFunctions;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,7 +22,7 @@ import java.util.function.BiFunction;
 import static net.minecraft.world.level.storage.loot.functions.LootItemFunctions.IDENTITY;
 
 public abstract class BaseSingletonLootPoolEntryContainer
-    extends BaseLootPoolEntryContainer
+        extends BaseLootPoolEntryContainer
 {
     public static final int DEFAULT_WEIGHT = 1;
     public static final int DEFAULT_QUALITY = 0;
@@ -43,8 +41,9 @@ public abstract class BaseSingletonLootPoolEntryContainer
     private BiFunction<ItemStack, LootContext, ItemStack> compositeFunction;
     private SingletonPoolEntry entry;
 
-    protected BaseSingletonLootPoolEntryContainer(int weight, int quality, List<LootItemFunction> functions)
+    protected BaseSingletonLootPoolEntryContainer(List<LootItemCondition> c, int weight, int quality, List<LootItemFunction> functions)
     {
+        super(c);
         this.weight = weight;
         this.quality = quality;
         this.functions = functions;
@@ -115,7 +114,7 @@ public abstract class BaseSingletonLootPoolEntryContainer
     }
 
     private static class SingletonPoolEntry
-        implements LootPoolEntry
+            implements LootPoolEntry
     {
         private final BaseSingletonLootPoolEntryContainer b;
 
@@ -134,17 +133,13 @@ public abstract class BaseSingletonLootPoolEntryContainer
         }
     }
 
-    public static <TB extends BaseSingletonLootPoolEntryContainer> Products.P3<RecordCodecBuilder.Mu<TB>, Integer , Integer , List<LootItemFunction>> GetBaseCodec(RecordCodecBuilder.Instance<TB> instance)
+    public static <TB extends BaseSingletonLootPoolEntryContainer> Products.P4<RecordCodecBuilder.Mu<TB>,  Integer ,  Integer , List<LootItemCondition> , List<LootItemFunction>> GetBaseCodec(RecordCodecBuilder.Instance<TB> instance)
     {
         return instance.group(
                 CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("weight" , DEFAULT_WEIGHT).forGetter((TB b) -> b.weight),
-                CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("quality" , DEFAULT_QUALITY).forGetter((TB b) -> b.quality),
-                new ListCodec<>(KeyDispatchCodec.unsafe("function" , // Using this hacky unsafe context allows us to magically pass the JsonElement to read directly , and thus read the function object on the fly.
-                        BuiltInRegistries.LOOT_FUNCTION_TYPE.byNameCodec() ,
-                        (LootItemFunction f) -> DataResult.success(f.getType()),
-                        (LootItemFunctionType f) -> DataResult.success(new LootItemFunctionTypeDecoder<>(f)), // For decoders only, we need the type reference itself so that we can use the underlying serializer and kick in.
-                        (LootItemFunction f) -> DataResult.success(new LootItemFunctionTypeEncoder<>())
-                ).codec()).optionalFieldOf("functions", List.of()).forGetter((TB b) -> b.functions)
+                CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("quality" , DEFAULT_QUALITY).forGetter((TB b) -> b.quality)
+        ).and(CommonFields(instance).t1()).and(
+                new ListCodec<>(LootItemFunctions.ROOT_CODEC).optionalFieldOf("functions", List.of()).forGetter((TB b) -> b.functions)
         );
     }
 }

@@ -102,6 +102,11 @@ public final class TeleporterSpawnData
         return PlayerMap.put(player.getUUID() , lastdata);
     }
 
+    private static PlayerPlacementInformation GetOrUpdateEntry_Mapping(UUID u) {
+        return new PlayerPlacementInformation();
+    }
+
+
     /**
      * Gets a player spawn placement entry or returns an empty one, suitable to be modified.
      * @param player The Server Player to operate on.
@@ -112,14 +117,14 @@ public final class TeleporterSpawnData
             throws ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(player , "player");
-        return PlayerMap.computeIfAbsent(player.getUUID() , (UUID u) -> new PlayerPlacementInformation());
+        return PlayerMap.computeIfAbsent(player.getUUID() , TeleporterSpawnData::GetOrUpdateEntry_Mapping);
     }
 
     /**
      * Gets the last known spawn position of the specified server player. <br />
      * If the current player is not known (i.e. a new player), null is returned.
      * @param player The {@link ServerPlayer} to get the last spawn position.
-     * @return The old spawn data of the player, if any.
+     * @return The spawn data of the player, if any.
      * @throws ArgumentNullException player was null.
      */
     @MaybeNull
@@ -127,7 +132,20 @@ public final class TeleporterSpawnData
             throws ArgumentNullException
     {
         ArgumentNullException.ThrowIfNull(player , "player");
-        return PlayerMap.get(player.getUUID());
+        return GetLastSpawnInfoByUUID(player.getUUID());
+    }
+
+    /**
+     * Gets the last known spawn of the player with the specified {@link UUID}. <br />
+     * Useful in cases where a {@link ServerPlayer} representing the UUID may not be connected.
+     * @param uuid The UUID of the player to get spawn information for.
+     * @return The spawn data of the player by the specified UUID, if any.
+     */
+    @MaybeNull
+    public PlayerPlacementInformation GetLastSpawnInfoByUUID(UUID uuid)
+    {
+        ArgumentNullException.ThrowIfNull(uuid , "uuid");
+        return PlayerMap.get(uuid);
     }
 
     /**

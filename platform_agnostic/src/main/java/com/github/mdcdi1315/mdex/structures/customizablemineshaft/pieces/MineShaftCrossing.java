@@ -122,11 +122,12 @@ public final class MineShaftCrossing
             this.placeSupportPillar(level, box, this.boundingBox.minX() + 1, this.boundingBox.minY(), this.boundingBox.maxZ() - 1, this.boundingBox.maxY());
             this.placeSupportPillar(level, box, this.boundingBox.maxX() - 1, this.boundingBox.minY(), this.boundingBox.minZ() + 1, this.boundingBox.maxY());
             this.placeSupportPillar(level, box, this.boundingBox.maxX() - 1, this.boundingBox.minY(), this.boundingBox.maxZ() - 1, this.boundingBox.maxY());
-            int i = this.boundingBox.minY() - 1;
 
-            for (int j = this.boundingBox.minX(); j <= this.boundingBox.maxX(); ++j) {
-                for (int k = this.boundingBox.minZ(); k <= this.boundingBox.maxZ(); ++k) {
-                    SetPlanksBlock(level, box, j, i, k);
+            int base_y = this.boundingBox.minY() - 1;
+
+            for (int cx = this.boundingBox.minX(); cx <= this.boundingBox.maxX(); ++cx) {
+                for (int cz = this.boundingBox.minZ(); cz <= this.boundingBox.maxZ(); ++cz) {
+                    SetPlanksBlock(level, box, cx, base_y, cz);
                 }
             }
         }

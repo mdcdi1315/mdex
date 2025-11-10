@@ -42,22 +42,24 @@ public final class MineShaftStairs
     }
 
     public void addChildren(StructurePiece piece, StructurePieceAccessor pieces, RandomSource random) {
-        int i = this.getGenDepth();
+        int gen_depth = this.getGenDepth();
         Direction direction = this.getOrientation();
         if (direction != null) {
-            switch (direction) {
+            switch (direction)
+            {
                 case SOUTH:
-                    MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX(), this.boundingBox.minY(), this.boundingBox.maxZ() + 1, Direction.SOUTH, i);
+                    MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX(), this.boundingBox.minY(), this.boundingBox.maxZ() + 1, Direction.SOUTH, gen_depth);
                     break;
                 case WEST:
-                    MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() - 1, this.boundingBox.minY(), this.boundingBox.minZ(), Direction.WEST, i);
+                    MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() - 1, this.boundingBox.minY(), this.boundingBox.minZ(), Direction.WEST, gen_depth);
                     break;
                 case EAST:
-                    MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.maxX() + 1, this.boundingBox.minY(), this.boundingBox.minZ(), Direction.EAST, i);
+                    MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.maxX() + 1, this.boundingBox.minY(), this.boundingBox.minZ(), Direction.EAST, gen_depth);
                     break;
-                case NORTH:
+                // We cover the below case by the default case, not needed
+                // case NORTH:
                 default:
-                    MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX(), this.boundingBox.minY(), this.boundingBox.minZ() - 1, Direction.NORTH, i);
+                    MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX(), this.boundingBox.minY(), this.boundingBox.minZ() - 1, Direction.NORTH, gen_depth);
                     break;
             }
         }

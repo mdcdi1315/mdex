@@ -43,6 +43,18 @@ public final class Archive_Expander_Internal
         return map;
     }
 
+    private static String FindPropertyInMap(Map<String, String> string_map, String key)
+    {
+        for (var es : string_map.entrySet())
+        {
+            if (es.getKey().equals(key))
+            {
+                return es.getValue();
+            }
+        }
+        return null;
+    }
+
     private static boolean ArchiveFileFilterImpl(File t) {
         return t.getName().endsWith(".zip");
     }
@@ -68,12 +80,6 @@ public final class Archive_Expander_Internal
             throws IOException
     {
         var root_dir = p.getLayout().getProjectDirectory().dir("deps");
-
-        String base_mods_lib_version = (String)p.findProperty("base_mods_lib_version");
-
-        if (base_mods_lib_version == null) {
-            throw new IllegalStateException("Cannot find project property base_mods_lib_version!");
-        }
 
         var list = root_dir.getAsFile().listFiles(Archive_Expander_Internal::ArchiveFileFilterImpl);
 
@@ -164,11 +170,14 @@ public final class Archive_Expander_Internal
                     }
                 } else if (k.equals("version")) {
                     logger.lifecycle(String.format("Reading archive %s with version %s", f.getName(), v));
-                    if (
-                            f.getName().equals("mdcdi1315_base_mods_lib_dev_package.zip") &&
-                                    !base_mods_lib_version.equals(v)
-                    ) {
-                        throw new IllegalStateException(String.format("Base mods library version mismatch!\nExpected %s while found %s." , base_mods_lib_version, v));
+                    String constructed_property = FindPropertyInMap(properties_map , "mod_id");
+                    if (constructed_property == null) {
+                        logger.warn("WARN: The mod_id property in the archive {} was not found! Version checker will not make a versioning check and this can cause unexpected issues while building.", f.getName());
+                    } else {
+                        Object version = p.findProperty(String.format("%s_version" , constructed_property));
+                        if (!v.equals(version)) {
+                            throw new IllegalStateException(String.format("Archive version mismatch!\nExpected %s while found %s." , version, v));
+                        }
                     }
                 }
             }

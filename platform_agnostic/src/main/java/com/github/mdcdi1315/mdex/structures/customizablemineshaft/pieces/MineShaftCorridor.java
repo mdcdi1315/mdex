@@ -62,8 +62,9 @@ public final class MineShaftCorridor
     public MineShaftCorridor(int genDepth, RandomSource random, BoundingBox boundingBox, Direction orientation, CustomizableMineshaftPiecesSettings settings) {
         super(settings, MineShaftCorridorType.INSTANCE, genDepth, boundingBox);
         this.setOrientation(orientation);
-        if (random.nextInt(3) == 0) { SetState(STATE_HAS_RAILS); }
-        if (HasNotStateFlag(STATE_HAS_RAILS) && random.nextInt(23) == 0) {
+        if (random.nextInt(3) == 0) {
+            SetState(STATE_HAS_RAILS);
+        } else if (random.nextInt(23) == 0) {
             SetState(STATE_IS_SPIDER_CORRIDOR);
         }
         Direction ort = this.getOrientation();
@@ -186,18 +187,21 @@ public final class MineShaftCorridor
         }
     }
 
-    public void postProcess(WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator, RandomSource random, BoundingBox box, ChunkPos chunkPos, BlockPos pos) {
+    public void postProcess(WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator, RandomSource random, BoundingBox box, ChunkPos chunkPos, BlockPos pos)
+    {
         if (!IsInInvalidLocation(level, box))
         {
+            boolean spider_corridor = HasStateFlag(STATE_IS_SPIDER_CORRIDOR);
             int i1 = this.numSections * MineshaftPieces.DEFAULT_SHAFT_LENGTH - 1;
             this.generateBox(level, box, 0, 0, 0, 2, 1, i1, CAVE_AIR, CAVE_AIR, false);
             this.generateMaybeBox(level, box, random, 0.8F, 0, 2, 0, 2, 2, i1, CAVE_AIR, CAVE_AIR, false, false);
-            if (HasStateFlag(STATE_IS_SPIDER_CORRIDOR)) {
+            if (spider_corridor) {
                 this.generateMaybeBox(level, box, random, 0.6F, 0, 0, 0, 2, 1, i1, Blocks.COBWEB.defaultBlockState(), CAVE_AIR, false, true);
             }
 
-            for (int j1 = 0; j1 < this.numSections; ++j1) {
-                int k1 = 2 + j1 * 5;
+            for (int section = 0; section < this.numSections; ++section)
+            {
+                int k1 = 2 + section * 5;
                 this.placeSupport(level, box, 0, 0, k1, 2, 2, random);
                 this.maybePlaceCobWeb(level, box, random, 0.1F, 0, 2, k1 - 1);
                 this.maybePlaceCobWeb(level, box, random, 0.1F, 2, 2, k1 - 1);
@@ -218,10 +222,10 @@ public final class MineShaftCorridor
                     this.createChest(level, box, random, 0, 0, k1 + 1, settings.MinecartsLootTable);
                 }
 
-                if (HasStateFlag(STATE_IS_SPIDER_CORRIDOR) && HasNotStateFlag(STATE_HAS_PLACED_SPIDER)) {
-                    int i2 = k1 - 1 + random.nextInt(3);
-                    BlockPos blockpos = this.getWorldPos(1, 0, i2);
-                    if (box.isInside(blockpos) && this.isInterior(level, 1, 0, i2, box)) {
+                if (spider_corridor && HasNotStateFlag(STATE_HAS_PLACED_SPIDER)) {
+                    int z = k1 - 1 + random.nextInt(3);
+                    BlockPos blockpos = this.getWorldPos(1, 0, z);
+                    if (box.isInside(blockpos) && this.isInterior(level, 1, 0, z, box)) {
                         SetState(STATE_HAS_PLACED_SPIDER);
                         level.setBlock(blockpos, Blocks.SPAWNER.defaultBlockState(), 2);
                         BlockEntity blockentity = level.getBlockEntity(blockpos);
@@ -296,8 +300,7 @@ public final class MineShaftCorridor
     private void fillPillarDownOrChainUp(LevelAccessor level, BlockState state, int x, int y, int z, BoundingBox box) {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = this.getWorldPos(x, y, z);
         if (box.isInside(blockpos$mutableblockpos)) {
-            int i = blockpos$mutableblockpos.getY();
-            int j = 1;
+            int i = blockpos$mutableblockpos.getY(), j = 1;
             boolean flag = true;
 
             for (boolean flag1 = true; flag || flag1; ++j) {

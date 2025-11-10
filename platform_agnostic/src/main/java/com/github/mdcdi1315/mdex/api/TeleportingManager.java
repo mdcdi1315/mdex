@@ -31,6 +31,7 @@ import net.minecraft.world.level.chunk.PalettedContainer;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
+import java.util.UUID;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -235,7 +236,7 @@ public abstract class TeleportingManager
         }
 
         // Determine which is the teleporter position.
-        BlockPos bp = null;
+        BlockPos bp;
 
         // If applicable and possible, restore the player's rotation too.
         PlayerRotationInformation rot_info = null;
@@ -244,10 +245,13 @@ public abstract class TeleportingManager
             // We have the exact teleporter position from the spawn data, use that instead.
             bp = p.GetTeleporterPosition();
             rot_info = p.GetPlayerRotationInfo();
+        } else {
+            // Try and see whether another player has used this teleporter implementation before.
+            bp = GetTeleporterInfoByOtherPlayer(sp , dat , teleporterposcurrentworld);
         }
 
         if (bp == null) {
-            // Apply the current coordinate scale defined by the Mining Dimension and the source dimension, and specify the teleporter area.
+            // Apply the current coordinate scale defined by the target dimension and the source dimension, and specify the teleporter area.
             double scale = target.dimensionType().coordinateScale() / old.dimensionType().coordinateScale();
             bp = target.getWorldBorder().clampToBounds(scale * teleporterposcurrentworld.getX() , teleporterposcurrentworld.getY() , scale * teleporterposcurrentworld.getZ());
         }
@@ -290,6 +294,35 @@ public abstract class TeleportingManager
     }
 
     @MaybeNull
+    private BlockPos GetTeleporterInfoByOtherPlayer(ServerPlayer player, TeleporterSpawnData data_target, BlockPos old_teleporter_pos)
+    {
+        // Check if another player has used the source teleporter before.
+        // Will help to avoid placing the teleporter feature a second time if already exists there.
+        // This will also prevent race conditions on the fact that the teleporter feature is placing but failed to be completely placed due to the above.
+        UUID player_key, current_player_key = player.getUUID();
+        PlayerPlacementInformation ppi;
+        var old_data = new PerDimensionWorldDataManager((ServerLevel) player.level()).Get(config.DimensionFileName, TeleporterSpawnData::new);
+        if (old_data != null)
+        {
+            for (var other_player : old_data.GetSpawnInfos())
+            {
+                player_key = other_player.getKey();
+                if ((!current_player_key.equals(player_key)) &&
+                        old_teleporter_pos.equals(other_player.getValue().GetTeleporterPosition()))
+                {
+                    // OK. We have found a player that has used the same teleporter before.
+                    // We can use that to locate where that player was spawned in the target dimension.
+                    // Then , return that position if exists for the in question player.
+                    ppi = data_target.GetLastSpawnInfoByUUID(player_key);
+                    MDEXModInstance.LOGGER.info("MDEXTELEPORTER_EVENTS: Found that the player with UUID '{}' has used the Teleporting Manager mechanism from this teleporter. Will use that player's information (if existing) to spawn '{}' to the desired dimension." , player_key , current_player_key);
+                    return ppi == null ? null : ppi.GetTeleporterPosition();
+                }
+            }
+        }
+        return null;
+    }
+
+    @MaybeNull
     private BlockPos PlaceTeleporterFeature(ServerLevel target , BlockPos basepos , TeleporterSpawnData targetleveldata)
     {
         BlockPos temp , possible;
@@ -308,9 +341,7 @@ public abstract class TeleportingManager
         }
         if (possible == null) {
             return null;
-        }
-        if (BlockUtils.HasAnyFluid(target , possible))
-        {
+        } else if (BlockUtils.HasAnyFluid(target , possible)) {
             // We are into a fluid region???!!
             // We need to remediate this since the player cannot be spawned there, he will die by lava or drown by the water.
             possible = AvoidFluidRegion(target , possible);
@@ -397,7 +428,7 @@ public abstract class TeleportingManager
                 BlockUtils.IsEmptyFluid(target , temp.above(2))
             ) {
                 // Nice, we have left the fluid region
-                return temp.above(2);
+                return temp;
             }
         }
 

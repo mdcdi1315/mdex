@@ -108,7 +108,7 @@ processResources {
             'sources'                      : sources,
             'issues'                       : issues,
             'discord'                      : discord,
-            'base_mods_lib_version'        : base_mods_lib_version,
+            'base_mods_lib_version'        : mdcdi1315_base_mods_lib_version,
             "forge_version"                : forge_version,
             "forge_version_range"          : forge_version_range,
             "forge_loader_version_range"   : forge_loader_version_range,

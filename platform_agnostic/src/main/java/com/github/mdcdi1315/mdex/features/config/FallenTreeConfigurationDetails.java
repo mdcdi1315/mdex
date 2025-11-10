@@ -1,9 +1,9 @@
 package com.github.mdcdi1315.mdex.features.config;
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
+import com.github.mdcdi1315.basemodslib.utils.OptionalDirectHolder;
 
 import com.github.mdcdi1315.mdex.block.BlockUtils;
-import com.github.mdcdi1315.mdex.api.OptionalDirectHolder;
 
 import com.mojang.serialization.MapCodec;
 

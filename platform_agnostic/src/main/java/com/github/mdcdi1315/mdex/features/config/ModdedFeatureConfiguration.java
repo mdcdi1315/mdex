@@ -1,8 +1,10 @@
 package com.github.mdcdi1315.mdex.features.config;
 
+import com.github.mdcdi1315.DotNetLayer.System.Action1;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.AllowNull;
 
+import com.github.mdcdi1315.DotNetLayer.System.Func2;
 import com.github.mdcdi1315.basemodslib.BaseModsLib;
 import com.github.mdcdi1315.basemodslib.codecs.ListCodec;
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
@@ -191,6 +193,27 @@ public class ModdedFeatureConfiguration<TD extends IModdedFeatureConfigurationDe
         return STATE_HasFlag(STATE_MODLIST_IS_VALID , STATE_IS_COMPILED);
     }
 
+    private static final class StackWalkerImplementation
+        implements Func2<Stream<StackWalker.StackFrame> , StringBuilder>
+    {
+        private record StackFrameFunction(StringBuilder sb_to_return)
+            implements Action1<StackWalker.StackFrame>
+        {
+            @Override
+            public void action(StackWalker.StackFrame frame) {
+                sb_to_return.append(frame.toStackTraceElement().toString());
+                sb_to_return.append('\n');
+            }
+        }
+
+        @Override
+        public StringBuilder function(Stream<StackWalker.StackFrame> stream) {
+            StringBuilder sbi = new StringBuilder(2048);
+            stream.limit(8).forEach(new StackFrameFunction(sbi));
+            return sbi;
+        }
+    }
+
     /**
      * Marks this configuration instance as invalid, and asynchronously destroys all the public fields of the derived class.
      * <p>
@@ -207,17 +230,7 @@ public class ModdedFeatureConfiguration<TD extends IModdedFeatureConfigurationDe
         STATE_RemoveFlag(STATE_IS_COMPILED);
         String cn = Details == null ? "<UNKNOWN>" : Details.getClass().getName();
         if (MDEXModInstance.LoggingFlags.Feature()) {
-            StringBuilder sb = StackWalker.getInstance().walk((Stream<StackWalker.StackFrame> s) -> {
-                StringBuilder sbi = new StringBuilder(2048);
-                s.limit(8).forEach(
-                        (StackWalker.StackFrame i) -> {
-                            sbi.append(i.toStackTraceElement().toString());
-                            sbi.append('\n');
-                        }
-                );
-                return sbi;
-            });
-            MDEXModInstance.LOGGER.info("IsInvalid was run for feature configuration object {}. Stack Trace: \n{}" , cn , sb);
+            MDEXModInstance.LOGGER.info("IsInvalid was run for feature configuration object {}. Stack Trace: \n{}" , cn , StackWalker.getInstance().walk(new StackWalkerImplementation()));
         } else {
             MDEXModInstance.LOGGER.info("IsInvalid was run for feature configuration object {}. To get stack trace information, set the DebugFeatureConfigurations to true." , cn);
         }

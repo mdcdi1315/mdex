@@ -4,14 +4,15 @@ import org.gradle.api.Task;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.specs.Spec;
 
 import java.io.IOException;
 
 public final class ArchiveExpander
-    implements Plugin<Project>
+        implements Plugin<Project>
 {
     private record ExpandDevArchivesTranslater(Project target)
-        implements Action<Task>
+            implements Action<Task>
     {
         @Override
         public void execute(Task task)
@@ -39,9 +40,14 @@ public final class ArchiveExpander
     }
 
     @Override
-    public void apply(Project target) {
+    public void apply(Project target)
+    {
         var tasks = target.getTasks();
-        tasks.register("expand_dep_archives").configure(new ExpandDevArchivesTranslater(target));
-        tasks.register("update_dep_archives").configure(new UpdateDevArchivesTranslater(target));
+        var expand_archives_task = tasks.register("expand_dep_archives");
+        expand_archives_task.configure(new ExpandDevArchivesTranslater(target));
+        // expand_archives_task.get().setDescription("Expands all the Developer archives found on the 'deps' directory. For initial project setup only.");
+        var update_archives_task = tasks.register("update_dep_archives");
+        update_archives_task.configure(new UpdateDevArchivesTranslater(target));
+        // update_archives_task.get().setDescription("Updates all the Developer archives found on the 'deps' directory.");
     }
 }

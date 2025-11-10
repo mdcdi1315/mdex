@@ -12,6 +12,8 @@ import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfigur
 public final class BaseTeleporterPlacementFeatureConfiguration
     implements FeatureConfiguration , Compilable
 {
+    public static final int MAX_FEATURE_SIZE = 6;
+
     public IntProvider Size;
     public boolean PlaceStarterChest;
     public StarterChestPlacement ChestPlacement;
@@ -33,7 +35,7 @@ public final class BaseTeleporterPlacementFeatureConfiguration
         return CodecUtils.CreateCodecDirect(
                 AbstractBlockStateProvider.CODEC.fieldOf("base_plate_provider").forGetter((g) -> g.Base_Plate_Provider),
                 AbstractBlockStateProvider.CODEC.fieldOf("light_block_provider").forGetter((g) -> g.Light_Block_Provider),
-                IntProvider.codec(1 , 6).fieldOf("size").forGetter((g) -> g.Size),
+                IntProvider.codec(1 , MAX_FEATURE_SIZE).fieldOf("size").forGetter((g) -> g.Size),
                 StarterChestPlacement.GetCodec().optionalFieldOf("starter_chest_placement" , new StarterChestPlacement(null , null , 0f)).forGetter((g) -> g.ChestPlacement),
                 BaseTeleporterPlacementFeatureConfiguration::new
         );

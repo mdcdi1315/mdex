@@ -5,8 +5,8 @@ import com.github.mdcdi1315.mdex.structures.customizablemineshaft.CustomizableMi
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.level.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,6 +19,7 @@ import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSerializationContext;
 
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 @SuppressWarnings("all")
 public final class MineShaftRoom
@@ -41,12 +42,9 @@ public final class MineShaftRoom
 
     public void addChildren(StructurePiece piece, StructurePieceAccessor pieces, RandomSource random)
     {
-        int i = this.getGenDepth();
-        int j = this.boundingBox.getYSpan() - 3 - 1;
+        int gen_depth = this.getGenDepth(), j = this.boundingBox.getYSpan() - MineshaftPieces.DEFAULT_SHAFT_HEIGHT - 1;
         int k;
-        if (j < 1) {
-            j = 1;
-        }
+        j = (j < 1) ? 1 : j;
 
         StructurePiece p;
         BoundingBox boundingbox;
@@ -57,7 +55,7 @@ public final class MineShaftRoom
                 break;
             }
 
-            p = MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() + k, this.boundingBox.minY() + random.nextInt(j) + 1, this.boundingBox.minZ() - 1, Direction.NORTH, i);
+            p = MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() + k, this.boundingBox.minY() + random.nextInt(j) + 1, this.boundingBox.minZ() - 1, Direction.NORTH, gen_depth);
             if (p != null) {
                 boundingbox = p.getBoundingBox();
                 this.childEntranceBoxes.add(new BoundingBox(boundingbox.minX(), boundingbox.minY(), this.boundingBox.minZ(), boundingbox.maxX(), boundingbox.maxY(), this.boundingBox.minZ() + 1));
@@ -70,7 +68,7 @@ public final class MineShaftRoom
                 break;
             }
 
-            p = MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() + k, this.boundingBox.minY() + random.nextInt(j) + 1, this.boundingBox.maxZ() + 1, Direction.SOUTH, i);
+            p = MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() + k, this.boundingBox.minY() + random.nextInt(j) + 1, this.boundingBox.maxZ() + 1, Direction.SOUTH, gen_depth);
             if (p != null) {
                 boundingbox = p.getBoundingBox();
                 this.childEntranceBoxes.add(new BoundingBox(boundingbox.minX(), boundingbox.minY(), this.boundingBox.maxZ() - 1, boundingbox.maxX(), boundingbox.maxY(), this.boundingBox.maxZ()));
@@ -84,7 +82,7 @@ public final class MineShaftRoom
                 break;
             }
 
-            p = MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() - 1, this.boundingBox.minY() + random.nextInt(j) + 1, this.boundingBox.minZ() + k, Direction.WEST, i);
+            p = MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.minX() - 1, this.boundingBox.minY() + random.nextInt(j) + 1, this.boundingBox.minZ() + k, Direction.WEST, gen_depth);
             if (p != null) {
                 boundingbox = p.getBoundingBox();
                 this.childEntranceBoxes.add(new BoundingBox(this.boundingBox.minX(), boundingbox.minY(), boundingbox.minZ(), this.boundingBox.minX() + 1, boundingbox.maxY(), boundingbox.maxZ()));
@@ -98,7 +96,7 @@ public final class MineShaftRoom
                 break;
             }
 
-            p = MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.maxX() + 1, this.boundingBox.minY() + random.nextInt(j) + 1, this.boundingBox.minZ() + k, Direction.EAST, i);
+            p = MineshaftPieces.GenerateAndAddPiece(piece, pieces, random, this.boundingBox.maxX() + 1, this.boundingBox.minY() + random.nextInt(j) + 1, this.boundingBox.minZ() + k, Direction.EAST, gen_depth);
             if (p != null) {
                 boundingbox = p.getBoundingBox();
                 this.childEntranceBoxes.add(new BoundingBox(this.boundingBox.maxX() - 1, boundingbox.minY(), boundingbox.minZ(), this.boundingBox.maxX(), boundingbox.maxY(), boundingbox.maxZ()));
@@ -120,10 +118,18 @@ public final class MineShaftRoom
 
     }
 
+    private record MoveAllBy(int x, int y, int z)
+        implements UnaryOperator<BoundingBox>
+    {
+        @Override
+        public BoundingBox apply(BoundingBox box) {
+            return box.moved(x, y, z);
+        }
+    }
+
     public void move(int x, int y, int z) {
         super.move(x, y, z);
-
-        this.childEntranceBoxes.replaceAll(box -> box.moved(x, y, z));
+        this.childEntranceBoxes.replaceAll(new MoveAllBy(x, y, z));
     }
 
     protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag tag)

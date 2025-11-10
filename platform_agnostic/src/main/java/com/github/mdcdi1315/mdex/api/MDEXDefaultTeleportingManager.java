@@ -24,8 +24,7 @@ public final class MDEXDefaultTeleportingManager
 
     @Override
     protected boolean TeleporterIsExisting(BlockState state) {
-        if (state == null) { return false; }
-        return state.is(ModBlocks.TELEPORTER);
+        return state != null && state.is(ModBlocks.TELEPORTER);
     }
 
     @Override

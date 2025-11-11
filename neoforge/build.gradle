@@ -67,7 +67,7 @@ tasks.register('curseforge', TaskPublishCurseForge) {
     project.minecraft_versions.split(',').toList().each { mainFile.addGameVersion(it) }
     mainFile.releaseType = curseforge_release_type
     mainFile.addModLoader("NeoForge");
-    mainFile.addRequirement("mdcdi1315_base_mods_lib")
+    mainFile.addRequirement("mdcdi1315-base-lib")
 }
 
 modrinth {
@@ -81,7 +81,7 @@ modrinth {
     syncBodyFrom = rootProject.file("modpage.md").text
     loaders = ['neoforge']
     dependencies {
-        required.project "mdcdi1315_base_mods_lib"
+        required.project "mdcdi1315-base-lib"
         required.project "fabric-api"
     }
 }

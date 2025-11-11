@@ -30,10 +30,10 @@ public final class MDEXDefaultTeleportingManager
     @Override
     protected boolean TeleportImpl(ServerPlayer player, ServerLevel target, Vec3 placement_position, PlayerRotationInformation rot_info, boolean playteleportsound)
     {
-        if (rot_info != null) {
-            return player.changeDimension(new DimensionTransition(target , placement_position , Vec3.ZERO , rot_info.GetYRotation() , rot_info.GetXRotation(), playteleportsound ? DimensionTransition.PLAY_PORTAL_SOUND : DimensionTransition.DO_NOTHING)) != null;
-        } else {
-            return player.changeDimension(new DimensionTransition(target , placement_position , Vec3.ZERO , player.getYRot() , player.getXRot(), playteleportsound ? DimensionTransition.PLAY_PORTAL_SOUND : DimensionTransition.DO_NOTHING)) != null;
-        }
+        return player.changeDimension(
+                (rot_info == null) ?
+                        new DimensionTransition(target , placement_position , Vec3.ZERO , player.getYRot() , player.getXRot(), playteleportsound ? DimensionTransition.PLAY_PORTAL_SOUND : DimensionTransition.DO_NOTHING) :
+                        new DimensionTransition(target , placement_position , Vec3.ZERO , rot_info.GetYRotation() , rot_info.GetXRotation(), playteleportsound ? DimensionTransition.PLAY_PORTAL_SOUND : DimensionTransition.DO_NOTHING)
+        ) != null;
     }
 }

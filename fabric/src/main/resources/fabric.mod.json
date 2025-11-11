@@ -35,8 +35,7 @@
 		"fabric-datagen": []
 	},
 	"mixins": [
-		"${mod_id}.mixins.json",
-		"${mod_id}.fabric.mixins.json"
+		"${mod_id}.mixins.json"
 	],
 	"depends": {
 		"java": ">=${java_version}",

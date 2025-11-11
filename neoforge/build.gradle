@@ -66,8 +66,9 @@ tasks.register('curseforge', TaskPublishCurseForge) {
     mainFile.changelog = rootProject.file('CHANGELOG.md').text
     project.minecraft_versions.split(',').toList().each { mainFile.addGameVersion(it) }
     mainFile.releaseType = curseforge_release_type
-    mainFile.addModLoader("NeoForge");
+    mainFile.addModLoader("NeoForge")
     mainFile.addRequirement("mdcdi1315-base-lib")
+    mainFile.addEnvironment("Client", "Server")
 }
 
 modrinth {
@@ -82,6 +83,5 @@ modrinth {
     loaders = ['neoforge']
     dependencies {
         required.project "mdcdi1315-base-lib"
-        required.project "fabric-api"
     }
 }

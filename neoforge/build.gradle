@@ -64,6 +64,7 @@ tasks.register('curseforge', TaskPublishCurseForge) {
     mainFile.releaseType = curseforge_release_type
     mainFile.addModLoader("NeoForge");
     mainFile.addRequirement("mdcdi1315-base-lib")
+    mainFile.addEnvironment("Client", "Server")
 }
 
 modrinth {

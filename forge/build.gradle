@@ -102,12 +102,6 @@ processResources {
     }
 }
 
-jar {
-    manifest.attributes([
-            "MixinConfigs": "${mod_id}.mixins.json,${mod_id}.forge.mixins.json"
-    ])
-}
-
 apply from: rootProject.file('repositories.gradle')
 apply from: 'dependencies.gradle'
 
@@ -124,6 +118,7 @@ tasks.register('curseforge', TaskPublishCurseForge) {
     project.minecraft_versions.split(',').toList().each { mainFile.addGameVersion(it) }
     mainFile.releaseType = curseforge_release_type
     mainFile.addModLoader("Forge")
+    mainFile.addEnvironment("Client", "Server")
 }
 
 modrinth {

@@ -51,8 +51,8 @@ public final class MineShaftCorridor
 
     public MineShaftCorridor(CompoundTag tag) {
         super(MineShaftCorridorType.INSTANCE , tag);
-        this.state = tag.getByte("state");
-        this.numSections = tag.getInt("Num");
+        this.state = tag.getByteOr("state", (byte)0);
+        this.numSections = tag.getIntOr("Num" , 0);
     }
 
     protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag tag) {
@@ -180,8 +180,9 @@ public final class MineShaftCorridor
         BlockPos blockpos = this.getWorldPos(x, y, z);
         if (box.isInside(blockpos) && BlockUtils.BlockIsSolidAndAboveIsAir(level , blockpos.below())) {
             this.placeBlock(level, Blocks.RAIL.defaultBlockState().setValue(RailBlock.SHAPE, random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST), x, y, z, box);
-            MinecartChest minecartchest = new MinecartChest(level.getLevel(), blockpos.getX() + 0.5d, blockpos.getY() + 0.5d, blockpos.getZ() + 0.5d);
-            minecartchest.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTable), random.nextLong());
+            MinecartChest minecartchest = new MinecartChest(EntityType.CHEST_MINECART , level.getLevel());
+            minecartchest.setPos(blockpos.getX() + 0.5d, blockpos.getY() + 0.5d, blockpos.getZ() + 0.5d);
+            minecartchest.setLootTable(ResourceKey.create(Registries.LOOT_TABLE , lootTable), random.nextLong());
             level.addFreshEntity(minecartchest);
             return true;
         } else {
@@ -257,7 +258,7 @@ public final class MineShaftCorridor
 
                 for (int j3 = 0; j3 <= i1; ++j3) {
                     BlockState blockstate2 = this.getBlock(level, 1, -1, j3, box);
-                    if (BlockUtils.ReferentIsSolidBlock(blockstate2) && blockstate2.isSolidRender(level, this.getWorldPos(1, -1, j3))) {
+                    if (BlockUtils.ReferentIsSolidBlock(blockstate2) && blockstate2.isSolidRender()) {
                         this.maybeGenerateBlock(level, box, random, this.isInterior(level, 1, 0, j3, box) ? 0.7F : 0.9F, 1, 0, j3, blockstate1);
                     }
                 }
@@ -285,7 +286,7 @@ public final class MineShaftCorridor
         if (box.isInside(blockpos$mutableblockpos)) {
             int i = blockpos$mutableblockpos.getY();
 
-            while (this.isReplaceableByStructures(level.getBlockState(blockpos$mutableblockpos)) && blockpos$mutableblockpos.getY() > level.getMinBuildHeight() + 1) {
+            while (this.isReplaceableByStructures(level.getBlockState(blockpos$mutableblockpos)) && blockpos$mutableblockpos.getY() > level.getMinY() + 1) {
                 blockpos$mutableblockpos.move(Direction.DOWN);
             }
 
@@ -315,7 +316,7 @@ public final class MineShaftCorridor
                         return;
                     }
 
-                    flag = j < (MineshaftPieces.MAX_PILLAR_HEIGHT + 1) && flag2 && blockpos$mutableblockpos.getY() > level.getMinBuildHeight() + 1;
+                    flag = j < (MineshaftPieces.MAX_PILLAR_HEIGHT + 1) && flag2 && blockpos$mutableblockpos.getY() > level.getMinY() + 1;
                 }
 
                 if (flag1) {
@@ -328,7 +329,7 @@ public final class MineShaftCorridor
                         return;
                     }
 
-                    flag1 = j < (MineshaftPieces.MAX_CHAIN_HEIGHT + 1) && flag3 && blockpos$mutableblockpos.getY() < level.getMaxBuildHeight() - 1;
+                    flag1 = j < (MineshaftPieces.MAX_CHAIN_HEIGHT + 1) && flag3 && blockpos$mutableblockpos.getY() < level.getMaxY() - 1;
                 }
             }
         }

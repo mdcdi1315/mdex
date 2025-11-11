@@ -34,6 +34,7 @@ import com.github.mdcdi1315.mdex.biomespawnadditions.BiomeSpawnAdditionsRegistry
 import com.github.mdcdi1315.mdex.block.blockstateproviders.CustomBlockStateProviderRegistrySubsystem;
 
 // Minecraft stuff
+import com.github.mdcdi1315.mdex.tag.ModItemTags;
 import net.minecraft.resources.ResourceLocation;
 
 // SLF4J logging
@@ -74,6 +75,7 @@ public final class MDEXModInstance
         TASKER = new OperationsTasker();
         MINING_DIM_IDENTIFIER = ResourceLocation.tryBuild(COMPATIBILITY_NAMESPACE , "mining_dim");
         ModBlockTags.Initialize();
+        ModItemTags.Initialize();
     }
 
     private static void TeleporterImplementation(ServerStartedEvent sse) {

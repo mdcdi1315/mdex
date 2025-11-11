@@ -69,7 +69,7 @@ public final class BlockIdOrBlockTagEntry
                 throw new BlockNotFoundException(BlockID);
             }
         }
-        var optlist = BuiltInRegistries.BLOCK.getTag(Tag);
+        var optlist = BuiltInRegistries.BLOCK.get(Tag);
         if (optlist.isPresent()) {
             return optlist.get();
         } else {

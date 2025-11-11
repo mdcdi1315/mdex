@@ -39,11 +39,11 @@ public final class BiomeSpawnAdditionsRegistrySubsystem
         // We need two registries for this to work:
         // -> The biome registry for modifying the biomes we need to
         // -> The biome spawn additions registry for providing the data to modify.
-        Optional<Registry<Biome>> biomes = sac.registry(Registries.BIOME);
+        Optional<Registry<Biome>> biomes = sac.lookup(Registries.BIOME);
         if (biomes.isEmpty()) {
             throw new InvalidOperationException("Cannot load the biomes registry!!!");
         }
-        Optional<Registry<BiomeSpawnAdditions>> bsregistry = sac.registry(REGISTRYKEY);
+        Optional<Registry<BiomeSpawnAdditions>> bsregistry = sac.lookup(REGISTRYKEY);
         if (bsregistry.isEmpty()) {
             throw new InvalidOperationException("Cannot load the biome spawn additions registry!!!");
         }

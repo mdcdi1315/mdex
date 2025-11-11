@@ -32,7 +32,7 @@ public final class LootTableReferenceEntry
 
     @Override
     protected void createItemStack(Consumer<ItemStack> stackConsumer, LootContext lootContext) {
-        Optional<Holder.Reference<LootTable>> loottable = lootContext.getResolver().get(Registries.LOOT_TABLE , resolved);
+        Optional<Holder.Reference<LootTable>> loottable = lootContext.getResolver().get(resolved);
         loottable.ifPresent(lootTableReference -> lootTableReference.value().getRandomItemsRaw(lootContext, stackConsumer));
     }
 
@@ -44,7 +44,7 @@ public final class LootTableReferenceEntry
             validationContext.reportProblem(String.format("Table %s is recursively called" , loottable));
         } else {
             super.validate(validationContext);
-            validationContext.resolver().get(Registries.LOOT_TABLE , resolved).ifPresentOrElse(
+            validationContext.resolver().get(resolved).ifPresentOrElse(
                     ( lt) -> lt.value().validate(validationContext.enterElement("->{" + this.loottable + "}", resolved)),
                     () -> {
                         MDEXModInstance.LOGGER.warn("LootTableManager: Cannot find the loot table with ID '{}'. The table will not be loaded." , loottable);

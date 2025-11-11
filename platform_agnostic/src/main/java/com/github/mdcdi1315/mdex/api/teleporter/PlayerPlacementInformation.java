@@ -13,6 +13,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Optional;
+
 public final class PlayerPlacementInformation
 {
     private ResourceLocation source_dimension;
@@ -23,21 +25,25 @@ public final class PlayerPlacementInformation
     public PlayerPlacementInformation(CompoundTag tag)
     {
         this();
-        if (tag.contains("source_dimension" , Tag.TAG_STRING)) {
-            source_dimension = ResourceLocation.tryParse(tag.getString("source_dimension"));
+        var sd = tag.getString("source_dimension");
+        if (sd.isPresent()) {
+            source_dimension = ResourceLocation.tryParse(sd.get());
             if (source_dimension == null) {
                 throw new IncorrectSavedDataFormatException("Cannot find or decode correctly the source_dimension field.");
             }
         }
-        if (tag.contains("source_dimension_position" , Tag.TAG_COMPOUND)) {
-            source_dimension_position = DecodeVec3(tag.getCompound("source_dimension_position"));
+        Optional<CompoundTag> oct = tag.getCompound("source_dimension_position");
+        if (oct.isPresent()) {
+            source_dimension_position = DecodeVec3(oct.get());
         }
-        if (tag.contains("teleporter_position" , Tag.TAG_INT_ARRAY)) {
-            int[] data = tag.getIntArray("teleporter_position");
+        var tp = tag.getIntArray("teleporter_position");
+        if (tp.isPresent()) {
+            int[] data = tp.get();
             teleporter_position = new BlockPos(data[0] , data[1] , data[2]);
         }
-        if (tag.contains("player_rotation_info" , Tag.TAG_COMPOUND)) {
-            rotation_info = new PlayerRotationInformation(tag.getCompound("player_rotation_info"));
+        oct = tag.getCompound("player_rotation_info");
+        if (oct.isPresent()) {
+            rotation_info = new PlayerRotationInformation(oct.get());
         }
     }
 
@@ -102,10 +108,22 @@ public final class PlayerPlacementInformation
 
     private static Vec3 DecodeVec3(CompoundTag ct)
     {
+        int index = 0;
+        double[] position = new double[3];
+        Optional<Double> od;
+        for (String p : new String[] { "xpos" , "ypos" , "zpos" })
+        {
+            od = ct.getDouble(p);
+            if (od.isEmpty()) {
+                throw new IncorrectSavedDataFormatException(String.format("Cannot find position field %s." , p));
+            } else {
+                position[index++] = od.get();
+            }
+        }
         return new Vec3(
-                ct.getDouble("xpos"),
-                ct.getDouble("ypos"),
-                ct.getDouble("zpos")
+                position[0],
+                position[1],
+                position[2]
         );
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.level.portal.TeleportTransition;
 
 public final class MDEXDefaultTeleportingManager
     extends TeleportingManager
@@ -30,10 +30,10 @@ public final class MDEXDefaultTeleportingManager
     @Override
     protected boolean TeleportImpl(ServerPlayer player, ServerLevel target, Vec3 placement_position, PlayerRotationInformation rot_info, boolean playteleportsound)
     {
-        return player.changeDimension(
+        return player.teleport(
                 (rot_info == null) ?
-                        new DimensionTransition(target , placement_position , Vec3.ZERO , player.getYRot() , player.getXRot(), playteleportsound ? DimensionTransition.PLAY_PORTAL_SOUND : DimensionTransition.DO_NOTHING) :
-                        new DimensionTransition(target , placement_position , Vec3.ZERO , rot_info.GetYRotation() , rot_info.GetXRotation(), playteleportsound ? DimensionTransition.PLAY_PORTAL_SOUND : DimensionTransition.DO_NOTHING)
+                        new TeleportTransition(target , placement_position , Vec3.ZERO , player.getYRot() , player.getXRot(), playteleportsound ? TeleportTransition.PLAY_PORTAL_SOUND : TeleportTransition.DO_NOTHING) :
+                        new TeleportTransition(target , placement_position , Vec3.ZERO , rot_info.GetYRotation() , rot_info.GetXRotation(), playteleportsound ? TeleportTransition.PLAY_PORTAL_SOUND : TeleportTransition.DO_NOTHING)
         ) != null;
     }
 }

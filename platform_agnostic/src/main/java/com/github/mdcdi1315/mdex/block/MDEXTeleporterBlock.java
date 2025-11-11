@@ -5,6 +5,7 @@ import com.github.mdcdi1315.mdex.api.TeleportRequestState;
 import com.github.mdcdi1315.mdex.block.entity.TeleporterTileEntity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.InteractionHand;
@@ -22,9 +23,9 @@ public class MDEXTeleporterBlock
         extends MDEXBaseBlock
         implements EntityBlock
 {
-    public MDEXTeleporterBlock(Properties properties)
+    public MDEXTeleporterBlock(Properties properties, ResourceLocation location)
     {
-        super(properties);
+        super(properties, location);
         this.registerDefaultState(this.stateDefinition.any());
     }
 
@@ -36,15 +37,14 @@ public class MDEXTeleporterBlock
     @Override
     public boolean dropFromExplosion(Explosion explosion)
     {
-        if (explosion.interactsWithBlocks() == false)
-        {
+        if (!explosion.getBlockInteraction().shouldAffectBlocklikeEntities()) {
             return false;
         }
         return explosion.getDirectSourceEntity() instanceof Player;
     }
 
     @Override
-    public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, float fallDistance)
+    public void fallOn(Level level, BlockState state, BlockPos pos, Entity entity, double fallDistance)
     {
         if (level.dimension().location().equals(MDEXModInstance.MINING_DIM_IDENTIFIER)) {
             entity.causeFallDamage(fallDistance , 1.062f , entity.damageSources().fall());

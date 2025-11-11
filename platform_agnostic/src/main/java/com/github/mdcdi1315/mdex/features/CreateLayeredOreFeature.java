@@ -69,7 +69,7 @@ public final class CreateLayeredOreFeature
         int z0 = fpc.origin().getZ();
 
         // Check whether we are in a good and buildable area.
-        if (y0 > worldGenLevel.getMaxBuildHeight() - 50) { return false; }
+        if (y0 > worldGenLevel.getMaxY() - 50) { return false; }
 
         byte size = (byte)(config.Size + 1);
 

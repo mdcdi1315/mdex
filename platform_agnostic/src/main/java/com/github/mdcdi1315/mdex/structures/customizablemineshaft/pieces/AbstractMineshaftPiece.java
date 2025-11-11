@@ -36,11 +36,8 @@ public abstract class AbstractMineshaftPiece
 
     public AbstractMineshaftPiece(AbstractStructurePieceType type, CompoundTag tag) {
         super(type, tag);
-        if (tag.contains(SETTINGS_NAME_OBJECT , Tag.TAG_COMPOUND)) {
-            settings = CustomizableMineshaftPiecesSettings.GetCodec().decode(NbtOps.INSTANCE , tag.getCompound(SETTINGS_NAME_OBJECT)).getOrThrow().getFirst();
-        } else {
-            settings = null;
-        }
+        var oct = tag.getCompound(SETTINGS_NAME_OBJECT);
+        settings = (oct.isPresent()) ? CustomizableMineshaftPiecesSettings.GetCodec().decode(NbtOps.INSTANCE , oct.get()).getOrThrow().getFirst() : null;
     }
 
     protected boolean canBeReplaced(LevelReader level, int x, int y, int z, BoundingBox box) {

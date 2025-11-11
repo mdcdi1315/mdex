@@ -9,10 +9,11 @@ import com.github.mdcdi1315.mdex.mixin.Biome_MobSpawnSettingsAccessor;
 
 import com.google.common.collect.ImmutableMap;
 
+import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.util.random.WeightedRandomList;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 
 import java.util.Map;
@@ -97,7 +98,7 @@ public final class BiomeSpawnsModifier
         }
         Biome_MobSpawnSettingsAccessor accessor = (Biome_MobSpawnSettingsAccessor) biometomodify.getMobSettings();
         var spawners = accessor.GetSpawners();
-        if (spawners instanceof ImmutableMap<MobCategory, WeightedRandomList<MobSpawnSettings.SpawnerData>> m)
+        if (spawners instanceof ImmutableMap<MobCategory, WeightedList<MobSpawnSettings.SpawnerData>> m)
         {
             spawners = new HashMap<>(m);
         }
@@ -108,14 +109,14 @@ public final class BiomeSpawnsModifier
         for (var entry : entries.entrySet())
         {
             var category = entry.getKey();
-            ArrayList<MobSpawnSettings.SpawnerData> data = new ArrayList<>(entry.getValue().size());
+            ArrayList<Weighted<MobSpawnSettings.SpawnerData>> data = new ArrayList<>(entry.getValue().size());
             // The value(s) returned by the entry will not be null nor empty.
             // Check the Add method for more information on how this is done.
             for (var e : entry.getValue())
             {
                 ent = e.Entity;
                 data.add(
-                        new MobSpawnSettings.SpawnerData(ent , e.min , e.max , e.weight)
+                       new Weighted<>(new MobSpawnSettings.SpawnerData(ent , e.min , e.max), e.weight)
                 );
                 sc = e.Costs;
                 if (sc != null)
@@ -136,7 +137,7 @@ public final class BiomeSpawnsModifier
             if (old != null && !old.isEmpty()) {
                 data.addAll(old.unwrap());
             }
-            spawners.put(category , WeightedRandomList.create(data));
+            spawners.put(category , WeightedList.of(data));
         }
         try {
             accessor.SetSpawners(spawners);

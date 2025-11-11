@@ -13,6 +13,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.MapColor;
@@ -22,7 +24,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 
-
 public final class ModBlocks
 {
     private ModBlocks() {}
@@ -30,8 +31,6 @@ public final class ModBlocks
     public static Block TELEPORTER;
 
     public static BlockEntityType<TeleporterTileEntity> TELEPORTER_TILE_ENTITY;
-
-
 
     public static void Initialize(IBlockRegistrar blocks)
     {
@@ -41,7 +40,8 @@ public final class ModBlocks
                                 .strength(5.233455f , 4.2f)
                                 .sound(SoundType.METAL)
                                 .requiresCorrectToolForDrops()
-                                .mapColor(MapColor.METAL)
+                                .mapColor(MapColor.METAL),
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 BlockUtils.GetMinecraftCreativeModeTab("functional_blocks")
@@ -62,7 +62,8 @@ public final class ModBlocks
                                         .strength(4.1843755f , 3.4f)
                                         .sound(SoundType.STONE)
                                         .requiresCorrectToolForDrops()
-                                        .mapColor(MapColor.STONE)
+                                        .mapColor(MapColor.STONE),
+                                identifier
                         ),
                         ModBlocks::GetBlockItem,
                         natural_blocks
@@ -75,7 +76,8 @@ public final class ModBlocks
                                         .strength(3.8494383f , 3.4f)
                                         .sound(SoundType.STONE)
                                         .requiresCorrectToolForDrops()
-                                        .mapColor(MapColor.STONE)
+                                        .mapColor(MapColor.STONE),
+                                identifier
                         ),
                         ModBlocks::GetBlockItem,
                         building_blocks
@@ -94,7 +96,8 @@ public final class ModBlocks
                                         .strength(3.644758445f , 3.4f)
                                         .sound(SoundType.STONE)
                                         .requiresCorrectToolForDrops()
-                                        .mapColor(MapColor.STONE)
+                                        .mapColor(MapColor.STONE),
+                                identifier
                         ),
                         ModBlocks::GetBlockItem,
                         building_blocks
@@ -107,7 +110,8 @@ public final class ModBlocks
                                     .strength(3.274367455f , 3.289f)
                                     .sound(SoundType.STONE)
                                     .requiresCorrectToolForDrops()
-                                    .mapColor(MapColor.STONE)
+                                    .mapColor(MapColor.STONE),
+                            identifier
                     ),
                     ModBlocks::GetBlockItem,
                     building_blocks
@@ -125,7 +129,8 @@ public final class ModBlocks
                                     .strength(3.14784563f , 2.84f)
                                     .sound(SoundType.STONE)
                                     .requiresCorrectToolForDrops()
-                                    .mapColor(MapColor.STONE)
+                                    .mapColor(MapColor.STONE),
+                            identifier
                     ),
                     ModBlocks::GetBlockItem
                 )
@@ -137,7 +142,8 @@ public final class ModBlocks
                                         .strength(2.774633f , 2.84f)
                                         .sound(SoundType.STONE)
                                         .requiresCorrectToolForDrops()
-                                        .mapColor(MapColor.STONE)
+                                        .mapColor(MapColor.STONE),
+                                identifier
                         ),
                         ModBlocks::GetBlockItem
                 )
@@ -150,7 +156,8 @@ public final class ModBlocks
                                     .strength(2.759384f , 2.84f)
                                     .sound(SoundType.STONE)
                                     .requiresCorrectToolForDrops()
-                                    .mapColor(MapColor.STONE)
+                                    .mapColor(MapColor.STONE),
+                            identifier
                     ),
                     ModBlocks::GetBlockItem
                 )
@@ -162,7 +169,8 @@ public final class ModBlocks
                                     .strength(2.72049f , 2.7103f)
                                     .sound(SoundType.STONE)
                                     .requiresCorrectToolForDrops()
-                                    .mapColor(MapColor.STONE)
+                                    .mapColor(MapColor.STONE),
+                            identifier
                     ),
                     ModBlocks::GetBlockItem
                 )
@@ -181,6 +189,8 @@ public final class ModBlocks
                                     .lightLevel(BlockUtils.GetBlockLightEmissionWhenLit(9))
                                     .requiresCorrectToolForDrops()
                                     .strength(4.27F, 3.45F)
+                                    .setId(ResourceKey.create(Registries.BLOCK , identifier))
+                                    .overrideDescription(BlockUtils.ConstructExactDescriptionID(identifier))
                     ),
                     ModBlocks::GetBlockItem,
                     natural_blocks
@@ -191,7 +201,8 @@ public final class ModBlocks
                         (ResourceLocation identifier) -> new MDEXBaseOreBlock(
                                 BlockBehaviour.Properties.of()
                                         .requiresCorrectToolForDrops()
-                                        .strength(4.18F , 3.45f)
+                                        .strength(4.18F , 3.45f),
+                                identifier
                         ),
                         ModBlocks::GetBlockItem,
                         natural_blocks
@@ -202,7 +213,8 @@ public final class ModBlocks
                 (ResourceLocation identifier) -> new MDEXBaseOreBlock(
                         BlockBehaviour.Properties.of()
                                 .requiresCorrectToolForDrops()
-                                .strength(4.1745F , 3.45f)
+                                .strength(4.1745F , 3.45f),
+                        identifier
                 ),
                 ModBlocks::GetBlockItem,
                 natural_blocks
@@ -213,7 +225,8 @@ public final class ModBlocks
                         (ResourceLocation identifier) -> new MDEXBaseOreBlock(
                                 BlockBehaviour.Properties.of()
                                         .requiresCorrectToolForDrops()
-                                        .strength(4.7774F , 3.45F)
+                                        .strength(4.7774F , 3.45F),
+                                identifier
                         ),
                         ModBlocks::GetBlockItem,
                         natural_blocks
@@ -224,7 +237,8 @@ public final class ModBlocks
                     (ResourceLocation identifier) -> new MDEXBaseOreBlock(
                             BlockBehaviour.Properties.of()
                                     .requiresCorrectToolForDrops()
-                                    .strength(4.19008484f , 3.45f)
+                                    .strength(4.19008484f , 3.45f),
+                            identifier
                     ),
                     ModBlocks::GetBlockItem
                 )
@@ -235,6 +249,7 @@ public final class ModBlocks
                                 BlockBehaviour.Properties.of()
                                         .requiresCorrectToolForDrops()
                                         .strength(4.8f , 3.45f),
+                                identifier,
                                 UniformInt.of(3 , 7)
                         ),
                         ModBlocks::GetBlockItem,
@@ -247,6 +262,7 @@ public final class ModBlocks
                                 BlockBehaviour.Properties.of()
                                         .requiresCorrectToolForDrops()
                                         .strength(4.612f , 3.45f),
+                                identifier,
                                 UniformInt.of(2 , 5)
                         ),
                         ModBlocks::GetBlockItem,
@@ -258,7 +274,7 @@ public final class ModBlocks
     private static BlockItem GetBlockItem(Block block , ResourceLocation identifier)
     {
         MDEXModInstance.LOGGER.trace("Registering block item named as {}" , identifier);
-        return new BlockItem(block, new Item.Properties());
+        return new BlockItem(block, new Item.Properties().setId(ResourceKey.create(Registries.ITEM , identifier)).useBlockDescriptionPrefix());
     }
 
     private static final class TeleporterBlockEntityFactory

@@ -1,8 +1,6 @@
 {
 	"type": "minecraft:stonecutting",
-	"ingredient": {
-		"item": "mdex:hardstone"
-	},
+	"ingredient": "mdex:hardstone",
 	"result": {
 		"count": 1,
 		"id": "mdex:hardstone_bricks"

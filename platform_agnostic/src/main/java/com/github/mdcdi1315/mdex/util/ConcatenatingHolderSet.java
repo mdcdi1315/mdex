@@ -87,6 +87,11 @@ public final class ConcatenatingHolderSet<T>
     }
 
     @Override
+    public boolean isBound() {
+        return true;
+    }
+
+    @Override
     public Either<TagKey<T>, List<Holder<T>>> unwrap() {
         return Either.right(listinternal);
     }

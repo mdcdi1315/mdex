@@ -6,9 +6,7 @@
 		"GGG"
 	],
 	"key": {
-		"G": {
-			"item": "mdex:granite"
-		}
+		"G": "mdex:granite"
 	},
 	"result": {
 		"id": "mdex:polished_granite_stairs",

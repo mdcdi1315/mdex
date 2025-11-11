@@ -174,8 +174,9 @@ public final class TeleporterSpawnData
         if (header.GetVersion() > SPAWN_DATA_VERSION) {
             MDEXModInstance.LOGGER.error("WORLDDIMSAVEDDATA: Cannot deserialize the specified spawn data file with version {}." , header.GetVersion());
         } else {
-            if (ct.contains("magic" , Tag.TAG_STRING)) {
-                var magic = ct.getString("magic");
+            Optional<String> os = ct.getString("magic");
+            if (os.isPresent()) {
+                var magic = os.get();
                 if (!magic.equals(MAGIC)) {
                     MDEXModInstance.LOGGER.error("WORLDDIMSAVEDATA: The magic value is not the one expected. Found: {}" , magic);
                 } else if (header.GetVersion() == 1) {
@@ -187,8 +188,9 @@ public final class TeleporterSpawnData
                 MDEXModInstance.LOGGER.error("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data file because the 'magic' field does not exist or is invalid.");
             }
             if (header.GetVersion() == 1) {
-                if (ct.contains("starter_chest_placement_info" , Tag.TAG_BYTE)) {
-                    placementinfo = StarterChestPlacementInfo.FromValue(ct.getByte("starter_chest_placement_info"));
+                var stpi = ct.getByte("starter_chest_placement_info");
+                if (stpi.isPresent()) {
+                    placementinfo = StarterChestPlacementInfo.FromValue(stpi.get());
                 } else {
                     MDEXModInstance.LOGGER.error("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data file because the 'starter_chest_placement_info' field does not exist or is invalid.");
                 }
@@ -201,18 +203,21 @@ public final class TeleporterSpawnData
 
     private void LoadV1(CompoundTag ct)
     {
-        if (ct.contains("teleporter_data" , Tag.TAG_COMPOUND)) {
-            var data = ct.getCompound("teleporter_data");
-            var keys = data.getAllKeys();
-            PlayerMap = new HashMap<>(keys.size());
-            for (var k : keys)
+        Optional<CompoundTag> oct = ct.getCompound("teleporter_data");
+        if (oct.isPresent()) {
+            var data = oct.get();
+            var entries = data.entrySet();
+            PlayerMap = new HashMap<>(entries.size());
+            for (var kvp : entries)
             {
                 try {
-                    UUID u = UUID.fromString(k);
-                    int[] d = data.getIntArray(k);
+                    UUID u = UUID.fromString(kvp.getKey());
+                    int[] d = kvp.getValue().asIntArray().get();
                     PlayerMap.put(u, new PlayerPlacementInformation().SetTeleporterPosition(new BlockPos(d[0] , d[1] , d[2]))); // BlockPos is now translated from now on as Vec3.
                 } catch (IllegalArgumentException iae) {
-                    MDEXModInstance.LOGGER.warn("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data for the key {} because the key is malformed." , k);
+                    MDEXModInstance.LOGGER.warn("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data for the key {} because the key is malformed." , kvp.getKey());
+                } catch (NoSuchElementException nsee) {
+                    MDEXModInstance.LOGGER.warn("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data for the key {} because the value is malformed." , kvp.getKey());
                 }
             }
         } else {
@@ -222,19 +227,22 @@ public final class TeleporterSpawnData
 
     private void LoadV2(CompoundTag ct)
     {
-        if (ct.contains("teleporter_data" , Tag.TAG_COMPOUND)) {
-            var data = ct.getCompound("teleporter_data");
-            var keys = data.getAllKeys();
-            PlayerMap = new HashMap<>(keys.size());
-            for (var k : keys)
+        Optional<CompoundTag> oct = ct.getCompound("teleporter_data");
+        if (oct.isPresent()) {
+            var data = oct.get();
+            var entries = data.entrySet();
+            PlayerMap = new HashMap<>(entries.size());
+            for (var k : entries)
             {
                 try {
-                    UUID u = UUID.fromString(k);
-                    PlayerMap.put(u, new PlayerPlacementInformation(data.getCompound(k)));
+                    UUID u = UUID.fromString(k.getKey());
+                    PlayerMap.put(u, new PlayerPlacementInformation(k.getValue().asCompound().get()));
                 } catch (IllegalArgumentException iae) {
-                    MDEXModInstance.LOGGER.warn("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data for the key {} because the key is malformed." , k);
+                    MDEXModInstance.LOGGER.warn("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data for the key {} because the key is malformed." , k.getKey());
                 } catch (IncorrectSavedDataFormatException e) {
-                    MDEXModInstance.LOGGER.warn("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data for the key {} due to an exception: {}", k, e);
+                    MDEXModInstance.LOGGER.warn("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data for the key {} due to an exception: {}", k.getKey(), e);
+                } catch (NoSuchElementException nsee) {
+                    MDEXModInstance.LOGGER.warn("WORLDDIMSAVEDATA: Cannot deserialize the specified spawn data for the key {} because the value is malformed." , k.getKey());
                 }
             }
         } else {

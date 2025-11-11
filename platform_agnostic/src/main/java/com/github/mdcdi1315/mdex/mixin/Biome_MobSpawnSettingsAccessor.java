@@ -1,8 +1,8 @@
 package com.github.mdcdi1315.mdex.mixin;
 
-import net.minecraft.util.random.WeightedRandomList;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,11 +15,11 @@ import java.util.Map;
 public interface Biome_MobSpawnSettingsAccessor
 {
     @Accessor("spawners")
-    Map<MobCategory, WeightedRandomList<MobSpawnSettings.SpawnerData>> GetSpawners();
+    Map<MobCategory, WeightedList<MobSpawnSettings.SpawnerData>> GetSpawners();
 
     @Mutable
     @Accessor("spawners")
-    void SetSpawners(Map<MobCategory, WeightedRandomList<MobSpawnSettings.SpawnerData>> map);
+    void SetSpawners(Map<MobCategory, WeightedList<MobSpawnSettings.SpawnerData>> map);
 
     @Accessor("mobSpawnCosts")
     Map<EntityType<?>, MobSpawnSettings.MobSpawnCost> GetMobSpawnCosts();

@@ -10,7 +10,6 @@ import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
 import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
 import com.github.mdcdi1315.mdex.features.config.ModdedFeatureConfiguration;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
@@ -20,6 +19,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.AirBlock;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -239,7 +239,7 @@ public final class FeaturePlacementUtils
     {
         Entity ent;
         try {
-            ent = type.create(level.getLevel());
+            ent = type.create(level.getLevel(), EntitySpawnReason.CHUNK_GENERATION);
         } catch (Exception e) {
             MDEXModInstance.LOGGER.warn("Failed to create mob instance." , e);
             return;
@@ -248,7 +248,7 @@ public final class FeaturePlacementUtils
             return;
         }
 
-        ent.moveTo(finalpos.getX() , finalpos.getY() , finalpos.getZ());
+        ent.teleportTo(finalpos.getX() , finalpos.getY() , finalpos.getZ());
 
         if (ent instanceof LivingEntity le)
         {
@@ -272,7 +272,7 @@ public final class FeaturePlacementUtils
      * Places entities around the specified block position.
      * The entity to be spawned is selected once then it is randomly generated up to {@code maxtimes} parameter. <br /> <br />
      * Remarks: <br />
-     * The entities are placed on the world using the mob spawn type {@link MobSpawnType#CHUNK_GENERATION}.
+     * The entities are placed on the world using the mob spawn type {@link EntitySpawnReason#CHUNK_GENERATION}.
      * @param level The {@link ServerLevelAccessor} object to apply the entities to.
      * @param basepos The block position where to place the entities to.
      * @param rs The {@link RandomSource} instance to use for randomization.

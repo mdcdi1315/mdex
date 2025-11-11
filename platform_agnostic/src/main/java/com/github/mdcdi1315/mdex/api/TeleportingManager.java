@@ -14,6 +14,7 @@ import com.github.mdcdi1315.mdex.util.MDEXException;
 import com.github.mdcdi1315.mdex.util.RectAreaIterable;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.resources.ResourceKey;
@@ -95,16 +96,26 @@ public abstract class TeleportingManager
         config = cfg;
         MDEXModInstance.LOGGER.info("TeleportingManager: Creating teleporting manager for Minecraft Server named as {}" , server.getMotd());
         Server = server;
-        var f = Server.registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).get(ResourceLocation.tryParse(cfg.FeatureLocation));
-        if (f == null)
+        java.util.Optional<Registry<ConfiguredFeature<? , ?>>> rfo = Server.registryAccess().lookup(Registries.CONFIGURED_FEATURE);
+        if (rfo.isEmpty())
         {
-            MDEXModInstance.LOGGER.error("Cannot find feature with ID {}." , cfg.FeatureLocation);
+            MDEXModInstance.LOGGER.error("Cannot find feature with ID {}." , config.FeatureLocation);
             throw new MDEXException("TeleportingManager Feature is missing");
         }
-        if (f.config() instanceof BaseTeleporterPlacementFeatureConfiguration) {
+        var rl = ResourceLocation.tryParse(config.FeatureLocation);
+        if (rl == null) {
+            MDEXModInstance.LOGGER.error("Cannot load the feature location because it was invalid: {}." , config.FeatureLocation);
+            throw new MDEXException("Misconstructed feature location. See log for more information.");
+        }
+        var fo = rfo.get().get(rl);
+        if (fo.isEmpty()) {
+            MDEXModInstance.LOGGER.error("Cannot find the specified configured feature: {}." , config.FeatureLocation);
+            throw new MDEXException("Misconstructed feature location. See log for more information.");
+        }
+        if (fo.get().value().config() instanceof BaseTeleporterPlacementFeatureConfiguration) {
             // Not unchecked cast because we have safely checked it with the above statement
             // Now allows to be used by other mods by properly providing a feature type that has as a config the BaseTeleporterPlacementFeatureConfiguration class.
-            genfeature = (ConfiguredFeature<BaseTeleporterPlacementFeatureConfiguration , ? super Feature<BaseTeleporterPlacementFeatureConfiguration>>)f;
+            genfeature = (ConfiguredFeature<BaseTeleporterPlacementFeatureConfiguration , ? super Feature<BaseTeleporterPlacementFeatureConfiguration>>)fo.get().value();
         } else {
             throw new MDEXException("TeleportingManager Feature misconfiguration. The feature type is not BaseTeleporterPlacementFeatureType.");
         }
@@ -330,8 +341,8 @@ public abstract class TeleportingManager
             possible = FindEmptyPlace(
                     target.getChunk(basepos) ,
                     config.ShouldSpawnPortalInDeep ?
-                            target.getMinBuildHeight() + 40 :
-                            target.getMaxBuildHeight() - 40 ,
+                            target.getMinY() + 40 :
+                            target.getMaxY() - 40 ,
                     basepos
             );
             genfeature.config().PlaceStarterChest = config.ShouldPlaceStarterChestAtFirstTime && targetleveldata.GetPlacementInfo() == StarterChestPlacementInfo.NOT_PLACED;
@@ -360,11 +371,11 @@ public abstract class TeleportingManager
 
     private static BlockPos FindSurface(ServerLevel level , BlockPos basepos)
     {
-        int minheight = level.getMinBuildHeight() + 2;
+        int minheight = level.getMinY() + 2;
 
         BlockPos temp;
 
-        for (int I = level.getMaxBuildHeight() - 2; I > minheight; I--)
+        for (int I = level.getMaxY() - 2; I > minheight; I--)
         {
             temp = basepos.atY(I);
             if (!level.getBlockState(temp).isAir() && level.getBlockState(temp.above()).isAir()) {
@@ -377,10 +388,10 @@ public abstract class TeleportingManager
 
     private static BlockPos FindEmptyPlace(ChunkAccess access, int endY , BlockPos relto)
     {
-        int startY = access.getMinBuildHeight();
+        int startY = access.getMinY();
 
-        if (endY >= access.getMaxBuildHeight()) {
-            endY = access.getMaxBuildHeight() - 1;
+        if (endY >= access.getMaxY()) {
+            endY = access.getMaxY() - 1;
         }
 
         SectionPos pg;
@@ -416,7 +427,7 @@ public abstract class TeleportingManager
 
     private static BlockPos AvoidFluidRegion(ServerLevel target , BlockPos current)
     {
-        int ymax = target.getMaxBuildHeight() - 15;
+        int ymax = target.getMaxY() - 15;
 
         BlockPos temp;
 

@@ -150,7 +150,7 @@ public final class CustomizableMonsterRoomFeature
                         {
                             FeaturePlacementUtils.SafeSetBlock(worldgenlevel, blockpos3, air_block, predicate);
                         }
-                    } else if (blockpos3.getY() >= worldgenlevel.getMinBuildHeight() && BlockUtils.ReferentIsAirBlock(worldgenlevel.getBlockState(blockpos3.below()))) {
+                    } else if (blockpos3.getY() >= worldgenlevel.getMinY() && BlockUtils.ReferentIsAirBlock(worldgenlevel.getBlockState(blockpos3.below()))) {
                         worldgenlevel.setBlock(blockpos3, air_block, 2);
                     } else if (BlockUtils.ReferentIsSolidBlock(blockstate) && !blockstate.is(Blocks.CHEST)) {
                         FeaturePlacementUtils.SafeSetBlock(worldgenlevel , blockpos3 , details.StoneBlockProvider.GetBlockState(worldgenlevel , randomsource , blockpos3) , predicate);

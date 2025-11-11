@@ -24,8 +24,8 @@ public final class MineShaftCrossing
 
     public MineShaftCrossing(CompoundTag tag) {
         super(MineShaftCrossingType.INSTANCE, tag);
-        this.isTwoFloored = tag.getBoolean("tf");
-        this.direction = Direction.from2DDataValue(tag.getInt("D"));
+        this.isTwoFloored = tag.getBooleanOr("tf" , false);
+        this.direction = tag.read("D", Direction.LEGACY_ID_CODEC_2D).orElse(Direction.SOUTH);
     }
 
     protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag tag) {

@@ -23,16 +23,8 @@ public final class PlayerRotationInformation
 
     public PlayerRotationInformation(CompoundTag ct)
     {
-        if (ct.contains("x_rot" , Tag.TAG_FLOAT)) {
-            xrot = ct.getFloat("x_rot");
-        } else {
-            xrot = 0f;
-        }
-        if (ct.contains("y_rot" , Tag.TAG_FLOAT)) {
-            yrot = ct.getFloat("y_rot");
-        } else {
-            yrot = 0f;
-        }
+        xrot = ct.getFloatOr("x_rot", 0f);
+        yrot = ct.getFloatOr("y_rot", 0f);
     }
 
     public float GetXRotation() { return xrot; }

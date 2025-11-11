@@ -5,7 +5,6 @@ import com.github.mdcdi1315.mdex.structures.customizablemineshaft.CustomizableMi
 
 import com.google.common.collect.Lists;
 
-import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.level.*;
 import net.minecraft.core.BlockPos;
@@ -35,9 +34,7 @@ public final class MineShaftRoom
     public MineShaftRoom(CompoundTag tag) {
         super(MineShaftRoomType.INSTANCE, tag);
         childEntranceBoxes = Lists.newLinkedList();
-        BoundingBox.CODEC.listOf()
-                .parse(NbtOps.INSTANCE, tag.getList("Entrances", Tag.TAG_INT_ARRAY))
-                .resultOrPartial(MDEXModInstance.LOGGER::error).ifPresent(this.childEntranceBoxes::addAll);
+        this.childEntranceBoxes.addAll(tag.read("Entrances", BoundingBox.CODEC.listOf()).orElse(List.of()));
     }
 
     public void addChildren(StructurePiece piece, StructurePieceAccessor pieces, RandomSource random)

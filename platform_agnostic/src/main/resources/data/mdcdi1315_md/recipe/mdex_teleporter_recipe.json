@@ -6,21 +6,10 @@
 		"D D"
 	],
 	"key": {
-		"I": {
-			"item": "minecraft:iron_ingot",
-			"count": 2
-		},
-		"G": {
-			"item": "minecraft:gold_ingot",
-			"count": 2
-		},
-		"P": {
-			"item": "minecraft:iron_pickaxe"
-		},
-		"D": {
-			"item": "minecraft:diamond",
-			"count": 2
-		}
+		"I": "minecraft:iron_ingot",
+		"G": "minecraft:gold_ingot",
+		"P": "minecraft:iron_pickaxe",
+		"D": "minecraft:diamond"
 	},
 	"result": {
 		"id": "mdex:teleporter",

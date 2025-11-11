@@ -81,7 +81,7 @@ public final class Layer
                 List<SingleTargetBlockState> inner = targets.get(I);
                 for (int J = 0; J < inner.size(); J++)
                 {
-                    entry = inner.get(I);
+                    entry = inner.get(J);
                     try {
                         entry.Compile();
                         if (!entry.IsCompiled()) {

@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.commands;
 
+import com.github.mdcdi1315.basemodslib.utils.ElementSupplier;
 import com.github.mdcdi1315.basemodslib.commands.AbstractCommand;
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
@@ -18,8 +19,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.DimensionArgument;
-
-import java.util.function.Supplier;
 
 public final class TeleportingManagerEvacuateAllCommandFromMiningDim
     extends AbstractCommand
@@ -57,17 +56,10 @@ public final class TeleportingManagerEvacuateAllCommandFromMiningDim
             }
         }
 
-        c.getSource().sendSuccess(new SuccessMessageSupplier(evacuated , evacuate_to_level.dimension().location().toString()), true);
+        // c.getSource().sendSuccess(new SuccessMessageSupplier(evacuated , evacuate_to_level.dimension().location().toString()), true);
+
+        c.getSource().sendSuccess(new ElementSupplier<>(Component.translatable("mdex.commands.msg.evacuate_all_mining_dim_players.success", evacuated , evacuate_to_level.dimension().location().toString())), true);
 
         return evacuated;
-    }
-
-    private record SuccessMessageSupplier(int evacuated , String todimension)
-        implements Supplier<Component>
-    {
-        @Override
-        public Component get() {
-            return Component.translatable("mdex.commands.msg.evacuate_all_mining_dim_players.success" , evacuated , todimension);
-        }
     }
 }

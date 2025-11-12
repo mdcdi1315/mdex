@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.commands;
 
+import com.github.mdcdi1315.basemodslib.utils.ElementSupplier;
 import com.github.mdcdi1315.basemodslib.commands.AbstractCommand;
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
@@ -52,7 +53,7 @@ public final class TeleportUsingTeleportingManagerCommand
                 yield -2;
             }
             default -> {
-                c.getSource().sendSuccess(() -> Component.translatable("mdex.commands.msg.teleportbymanager.success") , true);
+                c.getSource().sendSuccess(new ElementSupplier<>(Component.translatable("mdex.commands.msg.teleportbymanager.success")), true);
                 yield v;
             }
         };
@@ -79,7 +80,7 @@ public final class TeleportUsingTeleportingManagerCommand
                 yield -2;
             }
             default -> {
-                c.getSource().sendSuccess(() -> Component.translatable("mdex.commands.msg.teleportbymanager.success") , true);
+                c.getSource().sendSuccess(new ElementSupplier<>(Component.translatable("mdex.commands.msg.teleportbymanager.success")) , true);
                 yield v;
             }
         };
@@ -89,7 +90,8 @@ public final class TeleportUsingTeleportingManagerCommand
     {
         if (sp.level() == targetlevel) {
             return -1;
+        } else {
+            return MDEXModInstance.MANAGER.TeleportTo(sp , sp.getOnPos() , targetlevel).HasFailed() ? -2 : 0;
         }
-        return MDEXModInstance.MANAGER.TeleportTo(sp , sp.getOnPos() , targetlevel).HasFailed() ? -2 : 0;
     }
 }

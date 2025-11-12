@@ -1,11 +1,13 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
-import com.github.mdcdi1315.mdex.util.CompilableBlockState;
-import com.github.mdcdi1315.mdex.util.weight.SimpleWeightedEntryList;
-
 import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 
+import com.github.mdcdi1315.basemodslib.utils.ElementSupplier;
+
+import com.github.mdcdi1315.mdex.util.CompilableBlockState;
+import com.github.mdcdi1315.mdex.util.weight.SimpleWeightedEntryList;
 import com.github.mdcdi1315.mdex.util.weight.SimpleWeightedEntryList_Entry;
+
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.Optional;
@@ -26,7 +28,7 @@ public final class WeightedStateProvider
     @Override
     public BlockState GetBlockState(BlockStateProviderContext context) {
         Optional<SimpleWeightedEntryList_Entry<CompilableBlockState>> obs = States.GetRandom(context.source());
-        return obs.map(WeightedStateProvider::Mapper).orElseThrow(() -> new InvalidOperationException("Cannot find a block state to use!"));
+        return obs.map(WeightedStateProvider::Mapper).orElseThrow(new ElementSupplier<>(new InvalidOperationException("Cannot find a block state to use!")));
     }
 
     @Override

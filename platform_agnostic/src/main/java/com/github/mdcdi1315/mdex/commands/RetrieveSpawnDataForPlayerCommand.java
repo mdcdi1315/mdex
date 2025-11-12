@@ -46,7 +46,7 @@ public final class RetrieveSpawnDataForPlayerCommand
         ServerLevel sl = DimensionArgument.getDimension(c, "dimension");
         TeleporterSpawnData d = new PerDimensionWorldDataManager(sl).Get(TeleportingManagerConfiguration.DEFAULT_TELEPORTER_DATA_DIMFILE_NAME, TeleporterSpawnData::new);
         if (d == null) {
-            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location()));
+            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location().toString()));
             return -10;
         }
         var p = d.GetLastSpawnInfo(sp);
@@ -59,7 +59,7 @@ public final class RetrieveSpawnDataForPlayerCommand
             c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.getspdatacmdp.nodataforplayer" , sp.getName().getString() , sl.dimension().location().toString()));
             return -12;
         }
-        c.getSource().sendSuccess(new ElementSupplier<>(Component.translatable("mdex.commands.msg.getspdatacmdp.success" , sp.getName().getString() , sl.dimension().location() , pos.getX() , pos.getY() , pos.getZ())), true);
+        c.getSource().sendSuccess(new ElementSupplier<>(Component.translatable("mdex.commands.msg.getspdatacmdp.success" , sp.getName().getString() , sl.dimension().location().toString() , pos.getX() , pos.getY() , pos.getZ())), true);
         return 0;
     }
 }

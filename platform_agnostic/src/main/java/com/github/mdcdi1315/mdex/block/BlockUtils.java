@@ -14,10 +14,8 @@ import com.github.mdcdi1315.mdex.util.BlockPropertyNotFoundException;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.util.RandomSource;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -25,6 +23,8 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.state.BlockState;
@@ -323,11 +323,12 @@ public final class BlockUtils
             position = new BlockPos(0 , 0 , 0);
         }
         var fs = level.getFluidState(position);
-        if (!fs.is(Fluids.EMPTY)) {
+        if (fs.is(Fluids.EMPTY)) {
+            return false;
+        } else {
             level.scheduleTick(position, fs.getType(), 0);
             return true;
         }
-        return false;
     }
 
     /**
@@ -345,8 +346,9 @@ public final class BlockUtils
         if (blockentity instanceof RandomizableContainerBlockEntity e) {
             e.setLootTable(ResourceKey.create(Registries.LOOT_TABLE , lootTable), random.nextLong());
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**
@@ -364,8 +366,9 @@ public final class BlockUtils
         if (blockentity instanceof RandomizableContainerBlockEntity e) {
             e.setLootTable(lootTable, random.nextLong());
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     @Deprecated(since = "1.7.1" , forRemoval = true)

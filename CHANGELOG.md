@@ -1,5 +1,7 @@
-### Version 2!
+### Version 2.1.0:
 
-This is the version 2 of the mod.
+General stability issues have been fixed in this version.
 
-Now the mod requires my [BML library](https://www.curseforge.com/minecraft/mc-mods/mdcdi1315-base-lib) instead of Balm.
+The mod also has become less error-prone for this update.
+
+No features were added to this release.

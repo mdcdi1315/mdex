@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
+
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 import com.github.mdcdi1315.mdex.util.IntegerInclusiveRange;
 
@@ -21,7 +22,7 @@ public final class DualNoiseProviderType
                 IntegerInclusiveRange.EnforceRangeIntoRange(1 , 64).fieldOf("variety").forGetter((p) -> p.variety),
                 NormalNoise.NoiseParameters.CODEC.fieldOf("slow_noise").forGetter((p) -> p.slowNoiseParameters),
                 ExtraCodecs.POSITIVE_FLOAT.fieldOf("slow_scale").forGetter((p) -> p.slowScale),
-                CompilableBlockState.GetCodec().listOf().fieldOf("states").forGetter((p) -> p.States),
+                CompilableBlockState.GetListCodec().fieldOf("states").forGetter((p) -> p.States),
                 DualNoiseProvider::new
         );
     }

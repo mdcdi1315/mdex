@@ -12,14 +12,13 @@ public final class NoiseThresholdProviderType
 
     @Override
     protected Codec<NoiseThresholdProvider> GetCodecInstance() {
-        Codec<CompilableBlockState> codec = CompilableBlockState.GetCodec();
         return CodecUtils.CreateCodecDirect(
                 NoiseThresholdProvider.GetBaseCodec(),
                 Codec.floatRange(-1.0F, 1.0F).fieldOf("threshold").forGetter((p) -> p.Threshold),
                 CodecUtils.FLOAT_PROBABILITY.fieldOf("high_chance").forGetter((p) -> p.HighChance),
-                codec.fieldOf("default_state").forGetter((p) -> p.DefaultState),
-                Codec.list(codec).fieldOf("low_states").forGetter((p) -> p.LowStates),
-                Codec.list(codec).fieldOf("high_states").forGetter((p) -> p.HighStates),
+                CompilableBlockState.GetCodec().fieldOf("default_state").forGetter((p) -> p.DefaultState),
+                CompilableBlockState.GetListCodec().fieldOf("low_states").forGetter((p) -> p.LowStates),
+                CompilableBlockState.GetListCodec().fieldOf("high_states").forGetter((p) -> p.HighStates),
                 NoiseThresholdProvider::new
         );
     }

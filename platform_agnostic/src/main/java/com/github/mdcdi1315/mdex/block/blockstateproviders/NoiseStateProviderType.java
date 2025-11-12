@@ -13,7 +13,7 @@ public final class NoiseStateProviderType
     protected Codec<NoiseStateProvider> GetCodecInstance() {
         return CodecUtils.CreateCodecDirect(
                 NoiseStateProvider.GetBaseCodec(),
-                CompilableBlockState.GetCodec().listOf().fieldOf("states").forGetter((s) -> s.States),
+                CompilableBlockState.GetListCodec().fieldOf("states").forGetter((s) -> s.States),
                 NoiseStateProvider::new
         );
     }

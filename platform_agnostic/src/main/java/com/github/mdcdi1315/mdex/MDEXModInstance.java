@@ -184,7 +184,9 @@ public final class MDEXModInstance
 
     @Override
     public void Dispose() {
+        LOGGER.info("Disposing Mining Dimension: EX mod...");
         CustomBlockStateProviderRegistrySubsystem.DestroyRegistry();
+        OnServerShutdownInternal();
         LOGGER = null;
     }
 }

@@ -4,6 +4,7 @@ import com.github.mdcdi1315.DotNetLayer.System.ObjectDisposedException;
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 
+import com.github.mdcdi1315.basemodslib.codecs.StrictListCodec;
 import com.github.mdcdi1315.mdex.MDEXModInstance;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.dco_logic.Compilable;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import java.util.Map;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -24,6 +26,7 @@ public final class CompilableBlockState
     implements Compilable
 {
     private static Codec<CompilableBlockState> codec;
+    private static Codec<List<CompilableBlockState>> list_codec;
     private ResourceLocation Name;
     public BlockState BlockState;
     private Map<String , String> IProperties;
@@ -45,6 +48,15 @@ public final class CompilableBlockState
             );
         }
         return codec;
+    }
+
+    public static Codec<List<CompilableBlockState>> GetListCodec()
+    {
+        if (list_codec == null)
+        {
+            list_codec = new StrictListCodec<>(GetCodec());
+        }
+        return list_codec;
     }
 
     public static MapCodec<CompilableBlockState> GetMapCodec()

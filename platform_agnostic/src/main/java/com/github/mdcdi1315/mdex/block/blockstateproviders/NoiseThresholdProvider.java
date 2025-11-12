@@ -42,24 +42,24 @@ public final class NoiseThresholdProvider
         return NoiseThresholdProviderType.INSTANCE;
     }
 
+    private void DisposeFields()
+    {
+       HighStates = null;
+       LowStates = null;
+       DefaultState = null;
+    }
+
     @Override
-    protected boolean CompileImplementation() {
-       if (DCOUtils.CompileAllOrFail(LowStates))
-       {
-           if (DCOUtils.CompileAllOrFail(HighStates))
-           {
-               DefaultState.Compile();
-               boolean c = DefaultState.IsCompiled();
-               if (!c) { DefaultState = null; }
-               return c;
-           } else {
-               HighStates.clear();
-               HighStates = null;
-           }
+    protected boolean CompileImplementation()
+    {
+       if (DCOUtils.CompileAllOrFail(LowStates) && DCOUtils.CompileAllOrFail(HighStates)) {
+           DefaultState.Compile();
+           boolean c = DefaultState.IsCompiled();
+           if (!c) { DisposeFields(); }
+           return c;
        } else {
-           LowStates.clear();
-           LowStates = null;
+           DisposeFields();
+           return false;
        }
-        return false;
     }
 }

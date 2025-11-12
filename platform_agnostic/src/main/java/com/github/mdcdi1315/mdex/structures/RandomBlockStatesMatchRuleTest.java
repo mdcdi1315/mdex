@@ -3,6 +3,7 @@ package com.github.mdcdi1315.mdex.structures;
 import com.github.mdcdi1315.basemodslib.utils.Extensions;
 
 import com.github.mdcdi1315.mdex.block.BlockUtils;
+import com.github.mdcdi1315.mdex.dco_logic.DCOUtils;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
 import net.minecraft.util.RandomSource;
@@ -26,24 +27,22 @@ public final class RandomBlockStatesMatchRuleTest
     @Override
     protected boolean CompileRuleTestData()
     {
-        for (var i : RandomStates)
-        {
-            i.Compile();
-            if (!i.IsCompiled()) {
-                RandomStates = null;
-                return false;
-            }
+        if (DCOUtils.CompileAllOrFail(RandomStates)) {
+            return true;
+        } else {
+            RandomStates = null;
+            return false;
         }
-        return true;
     }
 
     @Override
     protected boolean Test(BlockState blockState, RandomSource randomSource)
     {
-        if (RandomStates.isEmpty()) {
+        if (RandomStates == null || RandomStates.isEmpty()) {
             return false;
+        } else {
+            return randomSource.nextFloat() < probability && BlockUtils.BlockStatesMatch(Extensions.SelectRandomFromListUnsafe(RandomStates, randomSource).BlockState , blockState);
         }
-        return randomSource.nextFloat() < probability && BlockUtils.BlockStatesMatch(Extensions.SelectRandomFromListUnsafe(RandomStates, randomSource).BlockState , blockState);
     }
 
     @Override

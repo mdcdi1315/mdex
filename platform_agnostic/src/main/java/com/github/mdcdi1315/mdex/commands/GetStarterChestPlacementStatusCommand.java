@@ -1,6 +1,8 @@
 package com.github.mdcdi1315.mdex.commands;
 
+import com.github.mdcdi1315.basemodslib.utils.ElementSupplier;
 import com.github.mdcdi1315.basemodslib.commands.AbstractCommand;
+
 import com.github.mdcdi1315.mdex.api.teleporter.TeleporterSpawnData;
 import com.github.mdcdi1315.mdex.api.TeleportingManagerConfiguration;
 import com.github.mdcdi1315.basemodslib.world.saveddata.PerDimensionWorldDataManager;
@@ -36,22 +38,17 @@ public final class GetStarterChestPlacementStatusCommand
         ServerLevel sl = DimensionArgument.getDimension(c , "dimension");
         var ds = new PerDimensionWorldDataManager(sl).Get(TeleportingManagerConfiguration.DEFAULT_TELEPORTER_DATA_DIMFILE_NAME, TeleporterSpawnData::new);
         if (ds == null) {
-            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location()));
+            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location().toString()));
             return -1;
-        }
-        switch (ds.GetPlacementInfo())
-        {
-            case PLACED -> {
-                Component co = Component.translatable("mdex.commands.msg.getstarterchestplacement.success.placed" , sl.dimension().location());
-                c.getSource().sendSuccess(() -> co , true);
+        } else {
+            switch (ds.GetPlacementInfo())
+            {
+                case PLACED -> c.getSource().sendSuccess(new ElementSupplier<>(Component.translatable("mdex.commands.msg.getstarterchestplacement.success.placed" , sl.dimension().location().toString())), true);
+                case NOT_PLACED -> c.getSource().sendSuccess(new ElementSupplier<>(Component.translatable("mdex.commands.msg.getstarterchestplacement.success.not_placed" , sl.dimension().location().toString())) , true);
+                case IRRELEVANT -> c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.getstarterchestplacement.irrelevant"));
             }
-            case NOT_PLACED -> {
-                Component co = Component.translatable("mdex.commands.msg.getstarterchestplacement.success.not_placed" , sl.dimension().location());
-                c.getSource().sendSuccess(() -> co , true);
-            }
-            case IRRELEVANT -> c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.getstarterchestplacement.irrelevant"));
+            return 0;
         }
-        return 0;
     }
 
 }

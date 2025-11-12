@@ -15,7 +15,7 @@ public final class RandomBlockStatesMatchRuleTestType
     protected Codec<RandomBlockStatesMatchRuleTest> GetCodecInstance()
     {
         return CodecUtils.CreateCodecDirect(
-                CompilableBlockState.GetCodec().listOf().fieldOf("random_states").forGetter((RandomBlockStatesMatchRuleTest r) -> r.RandomStates),
+                CompilableBlockState.GetListCodec().fieldOf("random_states").forGetter((RandomBlockStatesMatchRuleTest r) -> r.RandomStates),
                 CodecUtils.FLOAT_PROBABILITY.fieldOf("probability").forGetter((RandomBlockStatesMatchRuleTest r) -> r.probability),
                 RandomBlockStatesMatchRuleTest::new
         );

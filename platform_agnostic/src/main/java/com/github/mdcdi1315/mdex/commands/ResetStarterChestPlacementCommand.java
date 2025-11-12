@@ -41,11 +41,11 @@ public final class ResetStarterChestPlacementCommand
         ServerLevel sl = DimensionArgument.getDimension(c , "dimension");
         var ds = new PerDimensionWorldDataManager(sl).Get(TeleportingManagerConfiguration.DEFAULT_TELEPORTER_DATA_DIMFILE_NAME , TeleporterSpawnData::new);
         if (ds == null) {
-            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location()));
+            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location().toString()));
             return -1;
         }
         if (ds.GetPlacementInfo() == StarterChestPlacementInfo.IRRELEVANT) {
-            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.starterchestplacement.irrelevant_placement" , sl.dimension().location()));
+            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.starterchestplacement.irrelevant_placement" , sl.dimension().location().toString()));
             return -2;
         }
         try {

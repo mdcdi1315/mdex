@@ -48,7 +48,7 @@ public final class RetrieveSpawnDataForAllPlayersCommand
         ServerLevel sl = DimensionArgument.getDimension(c , "dimension");
         TeleporterSpawnData d = new PerDimensionWorldDataManager(sl).Get(TeleportingManagerConfiguration.DEFAULT_TELEPORTER_DATA_DIMFILE_NAME , TeleporterSpawnData::new);
         if (d == null) {
-            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location()));
+            c.getSource().sendFailure(Component.translatable("mdex.commands.errormsg.no_teleporting_spawn_data" , sl.dimension().location().toString()));
             return 10;
         }
         Component cp = Component.literal(ListSpawnData(sl , d.GetSpawnInfos()));
@@ -59,7 +59,7 @@ public final class RetrieveSpawnDataForAllPlayersCommand
     private static String ListSpawnData(ServerLevel level , List<KeyValuePair<UUID , PlayerPlacementInformation>> list)
     {
         StringBuilder sb = new StringBuilder(1024);
-        sb.append(Component.translatable("mdex.commands.msg.getspdatacmd.list.header" , list.size() , level.dimension().location()).getString());
+        sb.append(Component.translatable("mdex.commands.msg.getspdatacmd.list.header" , list.size() , level.dimension().location().toString()).getString());
         sb.append('\n');
         MinecraftServer s = level.getServer();
         int plc = 0;
@@ -74,10 +74,8 @@ public final class RetrieveSpawnDataForAllPlayersCommand
             if (sourcedimspawn != null && sourcedim != null) {
                 sb.append(
                         Component.translatable("mdex.commands.msg.getspdatacmd.list.entry.detailed" ,
-                                i.getKey() ,
-                                sp == null ?
-                                        Component.translatable("mdex.commands.msg.getspdatacmd.list.entry.playername.unidentified").getString() :
-                                        sp.getName().getString() ,
+                                i.getKey().toString() ,
+                                (sp == null ? Component.translatable("mdex.commands.msg.getspdatacmd.list.entry.playername.unidentified") : sp.getName()).getString(),
                                 position.getX(),
                                 position.getY(),
                                 position.getZ(),
@@ -90,10 +88,8 @@ public final class RetrieveSpawnDataForAllPlayersCommand
             } else {
                 sb.append(
                         Component.translatable("mdex.commands.msg.getspdatacmd.list.entry" ,
-                                i.getKey() ,
-                                sp == null ?
-                                        Component.translatable("mdex.commands.msg.getspdatacmd.list.entry.playername.unidentified").getString() :
-                                        sp.getName().getString() ,
+                                i.getKey().toString() ,
+                                (sp == null ? Component.translatable("mdex.commands.msg.getspdatacmd.list.entry.playername.unidentified") : sp.getName()).getString() ,
                                 position.getX(),
                                 position.getY(),
                                 position.getZ()

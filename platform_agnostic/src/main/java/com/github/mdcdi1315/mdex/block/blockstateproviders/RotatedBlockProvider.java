@@ -2,6 +2,7 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
+import com.github.mdcdi1315.mdex.util.BlockNotFoundException;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.state.BlockState;
@@ -10,7 +11,7 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 public final class RotatedBlockProvider
         extends AbstractBlockStateProvider
 {
-    public final CompilableBlockState Block;
+    public CompilableBlockState Block;
 
     public RotatedBlockProvider(CompilableBlockState block) {
         Block = block;
@@ -28,11 +29,19 @@ public final class RotatedBlockProvider
     }
 
     @Override
-    protected boolean CompileImplementation() {
+    protected boolean CompileImplementation()
+    {
         Block.Compile();
         boolean compiled = Block.IsCompiled();
         if (compiled) {
-            BlockUtils.RequireBlockPropertyOrFail(Block.BlockState.getBlock() , RotatedPillarBlock.AXIS.getName());
+            try {
+                BlockUtils.RequireBlockPropertyOrFail(Block.BlockState.getBlock(), RotatedPillarBlock.AXIS.getName());
+            } catch (BlockNotFoundException e) {
+                Block = null;
+                throw e;
+            }
+        } else {
+            Block = null;
         }
         return compiled;
     }

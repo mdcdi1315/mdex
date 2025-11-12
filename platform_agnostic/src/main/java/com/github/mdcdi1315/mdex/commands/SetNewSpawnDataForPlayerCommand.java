@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.commands;
 
+import com.github.mdcdi1315.basemodslib.utils.ElementSupplier;
 import com.github.mdcdi1315.basemodslib.commands.AbstractCommand;
 import com.github.mdcdi1315.basemodslib.world.saveddata.PerDimensionWorldDataManager;
 
@@ -51,13 +52,10 @@ public final class SetNewSpawnDataForPlayerCommand
         var p = tsd.GetOrUpdateEntry(sp);
         BlockPos old = p.GetTeleporterPosition();
         p.SetTeleporterPosition(newpos);
-        Component chatc;
-        if (old == null) {
-            chatc = Component.translatable("mdex.commands.msg.setspdatacmd.success" , sp.getName().getString() , newpos.getX() , newpos.getY() , newpos.getZ());
-        } else {
-            chatc = Component.translatable("mdex.commands.msg.setspdatacmd.successandshowoldtoo" , sp.getName().getString() , newpos.getX() , newpos.getY() , newpos.getZ() , old.getX() , old.getY() , old.getZ());
-        }
-        c.getSource().sendSuccess(() -> chatc , true);
+        c.getSource().sendSuccess(new ElementSupplier<>(
+                (old == null) ?
+                    Component.translatable("mdex.commands.msg.setspdatacmd.success" , sp.getName().getString() , newpos.getX() , newpos.getY() , newpos.getZ()) :
+                    Component.translatable("mdex.commands.msg.setspdatacmd.successandshowoldtoo" , sp.getName().getString() , newpos.getX() , newpos.getY() , newpos.getZ() , old.getX() , old.getY() , old.getZ())), true);
         return 0;
     }
 }

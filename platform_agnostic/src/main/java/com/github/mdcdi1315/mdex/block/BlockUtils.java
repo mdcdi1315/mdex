@@ -322,11 +322,12 @@ public final class BlockUtils
             position = new BlockPos(0 , 0 , 0);
         }
         var fs = level.getFluidState(position);
-        if (!fs.is(Fluids.EMPTY)) {
+        if (fs.is(Fluids.EMPTY)) {
+            return false;
+        } else {
             level.scheduleTick(position, fs.getType(), 0);
             return true;
         }
-        return false;
     }
 
     /**
@@ -344,8 +345,9 @@ public final class BlockUtils
         if (blockentity instanceof RandomizableContainerBlockEntity e) {
             e.setLootTable(ResourceKey.create(Registries.LOOT_TABLE , lootTable), random.nextLong());
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**
@@ -363,8 +365,9 @@ public final class BlockUtils
         if (blockentity instanceof RandomizableContainerBlockEntity e) {
             e.setLootTable(lootTable, random.nextLong());
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     /**

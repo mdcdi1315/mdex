@@ -48,12 +48,14 @@ public final class BlockPhasesStructureProcessor
     @Override
     protected void CompileData() {
         if (States.size() < 2) {
+            States = null;
             throw new ArgumentException("States provided must be at least two.");
         }
         for (var i : States)
         {
             i.Compile();
             if (!i.IsCompiled()) {
+                States = null;
                 this.MarkAsInvalid();
                 break;
             }

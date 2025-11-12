@@ -9,17 +9,16 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
-import java.util.Optional;
 import java.util.Collection;
 
 public final class RandomizedIntStateProvider
     extends AbstractBlockStateProvider
 {
-    public final AbstractBlockStateProvider source;
-    public final String propertyName;
+    public IntProvider values;
+    public String propertyName;
     @MaybeNull
     public IntegerProperty property;
-    public final IntProvider values;
+    public AbstractBlockStateProvider source;
 
     public RandomizedIntStateProvider(AbstractBlockStateProvider source, IntegerProperty property, IntProvider values) {
         this.source = source;
@@ -46,16 +45,16 @@ public final class RandomizedIntStateProvider
         return blockstate.setValue(this.property, this.values.sample(context.source()));
     }
 
-    private static IntegerProperty findProperty(BlockState state, String propertyName) {
+    private static IntegerProperty findProperty(BlockState state, String propertyName)
+    {
         Collection<Property<?>> collection = state.getProperties();
-        Optional<IntegerProperty> optional =
-                collection
-                        .stream()
-                        .filter((p) -> p.getName().equals(propertyName))
-                        .filter((p) -> p instanceof IntegerProperty)
-                        .map((p) -> (IntegerProperty)p)
-                        .findAny();
-        return optional.orElseThrow(() -> new InvalidOperationException("Illegal property: " + propertyName));
+        for (Property<?> p : collection)
+        {
+            if (propertyName.equals(p.getName()) && p instanceof IntegerProperty ip) {
+                return ip;
+            }
+        }
+        throw new InvalidOperationException("Illegal property: " + propertyName);
     }
 
     @Override
@@ -70,16 +69,32 @@ public final class RandomizedIntStateProvider
         for (int i = values.getMinValue(); i <= values.getMaxValue(); ++i)
         {
             if (!collection.contains(i)) {
+                DisposeFields();
                 throw new ArgumentException(String.format("Property value out of range: %s: %d" , property.getName() , i));
             }
         }
     }
 
+    private void DisposeFields()
+    {
+        propertyName = null;
+        property = null;
+        values = null;
+    }
+
     @Override
-    protected boolean CompileImplementation() {
-        if (property != null) {
-            ValidateProperty();
+    protected boolean CompileImplementation()
+    {
+        source.Compile();
+        if (source.IsCompiled())
+        {
+            if (property != null) {
+                ValidateProperty();
+            }
+            return true;
+        } else {
+            DisposeFields();
+            return false;
         }
-        return true;
     }
 }

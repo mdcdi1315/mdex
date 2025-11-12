@@ -378,7 +378,8 @@ public abstract class TeleportingManager
         for (int I = level.getMaxY() - 2; I > minheight; I--)
         {
             temp = basepos.atY(I);
-            if (!level.getBlockState(temp).isAir() && level.getBlockState(temp.above()).isAir()) {
+            if (BlockUtils.ReferentIsSolidBlockUnsafe(level.getBlockState(temp)) &&
+                    BlockUtils.ReferentIsAirBlockUnsafe(level.getBlockState(temp.above()))) {
                 return temp;
             }
         }

@@ -92,6 +92,8 @@ public final class BiomeSpawnAdditionsRegistrySubsystem
                             tempentries.add(e);
                         } catch (EntityTypeNotFoundException etnf) {
                             MDEXModInstance.LOGGER.warn("Cannot find entity type {} for the current biome spawns addition object - skipping this inclusion directly." , etnf.GetExpectedLocation());
+                        } catch (Exception ex) {
+                            MDEXModInstance.LOGGER.error("Cannot apply the current biome spawns addition object because of an exception - skipping this inclusion directly." , ex);
                         }
                     }
                     // There is the rare, but possible case that all the entries have failed compilation.
@@ -143,6 +145,7 @@ public final class BiomeSpawnAdditionsRegistrySubsystem
         {
             try {
                 i.ApplyChanges();
+                applied++;
             } catch (Exception e) {
                 MDEXModInstance.LOGGER.error("BiomeSpawnAdditions: Cannot apply new entities due to a runtime error. This error will be logged only once.", e);
             }

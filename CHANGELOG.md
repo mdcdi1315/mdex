@@ -1,7 +1,3 @@
-### Version 2.1.0:
+### Version 2.1.1:
 
-General stability issues have been fixed in this version.
-
-The mod also has become less error-prone for this update.
-
-No features were added to this release.
+-> Add a validation check when creating biome spawn addition objects. This helps pack developers to correctly code their packs. 

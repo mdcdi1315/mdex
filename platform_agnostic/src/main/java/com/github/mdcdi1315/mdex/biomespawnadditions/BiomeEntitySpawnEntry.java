@@ -1,6 +1,7 @@
 package com.github.mdcdi1315.mdex.biomespawnadditions;
 
 import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
+import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 
@@ -29,9 +30,21 @@ public final class BiomeEntitySpawnEntry
             Entity.Compile();
         } catch (Exception e) {
             DestroyData();
+            return;
         }
         if (!Entity.IsCompiled()) {
             DestroyData();
+            return;
+        }
+        if (max_inclusive < min_inclusive) {
+            DestroyData();
+            throw new InvalidOperationException(
+                    String.format(
+                            "The number of maximum entities to place must be greater than or equal to the number of minimum entities to place!\nActual Numbers:\nMinimum inclusive count: %d\nMaximum inclusive count: %d",
+                            min_inclusive,
+                            max_inclusive
+                    )
+            );
         }
     }
 

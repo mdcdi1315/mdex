@@ -1,4 +1,4 @@
-modLoader="javafml"
+modLoader="bml_java_fml"
 loaderVersion="${forge_loader_version_range}"
 license="${license}"
 issueTrackerURL="${issues}"
@@ -11,6 +11,8 @@ logoFile="${mod_id}-icon.png"
 credits="${credits}"
 authors="${mod_author}"
 description='''${description}'''
+server_mod_instance_class_name="${group}.${mod_id}.MDEXModInstance"
+client_mod_instance_class_name="${group}.${mod_id}.MDEXClientModInstance"
 [[mixins]]
 config = "${mod_id}.mixins.json"
 [[mixins]]

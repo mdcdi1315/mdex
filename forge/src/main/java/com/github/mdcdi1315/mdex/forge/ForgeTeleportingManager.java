@@ -1,4 +1,4 @@
-package com.github.mdcdi1315.mdex.forge.api;
+package com.github.mdcdi1315.mdex.forge;
 
 import com.github.mdcdi1315.mdex.api.TeleportingManagerConfiguration;
 import com.github.mdcdi1315.mdex.block.ModBlocks;

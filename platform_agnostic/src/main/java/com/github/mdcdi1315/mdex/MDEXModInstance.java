@@ -13,7 +13,7 @@ import com.github.mdcdi1315.basemodslib.registries.IRegistryRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.server.ServerStartedEvent;
 import com.github.mdcdi1315.basemodslib.block.entity.IBlockEntityRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.server.ServerStoppingEvent;
-import com.github.mdcdi1315.basemodslib.eventapi.mods.ModLoadingCompleteEvent;
+import com.github.mdcdi1315.basemodslib.eventapi.mods.registries.BlockEntityTypeRegistryFinalizedEvent;
 
 // Mod interfaces
 import com.github.mdcdi1315.mdex.item.ModItems;
@@ -78,15 +78,6 @@ public final class MDEXModInstance
         ModBlockTags.Initialize();
     }
 
-    private static void FabricTeleporterImplementation(ServerStartedEvent sse)
-    {
-        try {
-            MANAGER = (TeleportingManager) Class.forName("com.github.mdcdi1315.mdex.fabric.FabricTeleportingManager").getConstructor(MinecraftServer.class , TeleportingManagerConfiguration.class).newInstance(sse.server() , new TeleportingManagerConfiguration(CONFIG));
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void SetupConfigurationFiles(ConfigManager manager) {
         manager.TrackJsonConfigurationFile(MDEXModConfig.class, MDEXModConfig::new);
@@ -101,16 +92,25 @@ public final class MDEXModInstance
 
     @Override
     public void RegisterEvents(EventManager manager) {
-        manager.AddEventListener(ModLoadingCompleteEvent.class, ModBlocks::OnModLoadingComplete);
-        manager.AddEventListener(ServerStoppingEvent.class, MDEXModInstance::OnServerStopping);
-        if (BaseModsLib.GetModLoaderBranding().equals("Fabric")) {
-            // We need to create the Fabric teleporter mechanism.
-            manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::FabricTeleporterImplementation);
-        }
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::OnServerStarted);
+        manager.AddEventListener(ServerStoppingEvent.class, MDEXModInstance::OnServerStopping);
+        manager.AddEventListener(BlockEntityTypeRegistryFinalizedEvent.class , MDEXModInstance::OnBlockEntityRegistryCompleted);
+    }
+
+    private static void OnBlockEntityRegistryCompleted(BlockEntityTypeRegistryFinalizedEvent event) {
+        ModBlocks.InitializeBlockEntityTypes(event);
     }
 
     private static void OnServerStarted(ServerStartedEvent sse) {
+        try {
+            MANAGER = (TeleportingManager) Class.forName(
+                    "fabric".equalsIgnoreCase(BaseModsLib.GetModLoaderBranding()) ?
+                            "com.github.mdcdi1315.mdex.fabric.FabricTeleportingManager" :
+                            "com.github.mdcdi1315.mdex.forge.ForgeTeleportingManager"
+            ).getConstructor(MinecraftServer.class , TeleportingManagerConfiguration.class).newInstance(sse.server() , new TeleportingManagerConfiguration(CONFIG));
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
         BiomeSpawnAdditionsRegistrySubsystem.ApplyCurrentBiomeSpawnAdditions(sse.server());
     }
 

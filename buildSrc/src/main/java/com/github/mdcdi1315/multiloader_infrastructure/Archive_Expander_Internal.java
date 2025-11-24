@@ -14,7 +14,7 @@ import java.util.HashMap;
 public final class Archive_Expander_Internal
 {
     private static Map<String, String> ReadPropertiesFile(File f)
-            throws java.io.IOException
+            throws IOException
     {
         String temp;
         HashMap<String, String> map = new HashMap<>();
@@ -135,11 +135,11 @@ public final class Archive_Expander_Internal
                 continue;
             }
 
-            String jdocs = properties_map.get("javadoc");
+            String jdocs = properties_map.get("sources");
 
             if (jdocs != null)
             {
-                var dir = root_dir.dir("java_docs");
+                var dir = root_dir.dir("sources");
                 File other = dir.getAsFile();
                 if (!other.exists()) { other.mkdir(); }
                 for (File fo : ft)

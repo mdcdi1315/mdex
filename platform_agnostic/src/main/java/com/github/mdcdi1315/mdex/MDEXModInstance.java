@@ -12,7 +12,7 @@ import com.github.mdcdi1315.basemodslib.registries.IRegistryRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.server.ServerStartedEvent;
 import com.github.mdcdi1315.basemodslib.block.entity.IBlockEntityRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.server.ServerStoppingEvent;
-import com.github.mdcdi1315.basemodslib.eventapi.mods.ModLoadingCompleteEvent;
+import com.github.mdcdi1315.basemodslib.eventapi.mods.registries.BlockEntityTypeRegistryFinalizedEvent;
 
 // Mod interfaces
 import com.github.mdcdi1315.mdex.item.ModItems;
@@ -96,8 +96,8 @@ public final class MDEXModInstance
     public void RegisterEvents(EventManager manager) {
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::OnServerStarted);
         manager.AddEventListener(ServerStoppingEvent.class, MDEXModInstance::OnServerStopping);
-        manager.AddEventListener(ModLoadingCompleteEvent.class, ModBlocks::OnModLoadingComplete);
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::TeleporterImplementation);
+        manager.AddEventListener(BlockEntityTypeRegistryFinalizedEvent.class, ModBlocks::InitializeBlockEntityTypes);
     }
 
     private static void OnServerStarted(ServerStartedEvent sse) {

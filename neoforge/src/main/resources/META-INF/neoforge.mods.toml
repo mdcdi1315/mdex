@@ -1,5 +1,5 @@
-modLoader="javafml"
-loaderVersion="${neoforge_loader_version_range}"
+modLoader="bml_java_fml"
+loaderVersion="[1.0.0,)"
 license="${license}"
 issueTrackerURL="${issues}"
 [[mods]]
@@ -11,6 +11,8 @@ logoFile="${mod_id}-icon.png"
 credits="${credits}"
 authors="${mod_author}"
 description='''${description}'''
+server_mod_instance_class_name="${group}.${mod_id}.MDEXModInstance"
+client_mod_instance_class_name="${group}.${mod_id}.MDEXClientModInstance"
 [[mixins]]
 config = "${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]

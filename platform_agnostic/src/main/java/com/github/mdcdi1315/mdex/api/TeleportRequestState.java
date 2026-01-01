@@ -20,23 +20,21 @@ public enum TeleportRequestState
     /**
      * The teleporting request was to be scheduled, but that is not possible.
      */
-    SCHEDULING_FAILED(-2);
+    SCHEDULING_FAILED(-2),
+    /**
+     * The teleporting request could not be completed because a client player instance was passed as the argument to the teleport method.
+     */
+    REQUIRES_SERVER(-3);
 
     private final byte value;
 
-    TeleportRequestState(int value) {
-        this.value = (byte) value;
-    }
+    TeleportRequestState(int value) { this.value = (byte) value; }
 
     /**
      * Gets a value whether the current state represents a failure.
      * @return A value whether this state value represents a failure.
      */
-    public boolean HasFailed() {
-        return value < 0;
-    }
+    public boolean HasFailed() { return value < 0; }
 
-    public boolean EqualsWith(TeleportRequestState s) {
-        return s != null && (s.value == this.value);
-    }
+    public boolean EqualsWith(TeleportRequestState s) { return s != null && (s.value == this.value); }
 }

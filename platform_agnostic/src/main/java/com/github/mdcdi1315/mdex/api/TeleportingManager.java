@@ -140,7 +140,7 @@ public abstract class TeleportingManager
                 return TeleportRequestState.SCHEDULED;
             }
         } else {
-            return TeleportRequestState.FAILED;
+            return TeleportRequestState.REQUIRES_SERVER;
         }
     }
 

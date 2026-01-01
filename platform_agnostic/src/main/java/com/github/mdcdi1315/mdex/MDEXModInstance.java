@@ -5,6 +5,7 @@ import com.github.mdcdi1315.basemodslib.item.IItemRegistrar;
 import com.github.mdcdi1315.basemodslib.config.ConfigManager;
 import com.github.mdcdi1315.basemodslib.block.IBlockRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.EventManager;
+import com.github.mdcdi1315.basemodslib.network.NetworkManager;
 import com.github.mdcdi1315.basemodslib.mods.IServerModInstance;
 import com.github.mdcdi1315.basemodslib.world.IWorldGenRegistrar;
 import com.github.mdcdi1315.basemodslib.commands.ICommandRegistrar;
@@ -21,6 +22,7 @@ import com.github.mdcdi1315.mdex.tag.ModBlockTags;
 import com.github.mdcdi1315.mdex.api.OperationsTasker;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.commands.MDEXBaseCommand;
+import com.github.mdcdi1315.mdex.networking.MDEXNetworking;
 import com.github.mdcdi1315.mdex.api.MDEXDefaultTeleportingManager;
 
 // Registry subsystems
@@ -39,8 +41,6 @@ import net.minecraft.resources.ResourceLocation;
 // SLF4J logging
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
 
 public final class MDEXModInstance
     implements IServerModInstance
@@ -62,9 +62,7 @@ public final class MDEXModInstance
 
     public static ResourceLocation ID(String id) { return ResourceLocation.tryBuild(MOD_ID, id); }
 
-    public static ResourceLocation BlockID(String id) {
-        return ResourceLocation.tryBuild(MOD_ID , id);
-    }
+    public static ResourceLocation BlockID(String id) { return ResourceLocation.tryBuild(MOD_ID , id); }
 
     @Override
     public void Initialize() {
@@ -85,11 +83,6 @@ public final class MDEXModInstance
         manager.TrackJsonConfigurationFile(MDEXModConfig.class, MDEXModConfig::new);
         CONFIG = manager.LoadOrCreateConfigurationFile(MDEXModConfig.class);
         LoggingFlags = new MDEXDCOLoggingFlags(CONFIG);
-    }
-
-    @Override
-    public void OnInitializeEnd() {
-
     }
 
     @Override
@@ -156,6 +149,9 @@ public final class MDEXModInstance
         FeatureTypesRegistrySubsystem.RegisterFeatureTypes(registrar);
         PlacementModifierRegistrySubsystem.RegisterPlacementModifiers(registrar);
     }
+
+    @Override
+    public void InitializeNetwork(NetworkManager manager) { MDEXNetworking.Initialize(manager); }
 
     @Override
     public void RegisterItems(IItemRegistrar registrar) {

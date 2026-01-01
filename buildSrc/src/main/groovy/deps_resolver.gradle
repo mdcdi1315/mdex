@@ -10,9 +10,6 @@ dependencies {
         File rt = d.getAsFile();
         if (rt.exists())
         {
-            if (rp.name == "platform_agnostic" && (rt = d.dir("java_docs").getAsFile()).exists()) {
-                project.dependencies.javadocElements fileTree(rt) { include '*.jar' };
-            }
             if ((rt = d.dir(project.name).getAsFile()).exists())
             {
                 String name = rt.getName();

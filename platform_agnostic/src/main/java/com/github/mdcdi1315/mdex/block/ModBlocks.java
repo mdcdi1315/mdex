@@ -4,7 +4,7 @@ import com.github.mdcdi1315.basemodslib.block.IBlockRegistrar;
 import com.github.mdcdi1315.basemodslib.block.entity.IBlockEntityFactory;
 import com.github.mdcdi1315.basemodslib.block.BlockRegistrationInformation;
 import com.github.mdcdi1315.basemodslib.block.entity.IBlockEntityRegistrar;
-import com.github.mdcdi1315.basemodslib.eventapi.mods.ModLoadingCompleteEvent;
+import com.github.mdcdi1315.basemodslib.eventapi.mods.registries.BlockEntityTypeRegistryFinalizedEvent;
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
 import com.github.mdcdi1315.mdex.block.entity.TeleporterTileEntity;
@@ -295,7 +295,7 @@ public final class ModBlocks
         blockentities.Register("teleporter", new TeleporterBlockEntityFactory());
     }
 
-    public static void OnModLoadingComplete(ModLoadingCompleteEvent e) {
-        TELEPORTER_TILE_ENTITY = IBlockEntityRegistrar.GetBlockEntityType(MDEXModInstance.BlockID("teleporter"));
+    public static void InitializeBlockEntityTypes(BlockEntityTypeRegistryFinalizedEvent e) {
+        TELEPORTER_TILE_ENTITY = e.GetRegistryObjectChecked(MDEXModInstance.BlockID("teleporter"));
     }
 }

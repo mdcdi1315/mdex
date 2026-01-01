@@ -1,3 +1,6 @@
-### Version 2.1.1:
+### Version 2.2.1:
 
--> Add a validation check when creating biome spawn addition objects. This helps pack developers to correctly code their packs. 
+-> Fixed the issue where servers containing the mod cannot use it because it needs a packet to be dispatched.
+Now this version fixes that.
+
+-> Now, the BML mod version 1.0.14 is used from now on.

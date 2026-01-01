@@ -5,6 +5,7 @@ import com.github.mdcdi1315.basemodslib.item.IItemRegistrar;
 import com.github.mdcdi1315.basemodslib.config.ConfigManager;
 import com.github.mdcdi1315.basemodslib.block.IBlockRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.EventManager;
+import com.github.mdcdi1315.basemodslib.network.NetworkManager;
 import com.github.mdcdi1315.basemodslib.mods.IServerModInstance;
 import com.github.mdcdi1315.basemodslib.world.IWorldGenRegistrar;
 import com.github.mdcdi1315.basemodslib.commands.ICommandRegistrar;
@@ -12,15 +13,17 @@ import com.github.mdcdi1315.basemodslib.registries.IRegistryRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.server.ServerStartedEvent;
 import com.github.mdcdi1315.basemodslib.block.entity.IBlockEntityRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.server.ServerStoppingEvent;
-import com.github.mdcdi1315.basemodslib.eventapi.mods.ModLoadingCompleteEvent;
+import com.github.mdcdi1315.basemodslib.eventapi.mods.registries.BlockEntityTypeRegistryFinalizedEvent;
 
 // Mod interfaces
 import com.github.mdcdi1315.mdex.item.ModItems;
 import com.github.mdcdi1315.mdex.block.ModBlocks;
+import com.github.mdcdi1315.mdex.tag.ModItemTags;
 import com.github.mdcdi1315.mdex.tag.ModBlockTags;
 import com.github.mdcdi1315.mdex.api.OperationsTasker;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.commands.MDEXBaseCommand;
+import com.github.mdcdi1315.mdex.networking.MDEXNetworking;
 import com.github.mdcdi1315.mdex.api.MDEXDefaultTeleportingManager;
 
 // Registry subsystems
@@ -34,14 +37,11 @@ import com.github.mdcdi1315.mdex.biomespawnadditions.BiomeSpawnAdditionsRegistry
 import com.github.mdcdi1315.mdex.block.blockstateproviders.CustomBlockStateProviderRegistrySubsystem;
 
 // Minecraft stuff
-import com.github.mdcdi1315.mdex.tag.ModItemTags;
 import net.minecraft.resources.ResourceLocation;
 
 // SLF4J logging
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
 
 public final class MDEXModInstance
     implements IServerModInstance
@@ -63,9 +63,7 @@ public final class MDEXModInstance
 
     public static ResourceLocation ID(String id) { return ResourceLocation.tryBuild(MOD_ID, id); }
 
-    public static ResourceLocation BlockID(String id) {
-        return ResourceLocation.tryBuild(MOD_ID , id);
-    }
+    public static ResourceLocation BlockID(String id) { return ResourceLocation.tryBuild(MOD_ID , id); }
 
     @Override
     public void Initialize() {
@@ -90,16 +88,11 @@ public final class MDEXModInstance
     }
 
     @Override
-    public void OnInitializeEnd() {
-
-    }
-
-    @Override
     public void RegisterEvents(EventManager manager) {
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::OnServerStarted);
         manager.AddEventListener(ServerStoppingEvent.class, MDEXModInstance::OnServerStopping);
-        manager.AddEventListener(ModLoadingCompleteEvent.class, ModBlocks::OnModLoadingComplete);
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::TeleporterImplementation);
+        manager.AddEventListener(BlockEntityTypeRegistryFinalizedEvent.class, ModBlocks::InitializeBlockEntityTypes);
     }
 
     private static void OnServerStarted(ServerStartedEvent sse) {
@@ -160,19 +153,16 @@ public final class MDEXModInstance
     }
 
     @Override
-    public void RegisterItems(IItemRegistrar registrar) {
-        ModItems.Initialize(registrar);
-    }
+    public void InitializeNetwork(NetworkManager manager) { MDEXNetworking.Initialize(manager); }
 
     @Override
-    public void RegisterCommands(ICommandRegistrar registrar) {
-        registrar.RegisterByCommand(MDEXBaseCommand::new);
-    }
+    public void RegisterItems(IItemRegistrar registrar) { ModItems.Initialize(registrar); }
 
     @Override
-    public String GetModId() {
-        return MOD_ID;
-    }
+    public void RegisterCommands(ICommandRegistrar registrar) { registrar.RegisterByCommand(MDEXBaseCommand::new); }
+
+    @Override
+    public String GetModId() { return MOD_ID; }
 
     @Override
     public void Dispose() {

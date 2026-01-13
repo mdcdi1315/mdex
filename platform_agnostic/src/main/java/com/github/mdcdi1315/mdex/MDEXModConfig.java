@@ -62,4 +62,9 @@ public final class MDEXModConfig
     public String GetName() {
         return MDEXModInstance.MOD_ID + "-common";
     }
+
+    @Override
+    public String GetComment() {
+        return "[Translate]configuration.mdex_common.title";
+    }
 }

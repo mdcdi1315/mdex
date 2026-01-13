@@ -4,6 +4,7 @@ import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 
+import com.github.mdcdi1315.mdex.MDEXModInstance;
 import com.github.mdcdi1315.mdex.util.MDEXException;
 import com.github.mdcdi1315.mdex.mixin.Biome_MobSpawnSettingsAccessor;
 
@@ -114,9 +115,7 @@ public final class BiomeSpawnsModifier
             for (var e : entry.getValue())
             {
                 ent = e.Entity;
-                data.add(
-                        new MobSpawnSettings.SpawnerData(ent , e.min , e.max , e.weight)
-                );
+                data.add(new MobSpawnSettings.SpawnerData(ent, e.weight , e.min , e.max));
                 sc = e.Costs;
                 if (sc != null)
                 {

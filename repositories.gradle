@@ -12,6 +12,14 @@ repositories {
         url = "https://maven.terraformersmc.com/"
     }
 
+    maven {
+        name = "Shedaniel Maven"
+        url = "https://maven.shedaniel.me/"
+        content {
+            includeGroup "me.shedaniel.cloth"
+        }
+    }
+
     exclusiveContent {
         forRepository {
             maven {

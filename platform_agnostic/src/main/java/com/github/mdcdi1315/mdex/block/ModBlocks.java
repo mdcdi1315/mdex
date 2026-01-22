@@ -8,6 +8,7 @@ import com.github.mdcdi1315.basemodslib.eventapi.mods.registries.BlockEntityType
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
 import com.github.mdcdi1315.mdex.block.entity.TeleporterTileEntity;
+import com.github.mdcdi1315.mdex.block.entity.HardstoneFurnaceBlockEntity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
@@ -30,10 +31,16 @@ public final class ModBlocks
 
     public static Block TELEPORTER;
 
+    public static Block HARDSTONE_FURNACE;
+
     public static BlockEntityType<TeleporterTileEntity> TELEPORTER_TILE_ENTITY;
+
+    public static BlockEntityType<HardstoneFurnaceBlockEntity> HARDSTONE_FURNACE_ENTITY;
 
     public static void Initialize(IBlockRegistrar blocks)
     {
+        CreativeModeTab functional_blocks_tab = BlockUtils.GetMinecraftCreativeModeTab("functional_blocks");
+
         blocks.Register("teleporter", new BlockRegistrationInformation(
                 (identifier) -> TELEPORTER = new MDEXTeleporterBlock(
                         BlockBehaviour.Properties.of()
@@ -44,9 +51,22 @@ public final class ModBlocks
                         identifier
                 ),
                 ModBlocks::GetBlockItem,
-                BlockUtils.GetMinecraftCreativeModeTab("functional_blocks")
+                functional_blocks_tab
         ));
 
+        blocks.Register("hardstone_furnace", new BlockRegistrationInformation(
+                (id) -> HARDSTONE_FURNACE = new MDEXHardstoneFurnaceBlock(
+                        BlockBehaviour.Properties.of()
+                                .mapColor(MapColor.STONE)
+                                .instrument(NoteBlockInstrument.BASEDRUM)
+                                .requiresCorrectToolForDrops()
+                                .strength(4.1843755f , 3.4f)
+                                .lightLevel(BlockUtils.GetBlockLightEmissionWhenLit(13)),
+                        id
+                ),
+                ModBlocks::GetBlockItem,
+                functional_blocks_tab
+        ));
         InitializeHardstoneBlockFamily(blocks);
         InitializeDeepGraniteBlockFamily(blocks);
     }
@@ -291,11 +311,25 @@ public final class ModBlocks
         }
     }
 
-    public static void InitBlockEntities(IBlockEntityRegistrar blockentities) {
-        blockentities.Register("teleporter", new TeleporterBlockEntityFactory());
+    private record HardstoneFurnaceBlockEntityFactory()
+            implements IBlockEntityFactory<HardstoneFurnaceBlockEntity>
+    {
+        @Override
+        public HardstoneFurnaceBlockEntity Create(BlockPos position, BlockState associated_state) {
+            return new HardstoneFurnaceBlockEntity(position, associated_state);
+        }
+
+        @Override
+        public Block[] GetBlocks() { return new Block[] { HARDSTONE_FURNACE }; }
     }
 
-    public static void InitializeBlockEntityTypes(BlockEntityTypeRegistryFinalizedEvent e) {
-        TELEPORTER_TILE_ENTITY = e.GetRegistryObjectChecked(MDEXModInstance.BlockID("teleporter"));
+    public static void InitBlockEntities(IBlockEntityRegistrar blockentities) {
+        blockentities.Register("teleporter", new TeleporterBlockEntityFactory());
+        blockentities.Register("hardstone_furnace", new HardstoneFurnaceBlockEntityFactory());
+    }
+
+    public static void InitializeBlockEntityTypes(BlockEntityTypeRegistryFinalizedEvent event) {
+        TELEPORTER_TILE_ENTITY = event.GetRegistryObjectChecked(MDEXModInstance.BlockID("teleporter"));
+        HARDSTONE_FURNACE_ENTITY = event.GetRegistryObjectChecked(MDEXModInstance.BlockID("hardstone_furnace"));
     }
 }

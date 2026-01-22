@@ -1,14 +1,5 @@
 {
 	"parent": "minecraft:recipes/root",
-	"rewards": {
-		"recipes": [
-			"mdcdi1315_md:mdex_copper_axe",
-			"mdcdi1315_md:mdex_copper_pickaxe",
-			"mdcdi1315_md:mdex_copper_sword",
-			"mdcdi1315_md:mdex_copper_shovel",
-			"mdcdi1315_md:mdex_copper_hoe"
-		]
-	},
 	"criteria": {
 		"has_copper_ingot": {
 			"trigger": "minecraft:inventory_changed",
@@ -25,5 +16,14 @@
 		[
 			"has_copper_ingot"
 		]
-	]
+	],
+	"rewards": {
+		"recipes": [
+			"mdcdi1315_md:mdex_copper_axe",
+			"mdcdi1315_md:mdex_copper_pickaxe",
+			"mdcdi1315_md:mdex_copper_sword",
+			"mdcdi1315_md:mdex_copper_shovel",
+			"mdcdi1315_md:mdex_copper_hoe"
+		]
+	}
 }

@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.biomespawnadditions;
 
+import com.github.mdcdi1315.DotNetLayer.System.Exception;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 

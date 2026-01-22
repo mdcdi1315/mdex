@@ -31,6 +31,7 @@ import com.github.mdcdi1315.mdex.loottable.LootTableRegistrySubsystem;
 import com.github.mdcdi1315.mdex.structures.RuleTestsRegistrySubsystem;
 import com.github.mdcdi1315.mdex.structures.StructuresRegistrySubsystem;
 import com.github.mdcdi1315.mdex.features.FeatureTypesRegistrySubsystem;
+import com.github.mdcdi1315.mdex.aggressivespawners.AggressiveSpawnerRegistry;
 import com.github.mdcdi1315.mdex.structures.StructureProcessorsRegistrySubsystem;
 import com.github.mdcdi1315.mdex.features.placement.PlacementModifierRegistrySubsystem;
 import com.github.mdcdi1315.mdex.biomespawnadditions.BiomeSpawnAdditionsRegistrySubsystem;
@@ -97,6 +98,7 @@ public final class MDEXModInstance
 
     private static void OnServerStarted(ServerStartedEvent sse) {
         BiomeSpawnAdditionsRegistrySubsystem.ApplyCurrentBiomeSpawnAdditions(sse.server());
+        AggressiveSpawnerRegistry.OnStarted(sse.server());
     }
 
     private static void OnServerStopping(ServerStoppingEvent sse)
@@ -138,6 +140,7 @@ public final class MDEXModInstance
 
     @Override
     public void RegisterRegistryItems(IRegistryRegistrar registrar) {
+        AggressiveSpawnerRegistry.Initialize(registrar);
         LootTableRegistrySubsystem.Initialize(registrar);
         StructuresRegistrySubsystem.RegisterEntries(registrar);
         RuleTestsRegistrySubsystem.RegisterRuleTests(registrar);

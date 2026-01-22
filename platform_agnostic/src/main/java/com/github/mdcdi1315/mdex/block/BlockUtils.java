@@ -7,6 +7,8 @@ import com.github.mdcdi1315.DotNetLayer.System.Runtime.CompilerServices.Extensio
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.ConstantExpected;
 
+import com.github.mdcdi1315.basemodslib.item.ItemHelpers;
+
 import com.github.mdcdi1315.mdex.util.BlockNotFoundException;
 import com.github.mdcdi1315.mdex.util.FluidNotFoundException;
 import com.github.mdcdi1315.mdex.util.BlockPropertyNotFoundException;
@@ -539,7 +541,7 @@ public final class BlockUtils
      */
     @MaybeNull
     public static CreativeModeTab GetMinecraftCreativeModeTab(@MaybeNull @ConstantExpected String name) {
-        return BuiltInRegistries.CREATIVE_MODE_TAB.getValue(ResourceLocation.tryBuild(ResourceLocation.DEFAULT_NAMESPACE , name));
+        return ItemHelpers.GetMinecraftCreativeModeTab(name);
     }
 
     @Extension

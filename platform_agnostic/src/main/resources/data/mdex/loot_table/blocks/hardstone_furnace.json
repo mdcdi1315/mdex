@@ -1,0 +1,30 @@
+{
+	"type": "minecraft:block",
+	"random_sequence": "mdex:blocks/hardstone_furnace",
+	"pools": [
+		{
+			"rolls": 1.0,
+			"bonus_rolls": 0.0,
+			"conditions": [
+				{
+					"condition": "minecraft:survives_explosion"
+				}
+			],
+			"entries": [
+				{
+					"type": "minecraft:item",
+					"name": "mdex:hardstone_furnace",
+					"functions": [
+						{
+							"function": "minecraft:copy_components",
+							"include": [
+								"minecraft:custom_name"
+							],
+							"source": "block_entity"
+						}
+					]
+				}
+			]
+		}
+	]
+}

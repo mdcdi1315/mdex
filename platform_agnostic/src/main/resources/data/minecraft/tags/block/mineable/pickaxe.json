@@ -2,6 +2,7 @@
     "replace": false,
     "values": [
         "mdex:hardstone",
+		"mdex:hardstone_furnace",
 		"mdex:hardstone_gold_ore",
 		"mdex:hardstone_iron_ore",
 		"mdex:hardstone_lapis_ore",

@@ -4,7 +4,7 @@ import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 
-import com.github.mdcdi1315.mdex.MDEXModInstance;
+import com.github.mdcdi1315.mdex.util.SpawnCost;
 import com.github.mdcdi1315.mdex.util.MDEXException;
 import com.github.mdcdi1315.mdex.mixin.Biome_MobSpawnSettingsAccessor;
 
@@ -31,7 +31,7 @@ public final class BiomeSpawnsModifier
     {
         public EntityType<?> Entity;
         @MaybeNull
-        public BiomeEntitySpawnEntry.SpawnCost Costs;
+        public SpawnCost Costs;
         public byte min , max;
         public int weight; // Decouple weight
 
@@ -105,7 +105,7 @@ public final class BiomeSpawnsModifier
         // The below map object will be created only lazily on first found cost.
         Map<EntityType<?>, MobSpawnSettings.MobSpawnCost> costs = null;
         EntityType<?> ent;
-        BiomeEntitySpawnEntry.SpawnCost sc;
+        SpawnCost sc;
         for (var entry : entries.entrySet())
         {
             var category = entry.getKey();

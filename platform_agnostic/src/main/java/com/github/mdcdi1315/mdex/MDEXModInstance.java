@@ -6,6 +6,7 @@ import com.github.mdcdi1315.basemodslib.item.IItemRegistrar;
 import com.github.mdcdi1315.basemodslib.config.ConfigManager;
 import com.github.mdcdi1315.basemodslib.block.IBlockRegistrar;
 import com.github.mdcdi1315.basemodslib.eventapi.EventManager;
+import com.github.mdcdi1315.basemodslib.network.NetworkManager;
 import com.github.mdcdi1315.basemodslib.mods.IServerModInstance;
 import com.github.mdcdi1315.basemodslib.world.IWorldGenRegistrar;
 import com.github.mdcdi1315.basemodslib.commands.ICommandRegistrar;
@@ -22,6 +23,7 @@ import com.github.mdcdi1315.mdex.tag.ModBlockTags;
 import com.github.mdcdi1315.mdex.api.OperationsTasker;
 import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.commands.MDEXBaseCommand;
+import com.github.mdcdi1315.mdex.networking.MDEXNetworking;
 import com.github.mdcdi1315.mdex.api.TeleportingManagerConfiguration;
 
 // Registry subsystems
@@ -95,6 +97,11 @@ public final class MDEXModInstance
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::OnServerStarted);
         manager.AddEventListener(ServerStoppingEvent.class, MDEXModInstance::OnServerStopping);
         manager.AddEventListener(BlockEntityTypeRegistryFinalizedEvent.class , MDEXModInstance::OnBlockEntityRegistryCompleted);
+    }
+
+    @Override
+    public void InitializeNetwork(NetworkManager manager) {
+        MDEXNetworking.Initialize(manager);
     }
 
     private static void OnBlockEntityRegistryCompleted(BlockEntityTypeRegistryFinalizedEvent event) {
@@ -178,9 +185,7 @@ public final class MDEXModInstance
     }
 
     @Override
-    public String GetModId() {
-        return MOD_ID;
-    }
+    public String GetModId() { return MOD_ID; }
 
     @Override
     public void Dispose() {

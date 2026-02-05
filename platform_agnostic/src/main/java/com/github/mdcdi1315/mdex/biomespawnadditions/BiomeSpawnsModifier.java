@@ -115,7 +115,7 @@ public final class BiomeSpawnsModifier
             {
                 ent = e.Entity;
                 data.add(
-                        new MobSpawnSettings.SpawnerData(ent , e.min , e.max , e.weight)
+                        new MobSpawnSettings.SpawnerData(ent, e.weight , e.min , e.max)
                 );
                 sc = e.Costs;
                 if (sc != null)

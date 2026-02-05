@@ -1,7 +1,7 @@
 package com.github.mdcdi1315.mdex.block;
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
-import com.github.mdcdi1315.mdex.api.TeleportRequestState;
+import com.github.mdcdi1315.mdex.networking.MDEXNetworking;
 import com.github.mdcdi1315.mdex.block.entity.TeleporterTileEntity;
 
 import net.minecraft.core.BlockPos;
@@ -9,7 +9,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Explosion;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.entity.player.Player;
@@ -54,29 +53,18 @@ public class MDEXTeleporterBlock
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (hand == InteractionHand.MAIN_HAND)
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
+    {
+        if (player.getUsedItemHand() == InteractionHand.MAIN_HAND)
         {
-            if (TransferPlayer(player, pos)) {
-                return InteractionResult.SUCCESS;
-            } else {
+            if (player.getVehicle() != null || player.isVehicle()) { return InteractionResult.FAIL; }
+            if (MDEXNetworking.HandleTeleportRequest(player, pos).HasFailed()) {
                 return InteractionResult.FAIL;
+            } else {
+                return InteractionResult.SUCCESS;
             }
         }
         return InteractionResult.SUCCESS;
-    }
-
-    public boolean TransferPlayer(Player sp , BlockPos bps)
-    {
-        if (sp.getVehicle() != null || sp.isVehicle()) {
-            return false;
-        }
-
-        TeleportRequestState state = MDEXModInstance.MANAGER.Teleport(sp , bps);
-        if (state == TeleportRequestState.SCHEDULED) {
-            sp.displayClientMessage(Component.translatable("mdex.teleportmanager.msg.teleport_scheduled") , true);
-        }
-        return state != TeleportRequestState.FAILED;
     }
 
     @Override

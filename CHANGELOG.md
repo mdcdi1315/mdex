@@ -1,3 +1,4 @@
-### Version 2.1.1:
+### Version 2.2.0-final:
 
--> Add a validation check when creating biome spawn addition objects. This helps pack developers to correctly code their packs. 
+-> Various patches for 1.20.1. 
+Possibly this will be the VERY final version of the mod for 1.20.1.

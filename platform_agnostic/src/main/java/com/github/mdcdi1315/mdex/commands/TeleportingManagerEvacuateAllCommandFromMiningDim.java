@@ -4,8 +4,8 @@ import com.github.mdcdi1315.basemodslib.utils.ElementSupplier;
 import com.github.mdcdi1315.basemodslib.commands.AbstractCommand;
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
-import com.github.mdcdi1315.mdex.api.TeleportingManager;
 import com.github.mdcdi1315.mdex.api.TeleportRequestState;
+import com.github.mdcdi1315.mdex.api.TeleportingManagerV2;
 
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -23,9 +23,7 @@ import net.minecraft.commands.arguments.DimensionArgument;
 public final class TeleportingManagerEvacuateAllCommandFromMiningDim
     extends AbstractCommand
 {
-    public TeleportingManagerEvacuateAllCommandFromMiningDim() {
-        super("evacuate_all_players_to");
-    }
+    public TeleportingManagerEvacuateAllCommandFromMiningDim() { super("evacuate_all_players_to"); }
 
     @Override
     protected LiteralArgumentBuilder<CommandSourceStack> CommandImplementation(LiteralArgumentBuilder<CommandSourceStack> builder) {
@@ -45,13 +43,13 @@ public final class TeleportingManagerEvacuateAllCommandFromMiningDim
             return -1;
         }
 
-        TeleportingManager mgr = MDEXModInstance.MANAGER;
+        TeleportingManagerV2 mgr = MDEXModInstance.MANAGER;
 
         int evacuated = 0;
 
         for (ServerPlayer p : mining_dim.getPlayers((ServerPlayer sp) -> true))
         {
-            if (mgr.TeleportTo(p , p.getOnPos() , evacuate_to_level) == TeleportRequestState.COMPLETED) {
+            if (mgr.Teleport(p , p.getOnPos() , evacuate_to_level) == TeleportRequestState.COMPLETED) {
                 evacuated++;
             }
         }

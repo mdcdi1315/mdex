@@ -1,4 +1,5 @@
 dependencies {
-    implementation("com.google.code.findbugs:jsr305:3.0.2")
-	modImplementation("com.terraformersmc:modmenu:${modmenu_version}")
+    implementation "com.google.code.findbugs:jsr305:3.0.2"
+	modImplementation "com.terraformersmc:modmenu:${modmenu_version}"
+    modImplementation "com.github.mdcdi1315:bml-fabric-${minecraft_version}:${mdcdi1315_base_mods_lib_version}"
 }

@@ -146,7 +146,7 @@ public abstract class AbstractStructure
         } else {
             MDEXModInstance.LOGGER.info("IsInvalid was run for structure configuration object {}. To get stack trace information, set the DebugStructureConfigurations option to true." , getClass().getName());
         }
-        MDEXModInstance.RunTaskAsync(this::DestroyInternalState);
+        DestroyInternalState();
     }
 
     /**

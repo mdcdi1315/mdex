@@ -3,8 +3,8 @@ package com.github.mdcdi1315.mdex.api;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
+import com.github.mdcdi1315.mdex.api.teleporter.PlayerLogicalData;
 import com.github.mdcdi1315.mdex.block.ModBlocks;
-import com.github.mdcdi1315.mdex.api.teleporter.PlayerRotationInformation;
 
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.MinecraftServer;
@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.DimensionTransition;
 
 public final class MDEXDefaultTeleportingManager
-    extends TeleportingManager
+    extends TeleportingManagerV2
 {
     public MDEXDefaultTeleportingManager(MinecraftServer server)
             throws ArgumentNullException
@@ -23,17 +23,13 @@ public final class MDEXDefaultTeleportingManager
     }
 
     @Override
-    protected boolean TeleporterIsExisting(BlockState state) {
-        return state != null && state.is(ModBlocks.TELEPORTER);
-    }
+    protected boolean TeleporterExists(BlockState state) { return state != null && state.is(ModBlocks.TELEPORTER); }
 
     @Override
-    protected boolean TeleportImpl(ServerPlayer player, ServerLevel target, Vec3 placement_position, PlayerRotationInformation rot_info, boolean playteleportsound)
+    protected boolean TeleportImpl(ServerPlayer player, ServerLevel target, PlayerLogicalData data, boolean playteleportsound)
     {
         return player.changeDimension(
-                (rot_info == null) ?
-                        new DimensionTransition(target , placement_position , Vec3.ZERO , player.getYRot() , player.getXRot(), playteleportsound ? DimensionTransition.PLAY_PORTAL_SOUND : DimensionTransition.DO_NOTHING) :
-                        new DimensionTransition(target , placement_position , Vec3.ZERO , rot_info.GetYRotation() , rot_info.GetXRotation(), playteleportsound ? DimensionTransition.PLAY_PORTAL_SOUND : DimensionTransition.DO_NOTHING)
+                new DimensionTransition(target, data.current_position, Vec3.ZERO, data.y_rotation, data.x_rotation, playteleportsound ? DimensionTransition.PLAY_PORTAL_SOUND : DimensionTransition.DO_NOTHING)
         ) != null;
     }
 }

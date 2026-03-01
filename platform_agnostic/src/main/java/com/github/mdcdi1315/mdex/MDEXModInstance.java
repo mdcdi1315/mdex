@@ -19,8 +19,7 @@ import com.github.mdcdi1315.basemodslib.eventapi.mods.registries.BlockEntityType
 import com.github.mdcdi1315.mdex.item.ModItems;
 import com.github.mdcdi1315.mdex.block.ModBlocks;
 import com.github.mdcdi1315.mdex.tag.ModBlockTags;
-import com.github.mdcdi1315.mdex.api.OperationsTasker;
-import com.github.mdcdi1315.mdex.api.TeleportingManager;
+import com.github.mdcdi1315.mdex.api.TeleportingManagerV2;
 import com.github.mdcdi1315.mdex.commands.MDEXBaseCommand;
 import com.github.mdcdi1315.mdex.networking.MDEXNetworking;
 import com.github.mdcdi1315.mdex.api.MDEXDefaultTeleportingManager;
@@ -57,9 +56,7 @@ public final class MDEXModInstance
 
     public static ResourceLocation MINING_DIM_IDENTIFIER;
 
-    private static OperationsTasker TASKER;
-
-    public static TeleportingManager MANAGER;
+    public static TeleportingManagerV2 MANAGER;
 
     public static ResourceLocation ID(String id) { return ResourceLocation.tryBuild(MOD_ID, id); }
 
@@ -70,7 +67,6 @@ public final class MDEXModInstance
         MANAGER = null;
         LOGGER = LoggerFactory.getLogger("Mining Dimension: EX mod logger");
         LOGGER.info("Now initializing the Mining Dimension: EX mod!");
-        TASKER = new OperationsTasker();
         MINING_DIM_IDENTIFIER = ResourceLocation.tryBuild(COMPATIBILITY_NAMESPACE , "mining_dim");
         ModBlockTags.Initialize();
     }
@@ -111,19 +107,6 @@ public final class MDEXModInstance
             MANAGER.Dispose();
             MANAGER = null;
         }
-        if (TASKER != null)
-        {
-            TASKER.Dispose();
-            TASKER = null;
-        }
-    }
-
-    public static void RunTaskAsync(Runnable runnable)
-    {
-        if (TASKER == null) {
-            TASKER = new OperationsTasker();
-        }
-        TASKER.Add(runnable);
     }
 
     @Override

@@ -13,7 +13,7 @@ public final class TeleportingManagerConfiguration
     /**
      * Provides the default dimension file name that is used by the Mining Dimension: EX mod.
      */
-    public static final String DEFAULT_TELEPORTER_DATA_DIMFILE_NAME = PerDimensionWorldDataManager.EXPECTED_SAVED_DATA_PREFIX + "MDEX_TELEPORTERSPAWNDATA";
+    public static final String DEFAULT_TELEPORTER_DATA_DIMFILE_NAME = "mdcdi1315-mdex-teleporter-data-v2";
     /**
      * Provides the default resource location that is used by the Mining Dimension: EX mod.
      */

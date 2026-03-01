@@ -95,10 +95,7 @@ public class WeightedEntryList<T extends IWeightedEntry>
     @MaybeNull
     public Optional<T> GetRandom(RandomSource rs)
     {
-        if (totalweight == 0) {
-            return Optional.empty();
-        }
-        return WeightUtils.GetWeightedItem(list , rs.nextInt(totalweight));
+        return (totalweight == 0) ? Optional.empty() : WeightUtils.GetWeightedItem(list , rs.nextInt(totalweight));
     }
 
     public RandomWeightedEntriesIterable<T> GetRandomWeightedEntriesIterable(RandomSource rs, int rolls) {

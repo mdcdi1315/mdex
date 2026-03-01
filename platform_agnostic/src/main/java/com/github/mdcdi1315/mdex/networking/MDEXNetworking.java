@@ -33,8 +33,8 @@ public final class MDEXNetworking
 
     public static TeleportRequestState HandleTeleportRequest(Player p , BlockPos teleport_pos)
     {
-        if (p instanceof ServerPlayer) {
-            TeleportRequestState state = MDEXModInstance.MANAGER.Teleport(p , teleport_pos);
+        if (p instanceof ServerPlayer sp) {
+            TeleportRequestState state = MDEXModInstance.MANAGER.Teleport(sp , teleport_pos);
             if (state == TeleportRequestState.SCHEDULED) {
                 p.displayClientMessage(Component.translatable("mdex.teleportmanager.msg.teleport_scheduled") , true);
             }

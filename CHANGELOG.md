@@ -1,11 +1,14 @@
-### Version 2.2.3:
+### Version 2.2.4:
 
--> Added a new way to spawn mobs in Mining Dimension: The Aggressive Spawner. It helps to spawn mobs uncapped.
+-> Fixed various issues with the Aggressive Spawner not invoking all the possible entries.
 
--> Added a new furnace variant based on the Hardstone block
+-> Reimplemented the Teleporting Manager:
 
--> Reimplemented the Loot subsystem
+- This new system better handles edge cases, and it is much better and faster.
 
--> Stone tools can be now created by using the Hardstone block
+- The new system also removes issues with the teleporting data being corrupted. 
+Note, however that the new data logic is incompatible with the old one, so you must start from the beginning...
 
--> Minor bugfixes
+-> Updated to BML 1.0.19 and the base build logic.
+
+-> Removed the Operations Tasker thread - this should optimize the experience for most players (And the server as well).

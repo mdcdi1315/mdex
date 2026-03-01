@@ -32,12 +32,14 @@ public final class MDEXAggressiveSpawnerImpl
     private int tick_time;
     private final List<AggressiveSpawner> spawners;
     private final EnumMap<MobCategory, Integer> mob_cap_values;
+    private final Predicate<ServerPlayer> player_selector_predicate;
 
     public MDEXAggressiveSpawnerImpl(List<AggressiveSpawner> spawners)
     {
         ArgumentNullException.ThrowIfNull(spawners, "spawners");
         this.spawners = spawners;
         mob_cap_values = new EnumMap<>(MobCategory.class);
+        player_selector_predicate = BaseModsLib.IsDevelopmentEnvironment() ? new DevPredicate() : new SurvivalModePredicate();
     }
 
     @Override
@@ -50,7 +52,7 @@ public final class MDEXAggressiveSpawnerImpl
             return;
         }
 
-        if (tick_time > 0 && spawn_hostiles)
+        if (spawn_hostiles && tick_time > 0)
         {
             for (AggressivenessLevel l : AggressivenessLevel.values())
             {
@@ -76,15 +78,16 @@ public final class MDEXAggressiveSpawnerImpl
     private static Mob GetMobForSpawn(ServerLevel level, EntityType<?> entityType)
     {
         try {
-            Entity entity = entityType.create(level, EntitySpawnReason.NATURAL);
-            if (entity instanceof Mob) { return (Mob)entity; }
-
-            MDEXModInstance.LOGGER.warn("Can't spawn entity of type: {}", BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
+            if (entityType.create(level, EntitySpawnReason.NATURAL) instanceof Mob m) {
+                return m;
+            } else {
+                MDEXModInstance.LOGGER.warn("Can't spawn entity of type: {}", BuiltInRegistries.ENTITY_TYPE.getKey(entityType));
+                return null;
+            }
         } catch (Exception exception) {
             MDEXModInstance.LOGGER.warn("Failed to create mob", exception);
+            return null;
         }
-
-        return null;
     }
 
     // Spawns mobs of the specified difficulty specified in the spawner data
@@ -92,20 +95,14 @@ public final class MDEXAggressiveSpawnerImpl
     // It returns false if a mob category hit the implicit mob cap count.
     private boolean SpawnForDifficulty(ServerLevel level, AggressivenessLevel desired_aggressiveness_level)
     {
-        for (ServerPlayer p : level.getPlayers(BaseModsLib.IsDevelopmentEnvironment() ? new DevPredicate() : new SurvivalModePredicate()))
+        BlockPos p_position;
+        for (ServerPlayer p : level.getPlayers(player_selector_predicate))
         {
-            if (level.structureManager().hasAnyStructureAt(p.blockPosition())) { continue; }
+            p_position = p.blockPosition();
+            if (level.structureManager().hasAnyStructureAt(p_position)) { continue; }
             for (AggressiveSpawner g : spawners)
             {
-                boolean spawn_disallowed = true;
-                for (Holder<Biome> h : g.GetApplicableBiomes())
-                {
-                    if (h == level.getBiome(p.blockPosition())) {
-                        spawn_disallowed = false;
-                        break;
-                    }
-                }
-                if (spawn_disallowed) { break; }
+                if (IsSpawnDisallowed(g, level, p_position)) { continue; }
                 for (AggressiveSpawnerEntryList lst : g.Spawning_Entries)
                 {
                     if (lst.Difficulty == desired_aggressiveness_level)
@@ -119,36 +116,47 @@ public final class MDEXAggressiveSpawnerImpl
         return true;
     }
 
+    private static boolean IsSpawnDisallowed(AggressiveSpawner spawner, ServerLevel level, BlockPos player_pos)
+    {
+        boolean spawn_disallowed = true;
+        Holder<Biome> p_biome = level.getBiome(player_pos);
+        for (Holder<Biome> h : spawner.GetApplicableBiomes())
+        {
+            if (h.equals(p_biome)) {
+                spawn_disallowed = false;
+                break;
+            }
+        }
+        return spawn_disallowed;
+    }
+
     private int SpawnCode(ServerLevel level, ServerPlayer p, AggressiveSpawnerEntryList lst)
     {
         Optional<AggressiveSpawnerEntry> e;
         int spawned = 0;
         boolean friendly = false;
         BlockPos position;
-        int tries = Extensions.Ceiling(level.random.nextFloat() * 4.0F);
-        for (int I = 0; I < tries; I++)
+        for (AggressiveSpawnerEntry g : lst.Entries.GetRandomWeightedEntriesIterable(level.random, Extensions.Ceiling(level.random.nextFloat() * 4.0F)))
         {
-            e = lst.Entries.GetRandom(level.random);
-            if (e.isEmpty()) { continue; }
-            EntityType<?> t = e.get().Entity.Entity;
+            EntityType<?> t = g.Entity.Entity;
             if (friendly = t.getCategory().isFriendly()) {
                 MDEXModInstance.LOGGER.warn("MDEXAggressiveSpawnerImpl: Friendly mobs are not allowed to be spawned with the aggressive spawner! Entity: {}", BuiltInRegistries.ENTITY_TYPE.getKey(t));
                 continue;
             }
             position = GetRandomPositionWithin(level.random, p.blockPosition());
-            spawned += SpawnDirect(level, t, position, e.get().GetRandomNumberOfMobsToSpawn(level.random));
+            spawned += SpawnDirect(level, t, position, lst.Category, g.GetRandomNumberOfMobsToSpawn(level.random));
         }
         if (!friendly && spawned == 0) {
             e = lst.Entries.GetRandom(level.random);
             if (e.isPresent()) {
                 position = GetRandomPositionWithin(level.random, BlockPos.containing(p.pick(20f, 0f, false).getLocation()));
-                spawned += SpawnDirect(level, e.get().Entity.Entity, position, e.get().GetRandomNumberOfMobsToSpawn(level.random));
+                spawned += SpawnDirect(level, e.get().Entity.Entity, position, lst.Category, e.get().GetRandomNumberOfMobsToSpawn(level.random));
             }
         }
         return spawned;
     }
 
-    private int SpawnDirect(ServerLevel level, EntityType<?> entity_type, BlockPos position, int times_to_spawn)
+    private int SpawnDirect(ServerLevel level, EntityType<?> entity_type, BlockPos position, MobCategory category, int times_to_spawn)
     {
         SpawnGroupData sgp = null;
         int mobs_of_type_spawned = 0;

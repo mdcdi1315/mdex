@@ -20,9 +20,7 @@ import net.minecraft.commands.arguments.DimensionArgument;
 public final class TeleportUsingTeleportingManagerCommand
     extends AbstractCommand
 {
-    public TeleportUsingTeleportingManagerCommand() {
-        super("teleport");
-    }
+    public TeleportUsingTeleportingManagerCommand() { super("teleport"); }
 
     @Override
     protected LiteralArgumentBuilder<CommandSourceStack> CommandImplementation(LiteralArgumentBuilder<CommandSourceStack> builder)
@@ -91,7 +89,7 @@ public final class TeleportUsingTeleportingManagerCommand
         if (sp.level() == targetlevel) {
             return -1;
         } else {
-            return MDEXModInstance.MANAGER.TeleportTo(sp , sp.getOnPos() , targetlevel).HasFailed() ? -2 : 0;
+            return MDEXModInstance.MANAGER.Teleport(sp , sp.getOnPos() , targetlevel).HasFailed() ? -2 : 0;
         }
     }
 }

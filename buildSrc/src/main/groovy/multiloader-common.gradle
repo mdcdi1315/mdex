@@ -1,7 +1,6 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'deps_resolver'
 }
 
 base {
@@ -12,7 +11,6 @@ base {
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(java_version)
     withSourcesJar()
-    withJavadocJar()
 }
 
 repositories {
@@ -48,7 +46,7 @@ dependencies {
 
 // Declare capabilities on the outgoing configurations.
 // Read more about capabilities here: https://docs.gradle.org/current/userguide/component_capabilities.html#sec:declaring-additional-capabilities-for-a-local-component
-['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements'].each { variant ->
+['apiElements', 'runtimeElements', 'sourcesElements'].each { variant ->
     configurations."$variant".outgoing {
         capability("$group:${project.name}:$version")
         capability("$group:${base.archivesName.get()}:$version")
@@ -81,14 +79,9 @@ jar {
                 'Implementation-Version': project.jar.archiveVersion,
                 'Implementation-Vendor' : mod_author,
                 'Built-On-Minecraft'    : minecraft_version,
-                'MixinConfigs'          : "${mod_id}.mixins.json",
+                'MixinConfigs'          : "${mod_id}.mixins.json,${mod_id}.${project.name}.mixins.json",
         ])
     }
-}
-
-javadoc {
-    setFailOnError(false)
-    options {}
 }
 
 processResources {

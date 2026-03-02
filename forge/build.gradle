@@ -89,6 +89,7 @@ sourceSets.each {
     it.java.destinationDirectory = dir
 }
 
+/*
 processResources {
     doFirst {
         File refmapping_file = file("build/tmp/compileJava/${refmapfilename}");
@@ -100,7 +101,7 @@ processResources {
             sourceSets.main.resources.srcDir(work_dir);
         }
     }
-}
+}*/
 
 apply from: rootProject.file('repositories.gradle')
 apply from: 'dependencies.gradle'

@@ -63,8 +63,7 @@ public final class BaseTeleporterPlacementFeatureType
                     return false;
                 }
             } else if (!FeaturePlacementUtils.SafeSetBlock(wgl , temp , Blocks.CAVE_AIR.defaultBlockState() , replaceable)) {
-                MDEXModInstance.LOGGER.error("MDEXTELEPORTER_EVENTS: Failed to place an air block at {}." , temp);
-                return false;
+                MDEXModInstance.LOGGER.warn("MDEXTELEPORTER_EVENTS: Failed to place a cave air block at {}. This might cause the player to suffocate." , temp);
             }
         }
 

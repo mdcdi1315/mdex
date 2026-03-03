@@ -2,6 +2,7 @@ package com.github.mdcdi1315.mdex.api;
 
 import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
+import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.AllowNull;
@@ -206,22 +207,22 @@ public abstract class TeleportingManagerV2
 
     private int ManufactureTeleporter(BlockPos req_teleporter_position, ServerLevel source, ServerLevel target)
     {
+        BlockPos temp;
         boolean use_starter_chest = false;
         double coord_factor = target.dimensionType().coordinateScale() / source.dimensionType().coordinateScale();
-        BlockPos temp, teleporter_position = target.getWorldBorder().clampToBounds(req_teleporter_position.getX() * coord_factor, req_teleporter_position.getY(), req_teleporter_position.getZ() * coord_factor);
+        BlockPos.MutableBlockPos teleporter_position = target.getWorldBorder().clampToBounds(req_teleporter_position.getX() * coord_factor, req_teleporter_position.getY(), req_teleporter_position.getZ() * coord_factor).mutable();
 
-        if (teleporter_position.getY() + 20 > target.getMaxY())
-        {
-            teleporter_position = new BlockPos(
-                    teleporter_position.getX(),
-                    target.getMinY() - 20,
-                    teleporter_position.getZ()
-            );
-        }
+        if (teleporter_position.getY() + 20 > target.getMaxY()) { teleporter_position.setY(target.getMinY() - 20); }
 
         if (target == Server.overworld()) {
             // Mining Dimension -> Overworld
-            teleporter_position = target.getHeightmapPos(Heightmap.Types.OCEAN_FLOOR, teleporter_position);
+
+            int sea_level = target.getSeaLevel();
+
+            if (teleporter_position.getY() < sea_level) {
+                teleporter_position.setY(sea_level);
+                MDEXModInstance.LOGGER.warn("TeleportingManagerV2: Explicitly reassigned the Y coordinate of the teleporter position to {} because it was too low!", teleporter_position.getY());
+            }
 
             // Next step - find a suitable position to place our teleporter feature.
             temp = new ChunkAreaFinder(target.getChunkAt(teleporter_position)).FindArea(new FindTeleporterArea_OverworldImpl(), teleporter_position);
@@ -229,7 +230,7 @@ public abstract class TeleportingManagerV2
             // Any Dimension -> Mining Dimension
 
             if (config.ShouldSpawnPortalInDeep && teleporter_position.getY() > 50) {
-                teleporter_position = new BlockPos(teleporter_position.getX(), Extensions.RandomBetweenInclusiveUnsafe(target.random, 10, 50) - 40, teleporter_position.getZ());
+                teleporter_position.setY(Extensions.RandomBetweenInclusiveUnsafe(target.random, 10, 50) - 40);
             }
 
             temp = new ChunkAreaFinder(target.getChunkAt(teleporter_position)).FindArea(new FindTeleporterArea_MiningDimImpl(), teleporter_position);
@@ -237,11 +238,26 @@ public abstract class TeleportingManagerV2
             use_starter_chest = config.ShouldPlaceStarterChestAtFirstTime && data.GetPlacementInfo() == StarterChestPlacementInfo.NOT_PLACED;
         } else {
             // Mining Dimension -> Any Dimension
-            teleporter_position = target.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, teleporter_position);
-            temp = new ChunkAreaFinder(target.getChunkAt(teleporter_position)).FindArea(new FindTeleporterArea_OverworldImpl());
+            temp = new ChunkAreaFinder(
+                    target.getChunkAt(
+                            target.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, teleporter_position)
+                    )
+            ).FindArea(new FindTeleporterArea_OverworldImpl());
         }
 
-        if (temp == null) { temp = teleporter_position; }
+        if (temp == null) {
+            // Will always be non-null by definition.
+            // We won't run the position transformer since this is not a valid placement position.
+            temp = teleporter_position;
+        } else {
+            // Be noted, any call to FindArea would return the position that above it is the surface.
+            // As such, adjustments may be required.
+            temp = AdjustTeleporterPositionForFeature(temp, target);
+            if (temp == null) {
+                // We don't trust the derived class output.
+                throw new InvalidOperationException("Teleporter position transformer failed to give a result!");
+            }
+        }
 
         // Build the feature here
         genfeature.config().PlaceStarterChest = use_starter_chest;
@@ -344,6 +360,18 @@ public abstract class TeleportingManagerV2
      * @return A value whether {@code state} is the teleporter block.
      */
     protected abstract boolean TeleporterExists(@DisallowNull BlockState state);
+
+    /**
+     * Transforms the input position for adjusting the teleporter feature position as appropriate. <br />
+     * For example, the default teleporting implementation returns always one block above the input one so that the teleporter is naturally placed on the surface. <br />
+     * This is called only when a possible position for generating the teleporter feature has been found.
+     * @param position The input position to transform.
+     * @param target The target server level, if you need to read something from the level to further adjust the position.
+     * @return The transformed output position. Must be non-{@code null}. If it is {@code null}, an exception will be thrown at teleporting time.
+     * @since 2.2.5
+     */
+    @NotNull
+    protected abstract BlockPos AdjustTeleporterPositionForFeature(@DisallowNull BlockPos position, @DisallowNull ServerLevel target);
 
     @Override
     public void Dispose()

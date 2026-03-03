@@ -22,26 +22,27 @@ public final class SectionAreaEnumerator
         z = -1;
     }
 
+    public SectionAreaEnumerator(int min_y, int height, SectionPos start_pos)
+    {
+        this.width = SectionPos.SECTION_SIZE;
+        this.height = height + min_y;
+        x = start_pos.getX();
+        y = start_pos.getY();
+        if (y < min_y) { y = min_y; }
+        z = start_pos.getZ() - 1;
+    }
+
     public SectionAreaEnumerator(ChunkAccess chunk)
     {
         this.width = SectionPos.SECTION_SIZE;
         int min_height = chunk.getMinBuildHeight();
-        this.height = chunk.getMaxBuildHeight() + min_height;
+        this.height = chunk.getHeight() + min_height;
         x = 0;
         y = min_height; // May be negative, but we are not interested in that.
         z = -1; // Of our importance is the z value to be -1 so that in the first iteration becomes 0.
     }
 
-    public SectionAreaEnumerator(ChunkAccess chunk, SectionPos start_pos)
-    {
-        this.width = SectionPos.SECTION_SIZE;
-        int min_height = chunk.getMinBuildHeight();
-        this.height = chunk.getMaxBuildHeight() + min_height;
-        x = start_pos.getX();
-        y = start_pos.getY();
-        if (y < min_height) { y = min_height; }
-        z = start_pos.getZ() - 1;
-    }
+    public SectionAreaEnumerator(ChunkAccess chunk, SectionPos start_pos) { this(chunk.getMinBuildHeight(), chunk.getHeight(), start_pos); }
 
     public SectionAreaEnumerator() { this(SectionPos.SECTION_SIZE, SectionPos.SECTION_SIZE); }
 

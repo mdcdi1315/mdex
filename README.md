@@ -11,6 +11,8 @@ Technical documentation about the datapack features that it provides can be foun
 
 An overview of how creating a data pack for the mod is roughly described [here](./Docs/GeneralDevelopment/Index.md).
 
+For the currently provided commands, they are documented [here](./ModCommands/Index.md).
+
 A good and prime example is also to see the [Default MD Experience Pack](https://github.com/mdcdi1315/mdex_default_experience_pack) code as an additional learning source for how things are done.
 
 ### Mod development status

@@ -2,8 +2,8 @@ package com.github.mdcdi1315.mdex.api.teleporter;
 
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentException;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
-
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
+
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 import com.github.mdcdi1315.basemodslib.world.GlobalPosition;
 import com.github.mdcdi1315.basemodslib.utils.ElementSupplier;
@@ -80,7 +80,9 @@ public final class TeleporterManagerData
 
         private PlayerLogicalDataUpdateContext(PlayerLogicalData data) { this.data = data; }
 
-        public void EndUpdateAndStore(int teleporter_index) { data.used_teleporter_index = teleporter_index; }
+        public void StoreTargetTeleporterIndex(int teleporter_index) { data.used_teleporter_index = teleporter_index; }
+
+        public void StoreCurrentTeleporterIndex(int source_teleporter_index) { data.last_teleporter_index = source_teleporter_index; }
     }
 
     public TeleporterManagerData()

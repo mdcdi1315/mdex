@@ -1,5 +1,6 @@
-### Version 2.2.5:
+### Version 2.2.6:
 
--> Performed some last changes to the teleporting Manager to address important issues with edge cases.
+-> Fixed some bugs of the teleporting manager 
+if players are teleported without the mod's mechanisms.
 
-Additionally, the placement requirements for the Base Teleporter Placement Feature have been lessened up a bit.
+-> Updated the mod to depend on BML 1.0.24.

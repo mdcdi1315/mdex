@@ -42,9 +42,9 @@ public abstract class TeleportingManagerV2
     @MaybeNull
     private MinecraftServer Server;
     private TeleporterManagerData data;
-    private ServerLevel Mining_Dim_Level;
     private boolean executing, completing_reqs;
     private TeleportingManagerConfiguration config;
+    private ServerLevel Mining_Dim_Level, Home_Level;
     private SingleLinkedListBasedQueue<TeleportRequest> requests;
     private ConfiguredFeature<BaseTeleporterPlacementFeatureConfiguration, ? super Feature<BaseTeleporterPlacementFeatureConfiguration>> genfeature;
 
@@ -92,6 +92,11 @@ public abstract class TeleportingManagerV2
             Server = null;
             MDEXModInstance.LOGGER.warn("The mining dimension does not exist in the server. Disabling teleporter implementation for this instance.");
         }
+        Home_Level = Server.getLevel(ResourceKey.create(Registries.DIMENSION, cfg.HomeDimension));
+        if (Home_Level == null) {
+            Server = null;
+            MDEXModInstance.LOGGER.warn("The home dimension does not exist in the server. Disabling teleporter implementation for this instance.");
+        }
         data = new PerDimensionWorldDataManager(Mining_Dim_Level).ComputeIfAbsent(cfg.DimensionFileName, TeleporterManagerData::new);
         lock = new ReentrantLock();
         completing_reqs = false;
@@ -116,7 +121,7 @@ public abstract class TeleportingManagerV2
                 // We do not have a target teleporter.
                 if (source == Mining_Dim_Level) {
                     // The target dimension in this case is the home dimension.
-                    level = Server.getLevel(ResourceKey.create(Registries.DIMENSION, config.HomeDimension));
+                    level = Home_Level;
                 } else {
                     // Target is the Mining Dimension.
                     level = Mining_Dim_Level;
@@ -125,6 +130,36 @@ public abstract class TeleportingManagerV2
                 // We do have a target teleporter.
                 target_teleporter = data.GetTeleporterEntry(index);
                 level = Server.getLevel(target_teleporter.teleporter_position.level());
+            }
+
+            if (level == source) {
+                // Resolved teleporter is cycling in the same dimension.
+                // This happens if and only if the player dies in the Mining Dimension.
+                // To fix this, we will set index = -1 to get to the below if statement.
+                // NOTE: Do not reorder this to be a subcase of the below if statement, we need null detection!
+                MDEXModInstance.LOGGER.warn("TeleportingManagerV2: Detected a dimension cycle for player with UUID '{}': Dimension: '{}'", request.player.getUUID(), level.dimension().location());
+                if (level == Mining_Dim_Level) {
+                    // Cycling through Mining Dimension, use home dimension.
+                    level = Home_Level;
+                } else {
+                    // Otherwise define the Mining Dimension.
+                    level = Mining_Dim_Level;
+                }
+                index = source_data.last_teleporter_index;
+                if (index > -1)
+                {
+                    target_teleporter = data.GetTeleporterEntry(index);
+                    if (target_teleporter.teleporter_position.level().equals(level.dimension())) {
+                        MDEXModInstance.LOGGER.info("TeleportingManagerV2: Mitigated dimension cycle for player with UUID '{}' by using previous teleporter implementation.", request.player.getUUID());
+                        PatchPlayerLogicalData(source_data, request.player, target_teleporter.teleporter_position.position());
+                    } else {
+                        index = -1;
+                        target_teleporter = null;
+                    }
+                }
+                if (index == -1 || target_teleporter == null) {
+                    MDEXModInstance.LOGGER.warn("TeleportingManagerV2: Could not mitigate dimension cycle by previous teleporting data, manufacturing a new one.");
+                }
             }
 
             if (level == null) {
@@ -177,9 +212,7 @@ public abstract class TeleportingManagerV2
                     }
                 }
                 // We need to also patch the player logical data to teleport the player to the correct position - otherwise we will always teleport him to 0, 0, 0 and that's bad.
-                source_data.current_position = Vec3.upFromBottomCenterOf(target_teleporter.teleporter_position.position(), 0.6f);
-                source_data.x_rotation = request.player.getXRot();
-                source_data.y_rotation = request.player.getYRot();
+                PatchPlayerLogicalData(source_data, request.player, target_teleporter.teleporter_position.position());
             }
 
             var cxt = data.BeginUpdateLogicalData(request.player);
@@ -193,7 +226,9 @@ public abstract class TeleportingManagerV2
                     // We need to place it down.
                     level.setBlock(request.teleporter_position, ModBlocks.TELEPORTER.defaultBlockState(), 0);
                 }
-                cxt.EndUpdateAndStore(target_teleporter.target_teleporter_index = data.GetTeleporterIndex(source, request.teleporter_position));
+
+                cxt.StoreCurrentTeleporterIndex(source_data.used_teleporter_index);
+                cxt.StoreTargetTeleporterIndex(target_teleporter.target_teleporter_index = data.GetTeleporterIndex(source, request.teleporter_position));
                 MDEXModInstance.LOGGER.info("TeleportingManagerV2: Successfully teleported player with UUID '{}' from dimension '{}' to dimension '{}'.", request.player.getUUID(), source.dimension().location(), level.dimension().location());
             }
 
@@ -214,8 +249,14 @@ public abstract class TeleportingManagerV2
 
         if (teleporter_position.getY() + 20 > target.getMaxY()) { teleporter_position.setY(target.getMinY() - 20); }
 
-        if (target == Server.overworld()) {
-            // Mining Dimension -> Overworld
+        if (target == Home_Level) {
+            // Mining Dimension -> Home dimension (Typically the Overworld)
+            // The home level is typically an overworld-like dimension that has
+            // the property of sea biomes, as such we want the player to spawn above
+            // the surface because spawning in a cave is not a solution.
+            // So, that's why this is overridden here with this code.
+            // The heightmap does not that, btw.
+            // TODO: check spawn biome and make sure to exclude the mountainous ones.
 
             int sea_level = target.getSeaLevel();
 
@@ -265,6 +306,13 @@ public abstract class TeleportingManagerV2
         data.SetChestPlacementAsPlaced();
         genfeature.config().PlaceStarterChest = false;
         return p ? data.GetTeleporterIndex(target, temp) : -1;
+    }
+
+    private static void PatchPlayerLogicalData(PlayerLogicalData data, ServerPlayer player, BlockPos teleporter_position)
+    {
+        data.current_position = Vec3.upFromBottomCenterOf(teleporter_position, 0.6f);
+        data.x_rotation = player.getXRot();
+        data.y_rotation = player.getYRot();
     }
 
     private void CompleteOtherRequests()

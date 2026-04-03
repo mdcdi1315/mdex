@@ -37,6 +37,9 @@ repositories {
                 url = 'https://libraries.minecraft.net/'
             }
         }
-        filter { includeGroupAndSubgroups("com.mojang") }
+        filter {
+            includeGroupAndSubgroups("com.mojang")
+            includeGroupAndSubgroups("org.lwjgl") // Fixes resolution issue on MacOSX with lwjgl-freetype-3.3.3-patch.
+        }
     }
 }

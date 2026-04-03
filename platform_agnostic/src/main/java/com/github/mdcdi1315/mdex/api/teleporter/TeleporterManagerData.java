@@ -80,7 +80,9 @@ public final class TeleporterManagerData
 
         private PlayerLogicalDataUpdateContext(PlayerLogicalData data) { this.data = data; }
 
-        public void EndUpdateAndStore(int teleporter_index) { data.used_teleporter_index = teleporter_index; }
+        public void StoreTargetTeleporterIndex(int teleporter_index) { data.used_teleporter_index = teleporter_index; }
+
+        public void StoreCurrentTeleporterIndex(int source_teleporter_index) { data.last_teleporter_index = source_teleporter_index; }
     }
 
     public TeleporterManagerData()

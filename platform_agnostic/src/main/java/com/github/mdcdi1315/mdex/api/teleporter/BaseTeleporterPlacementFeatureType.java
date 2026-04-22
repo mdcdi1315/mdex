@@ -73,7 +73,7 @@ public final class BaseTeleporterPlacementFeatureType
             return false;
         }
 
-        if (wgl.getMaxLocalRawBrightness(pos) < 4)
+        if (wgl.getMaxLocalRawBrightness(pos) < 6)
         {
             var lightblockprovider = fpc.config().Light_Block_Provider;
             for (BlockPos temp : new BlockPos[] {

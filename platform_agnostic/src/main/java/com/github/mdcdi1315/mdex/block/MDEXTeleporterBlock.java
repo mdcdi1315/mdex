@@ -58,11 +58,7 @@ public class MDEXTeleporterBlock
         if (player.getUsedItemHand() == InteractionHand.MAIN_HAND)
         {
             if (player.getVehicle() != null || player.isVehicle()) { return InteractionResult.FAIL; }
-            if (MDEXNetworking.HandleTeleportRequest(player, pos).HasFailed()) {
-                return InteractionResult.FAIL;
-            } else {
-                return InteractionResult.SUCCESS;
-            }
+            MDEXNetworking.HandleTeleportRequest(player, pos);
         }
         return InteractionResult.SUCCESS;
     }

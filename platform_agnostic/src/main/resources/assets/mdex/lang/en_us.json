@@ -1,5 +1,7 @@
 {
 	"mdex.errormsg.wrong_travelling_dimension": "You cannot go to the Mining Dimension from this dimension.\nGo back to your home dimension and try accessing it from there.",
+	"mdex.teleportmanager.msg.teleport_succeeded": "You have been teleported to the Mining Dimension!",
+	"mdex.teleportmanager.msg.teleport_failed": "Your teleportation request has been failed. Please retry.\nIf this message continues to pop up after a couple of times, report it as issue to mdcdi1315.",
 	"mdex.teleportmanager.msg.teleport_scheduled": "Your teleportation request has been submitted. You can do other stuff until you will be actually teleported.",
 	"mdex.teleportmanager.msg.teleporting_to_specified_dim_is_disabled": "Access to the target dimension is disabled because the DisableTeleportations configuration option is active.\nIf you are in an external server, request from the server administrators to re-enable teleportation.",
 	"mdex.commands.errormsg.player_no_data": "Player '%s' does not have any teleporting logical data.",

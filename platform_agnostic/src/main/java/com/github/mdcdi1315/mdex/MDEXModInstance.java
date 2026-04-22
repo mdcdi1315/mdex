@@ -16,6 +16,7 @@ import com.github.mdcdi1315.basemodslib.eventapi.server.ServerStoppingEvent;
 import com.github.mdcdi1315.basemodslib.eventapi.mods.registries.BlockEntityTypeRegistryFinalizedEvent;
 
 // Mod interfaces
+import com.github.mdcdi1315.mdex.api.TeleportResultReceivedEvent;
 import com.github.mdcdi1315.mdex.item.ModItems;
 import com.github.mdcdi1315.mdex.block.ModBlocks;
 import com.github.mdcdi1315.mdex.tag.ModItemTags;
@@ -85,10 +86,13 @@ public final class MDEXModInstance
     }
 
     @Override
-    public void RegisterEvents(EventManager manager) {
+    public void RegisterEvents(EventManager manager)
+    {
+        manager.AddEvent(TeleportResultReceivedEvent.class);
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::OnServerStarted);
         manager.AddEventListener(ServerStoppingEvent.class, MDEXModInstance::OnServerStopping);
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::TeleporterImplementation);
+        manager.AddEventListener(TeleportResultReceivedEvent.class, TeleportResultReceivedEvent::MDEXDefaultHandler);
         manager.AddEventListener(BlockEntityTypeRegistryFinalizedEvent.class, ModBlocks::InitializeBlockEntityTypes);
     }
 

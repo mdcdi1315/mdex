@@ -31,25 +31,12 @@ public final class MDEXNetworking
         ));
     }
 
-    public static TeleportRequestState HandleTeleportRequest(Player p , BlockPos teleport_pos)
+    public static void HandleTeleportRequest(Player p , BlockPos teleport_pos)
     {
-        if (p instanceof ServerPlayer sp) {
-            TeleportRequestState state = MDEXModInstance.MANAGER.Teleport(sp , teleport_pos);
-            if (state == TeleportRequestState.SCHEDULED) {
-                p.displayClientMessage(Component.translatable("mdex.teleportmanager.msg.teleport_scheduled") , true);
-            }
-            return state;
-        } else {
+        if (!(p instanceof ServerPlayer)) {
             NETWORKING.SendToServer(new TeleportingRequestPacket(teleport_pos));
-            return TeleportRequestState.COMPLETED;
         }
     }
 
-    private static void OnTeleportingPacketDispatched(ServerPlayer player, TeleportingRequestPacket packet)
-    {
-        TeleportRequestState state = MDEXModInstance.MANAGER.Teleport(player , packet.GetTeleporterPosition());
-        if (state == TeleportRequestState.SCHEDULED) {
-            player.displayClientMessage(Component.translatable("mdex.teleportmanager.msg.teleport_scheduled") , true);
-        }
-    }
+    private static void OnTeleportingPacketDispatched(ServerPlayer player, TeleportingRequestPacket packet) { MDEXModInstance.MANAGER.Teleport(player , packet.GetTeleporterPosition()); }
 }

@@ -22,6 +22,7 @@ import com.github.mdcdi1315.mdex.tag.ModBlockTags;
 import com.github.mdcdi1315.mdex.api.TeleportingManagerV2;
 import com.github.mdcdi1315.mdex.commands.MDEXBaseCommand;
 import com.github.mdcdi1315.mdex.networking.MDEXNetworking;
+import com.github.mdcdi1315.mdex.api.TeleportResultReceivedEvent;
 import com.github.mdcdi1315.mdex.api.MDEXDefaultTeleportingManager;
 
 // Registry subsystems
@@ -83,10 +84,13 @@ public final class MDEXModInstance
     }
 
     @Override
-    public void RegisterEvents(EventManager manager) {
+    public void RegisterEvents(EventManager manager)
+    {
+        manager.AddEvent(TeleportResultReceivedEvent.class);
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::OnServerStarted);
         manager.AddEventListener(ServerStoppingEvent.class, MDEXModInstance::OnServerStopping);
         manager.AddEventListener(ServerStartedEvent.class , MDEXModInstance::TeleporterImplementation);
+        manager.AddEventListener(TeleportResultReceivedEvent.class, TeleportResultReceivedEvent::MDEXDefaultHandler);
         manager.AddEventListener(BlockEntityTypeRegistryFinalizedEvent.class, ModBlocks::InitializeBlockEntityTypes);
     }
 

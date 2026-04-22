@@ -1,6 +1,3 @@
-### Version 2.2.6:
+### Version 2.2.7:
 
--> Fixed some bugs of the teleporting manager 
-if players are teleported without the mod's mechanisms.
-
--> Updated the mod to depend on BML 1.0.24.
+-> Fix double teleportation issue in single-player worlds.

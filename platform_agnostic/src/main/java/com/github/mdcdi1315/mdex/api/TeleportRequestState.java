@@ -20,6 +20,7 @@ public enum TeleportRequestState
     /**
      * The teleporting request was to be scheduled, but that is not possible.
      */
+    @Deprecated(forRemoval = true)
     SCHEDULING_FAILED(-2),
     /**
      * The teleporting request could not be completed because a client player instance was passed as the argument to the teleport method.

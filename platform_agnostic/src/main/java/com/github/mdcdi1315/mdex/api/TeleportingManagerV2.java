@@ -2,12 +2,13 @@ package com.github.mdcdi1315.mdex.api;
 
 import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
 import com.github.mdcdi1315.DotNetLayer.System.ArgumentNullException;
+import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.AllowNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
 
-import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
+import com.github.mdcdi1315.basemodslib.BaseModsLib;
 import com.github.mdcdi1315.basemodslib.utils.Extensions;
 import com.github.mdcdi1315.basemodslib.utils.ISynchronized;
 import com.github.mdcdi1315.basemodslib.utils.collections.SingleLinkedListBasedQueue;
@@ -42,7 +43,7 @@ public abstract class TeleportingManagerV2
     @MaybeNull
     private MinecraftServer Server;
     private TeleporterManagerData data;
-    private boolean executing, completing_reqs;
+    private volatile boolean executing;
     private TeleportingManagerConfiguration config;
     private ServerLevel Mining_Dim_Level, Home_Level;
     private SingleLinkedListBasedQueue<TeleportRequest> requests;
@@ -89,145 +90,136 @@ public abstract class TeleportingManagerV2
         }
         data = new PerDimensionWorldDataManager(Mining_Dim_Level).ComputeIfAbsent(cfg.DimensionFileName, TeleporterManagerData::new);
         lock = new ReentrantLock();
-        completing_reqs = false;
+        executing = false;
         requests = new SingleLinkedListBasedQueue<>();
     }
 
     private TeleportRequestState TeleportImpl(TeleportRequest request)
     {
-        try {
-            executing = true;
-            ServerLevel source = request.player.serverLevel();
-            PlayerLogicalData source_data = data.GetPlayerLogicalData(request.player);
+        ServerLevel source = request.player.serverLevel();
+        PlayerLogicalData source_data = data.GetPlayerLogicalData(request.player);
 
-            ServerLevel level;
-            TeleporterLogicalEntry target_teleporter = null;
-            int index = source_data.used_teleporter_index;
-            if (request.target != null) {
-                // Use the target level specified in the request.
-                index = -1;
-                level = request.target;
-            } else if (index == -1) {
-                // We do not have a target teleporter.
-                if (source == Mining_Dim_Level) {
-                    // The target dimension in this case is the home dimension.
-                    level = Home_Level;
-                } else {
-                    // Target is the Mining Dimension.
-                    level = Mining_Dim_Level;
-                }
+        ServerLevel level;
+        TeleporterLogicalEntry target_teleporter = null;
+        int index = source_data.used_teleporter_index;
+        if (request.target != null) {
+            // Use the target level specified in the request.
+            index = -1;
+            level = request.target;
+        } else if (index == -1) {
+            // We do not have a target teleporter.
+            if (source == Mining_Dim_Level) {
+                // The target dimension in this case is the home dimension.
+                level = Home_Level;
             } else {
-                // We do have a target teleporter.
-                target_teleporter = data.GetTeleporterEntry(index);
-                level = Server.getLevel(target_teleporter.teleporter_position.level());
+                // Target is the Mining Dimension.
+                level = Mining_Dim_Level;
             }
+        } else {
+            // We do have a target teleporter.
+            target_teleporter = data.GetTeleporterEntry(index);
+            level = Server.getLevel(target_teleporter.teleporter_position.level());
+        }
 
-            if (level == source) {
-                // Resolved teleporter is cycling in the same dimension.
-                // This happens if and only if the player dies in the Mining Dimension.
-                // To fix this, we will set index = -1 to get to the below if statement.
-                // NOTE: Do not reorder this to be a subcase of the below if statement, we need null detection!
-                MDEXModInstance.LOGGER.warn("TeleportingManagerV2: Detected a dimension cycle for player with UUID '{}': Dimension: '{}'", request.player.getUUID(), level.dimension().location());
-                if (level == Mining_Dim_Level) {
-                    // Cycling through Mining Dimension, use home dimension.
-                    level = Home_Level;
-                } else {
-                    // Otherwise define the Mining Dimension.
-                    level = Mining_Dim_Level;
-                }
-                index = source_data.last_teleporter_index;
-                if (index > -1)
-                {
-                    target_teleporter = data.GetTeleporterEntry(index);
-                    if (target_teleporter.teleporter_position.level().equals(level.dimension())) {
-                        MDEXModInstance.LOGGER.info("TeleportingManagerV2: Mitigated dimension cycle for player with UUID '{}' by using previous teleporter implementation.", request.player.getUUID());
-                        PatchPlayerLogicalData(source_data, request.player, target_teleporter.teleporter_position.position());
-                    } else {
-                        index = -1;
-                        target_teleporter = null;
-                    }
-                }
-                if (index == -1 || target_teleporter == null) {
-                    MDEXModInstance.LOGGER.warn("TeleportingManagerV2: Could not mitigate dimension cycle by previous teleporting data, manufacturing a new one.");
-                }
+        if (level == source) {
+            // Resolved teleporter is cycling in the same dimension.
+            // This happens if and only if the player dies in the Mining Dimension.
+            // To fix this, we will set index = -1 to get to the below if statement.
+            // NOTE: Do not reorder this to be a subcase of the below if statement, we need null detection!
+            MDEXModInstance.LOGGER.warn("TeleportingManagerV2: Detected a dimension cycle for player with UUID '{}': Dimension: '{}'", request.player.getUUID(), level.dimension().location());
+            if (level == Mining_Dim_Level) {
+                // Cycling through Mining Dimension, use home dimension.
+                level = Home_Level;
+            } else {
+                // Otherwise define the Mining Dimension.
+                level = Mining_Dim_Level;
             }
-
-            if (level == null) {
-                MDEXModInstance.LOGGER.info("TeleportingManagerV2: Cannot teleport player with UUID '{}' because a target dimension could not be computed.", request.player.getUUID());
-                request.player.displayClientMessage(Component.literal("Cannot teleport. This is an implementation bug. Please report to mdcdi1315.") , true);
-                CompleteOtherRequests();
-                return TeleportRequestState.FAILED;
-            } else if (config.DisableTeleportations && level == Mining_Dim_Level) {
-                request.player.sendSystemMessage(
-                        Component.translatable("mdex.teleportmanager.msg.teleporting_to_specified_dim_is_disabled"),
-                        true
-                );
-                return TeleportRequestState.FAILED;
-            }
-
-            if (index == -1)
+            index = source_data.last_teleporter_index;
+            if (index > -1)
             {
-                // Maybe we can resolve the teleporter to use if we perform a lookup on the teleporters...
-                TeleporterLogicalEntry e;
-                int n_teleporters = data.GetTeleporters();
-                for (int I = 0; I < n_teleporters && target_teleporter == null; I++)
+                target_teleporter = data.GetTeleporterEntry(index);
+                if (target_teleporter.teleporter_position.level().equals(level.dimension())) {
+                    MDEXModInstance.LOGGER.info("TeleportingManagerV2: Mitigated dimension cycle for player with UUID '{}' by using previous teleporter implementation.", request.player.getUUID());
+                    PatchPlayerLogicalData(source_data, request.player, target_teleporter.teleporter_position.position());
+                } else {
+                    index = -1;
+                    target_teleporter = null;
+                }
+            }
+            if (index == -1 || target_teleporter == null) {
+                MDEXModInstance.LOGGER.warn("TeleportingManagerV2: Could not mitigate dimension cycle by previous teleporting data, manufacturing a new one.");
+            }
+        }
+
+        if (level == null) {
+            MDEXModInstance.LOGGER.info("TeleportingManagerV2: Cannot teleport player with UUID '{}' because a target dimension could not be computed.", request.player.getUUID());
+            request.player.displayClientMessage(Component.literal("Cannot teleport. This is an implementation bug. Please report to mdcdi1315.") , true);
+            return TeleportRequestState.FAILED;
+        } else if (config.DisableTeleportations && level == Mining_Dim_Level) {
+            request.player.sendSystemMessage(
+                    Component.translatable("mdex.teleportmanager.msg.teleporting_to_specified_dim_is_disabled"),
+                    true
+            );
+            return TeleportRequestState.FAILED;
+        }
+
+        if (index == -1)
+        {
+            // Maybe we can resolve the teleporter to use if we perform a lookup on the teleporters...
+            TeleporterLogicalEntry e;
+            int n_teleporters = data.GetTeleporters();
+            for (int I = 0; I < n_teleporters && target_teleporter == null; I++)
+            {
+                e = data.GetTeleporterEntry(I);
+                if (Server.getLevel(e.teleporter_position.level()) == level)
                 {
-                    e = data.GetTeleporterEntry(I);
-                    if (Server.getLevel(e.teleporter_position.level()) == level)
+                    int U = e.target_teleporter_index;
+                    // To spice up a bit, accept only if the random source has green light.
+                    if (U > -1 && level.random.nextBoolean())
                     {
-                        int U = e.target_teleporter_index;
-                        // To spice up a bit, accept only if the random source has green light.
-                        if (U > -1 && level.random.nextBoolean())
+                        var g = data.GetTeleporterEntry(U);
+                        if (Server.getLevel(g.teleporter_position.level()) == source)
                         {
-                            var g = data.GetTeleporterEntry(U);
-                            if (Server.getLevel(g.teleporter_position.level()) == source)
-                            {
-                                // OK, we can use this, so, we do not need to manufacture a teleporter.
-                                target_teleporter = e;
-                                MDEXModInstance.LOGGER.info("TeleportingManagerV2: Found a compatible teleporter to teleport the player of UUID '{}'. Target dimension: {}, Position: {}", request.player.getUUID(), e.teleporter_position.level(), e.teleporter_position.position());
-                            }
+                            // OK, we can use this, so, we do not need to manufacture a teleporter.
+                            target_teleporter = e;
+                            MDEXModInstance.LOGGER.info("TeleportingManagerV2: Found a compatible teleporter to teleport the player of UUID '{}'. Target dimension: {}, Position: {}", request.player.getUUID(), e.teleporter_position.level(), e.teleporter_position.position());
                         }
                     }
                 }
-                if (target_teleporter == null)
-                {
-                    int target_index = ManufactureTeleporter(request.teleporter_position, source, level);
-                    if (target_index == -1) {
-                        MDEXModInstance.LOGGER.info("TeleportingManagerV2: Cannot teleport player with UUID '{}' because a teleporter could not be manufactured.", request.player.getUUID());
-                        CompleteOtherRequests();
-                        request.player.displayClientMessage(Component.literal("Cannot teleport. This is an implementation bug. Please report to mdcdi1315.") , true);
-                        return TeleportRequestState.FAILED;
-                    } else {
-                        target_teleporter = data.GetTeleporterEntry(target_index);
-                    }
-                }
-                // We need to also patch the player logical data to teleport the player to the correct position - otherwise we will always teleport him to 0, 0, 0 and that's bad.
-                PatchPlayerLogicalData(source_data, request.player, target_teleporter.teleporter_position.position());
             }
-
-            var cxt = data.BeginUpdateLogicalData(request.player);
-            boolean success = TeleportImpl(request.player, level, source_data, source != level);
-            if (success)
+            if (target_teleporter == null)
             {
-                // Verify that we have a teleporter on the source dimension. Things can go very wrong sometimes so
-                // at least we want to ensure that the player can teleport back.
-                // Only the block of interest will be changed, if needed; the entire feature won't be placed.
-                if (!TeleporterExists(source.getBlockState(request.teleporter_position))) {
-                    // We need to place it down.
-                    level.setBlock(request.teleporter_position, ModBlocks.TELEPORTER.defaultBlockState(), 0);
+                int target_index = ManufactureTeleporter(request.teleporter_position, source, level);
+                if (target_index == -1) {
+                    MDEXModInstance.LOGGER.info("TeleportingManagerV2: Cannot teleport player with UUID '{}' because a teleporter could not be manufactured.", request.player.getUUID());
+                    request.player.displayClientMessage(Component.literal("Cannot teleport. This is an implementation bug. Please report to mdcdi1315.") , true);
+                    return TeleportRequestState.FAILED;
+                } else {
+                    target_teleporter = data.GetTeleporterEntry(target_index);
                 }
+            }
+            // We need to also patch the player logical data to teleport the player to the correct position - otherwise we will always teleport him to 0, 0, 0 and that's bad.
+            PatchPlayerLogicalData(source_data, request.player, target_teleporter.teleporter_position.position());
+        }
 
-                cxt.StoreCurrentTeleporterIndex(source_data.used_teleporter_index);
-                cxt.StoreTargetTeleporterIndex(target_teleporter.target_teleporter_index = data.GetTeleporterIndex(source, request.teleporter_position));
-                MDEXModInstance.LOGGER.info("TeleportingManagerV2: Successfully teleported player with UUID '{}' from dimension '{}' to dimension '{}'.", request.player.getUUID(), source.dimension().location(), level.dimension().location());
+        var cxt = data.BeginUpdateLogicalData(request.player);
+        boolean success = TeleportImpl(request.player, level, source_data, source != level);
+        if (success)
+        {
+            // Verify that we have a teleporter on the source dimension. Things can go very wrong sometimes so
+            // at least we want to ensure that the player can teleport back.
+            // Only the block of interest will be changed, if needed; the entire feature won't be placed.
+            if (!TeleporterExists(source.getBlockState(request.teleporter_position))) {
+                // We need to place it down.
+                level.setBlock(request.teleporter_position, ModBlocks.TELEPORTER.defaultBlockState(), 0);
             }
 
-            CompleteOtherRequests();
-
-            return success ? TeleportRequestState.COMPLETED : TeleportRequestState.FAILED;
-        } finally {
-            if (!completing_reqs) { executing = false; }
+            cxt.StoreCurrentTeleporterIndex(source_data.used_teleporter_index);
+            cxt.StoreTargetTeleporterIndex(target_teleporter.target_teleporter_index = data.GetTeleporterIndex(source, request.teleporter_position));
+            MDEXModInstance.LOGGER.info("TeleportingManagerV2: Successfully teleported player with UUID '{}' from dimension '{}' to dimension '{}'.", request.player.getUUID(), source.dimension().location(), level.dimension().location());
         }
+
+        return success ? TeleportRequestState.COMPLETED : TeleportRequestState.FAILED;
     }
 
     private int ManufactureTeleporter(BlockPos req_teleporter_position, ServerLevel source, ServerLevel target)
@@ -305,17 +297,20 @@ public abstract class TeleportingManagerV2
         data.y_rotation = player.getYRot();
     }
 
-    private void CompleteOtherRequests()
+    private void RunRequests()
     {
-        TeleportRequest req;
-        if (completing_reqs) { return; }
         try {
-            completing_reqs = true;
-            while ((req = GetRequestSafe()) != null) {
-                TeleportImpl(req);
+            if (executing) { return; }
+            executing = true;
+            TeleportRequest req;
+            TeleportRequestState state;
+            while ((req = GetRequestSafe()) != null)
+            {
+                state = TeleportImpl(req);
+                BaseModsLib.GetEventsManager().FireEvent(new TeleportResultReceivedEvent(state, req.player));
             }
         } finally {
-            completing_reqs = false;
+            executing = false;
         }
     }
 
@@ -339,18 +334,21 @@ public abstract class TeleportingManagerV2
     @NotNull
     public TeleportRequestState Teleport(ServerPlayer player, BlockPos teleporter_position, @AllowNull ServerLevel target)
     {
-        if (Server == null) { return TeleportRequestState.FAILED; }
-        TeleportRequest req = new TeleportRequest(player, teleporter_position, target);
-        lock.lock();
-        try {
-            if (executing) {
-                requests.Enqueue(req);
-                return TeleportRequestState.SCHEDULED;
-            } else {
-                return TeleportImpl(req);
+        if (Server == null) {
+            return TeleportRequestState.FAILED;
+        } else {
+            lock.lock();
+            try {
+                requests.Enqueue(new TeleportRequest(player, teleporter_position, target));
+                Server.execute(this::RunRequests);
+                TeleportRequestState state = requests.GetCount() > 1 ? TeleportRequestState.SCHEDULED : TeleportRequestState.COMPLETED;
+                if (state == TeleportRequestState.SCHEDULED) {
+                    BaseModsLib.GetEventsManager().FireEvent(new TeleportResultReceivedEvent(state, player));
+                }
+                return state;
+            } finally {
+                lock.unlock();
             }
-        } finally {
-            lock.unlock();
         }
     }
 
@@ -376,6 +374,13 @@ public abstract class TeleportingManagerV2
      */
     @NotNull
     public ServerLevel GetMiningDimensionLevel() { return Mining_Dim_Level; }
+
+    /**
+     * Returns the {@link ServerLevel} object associated with the home dimension.
+     * @return The {@link ServerLevel} associated with the home dimension.
+     */
+    @NotNull
+    public ServerLevel GetHomeDimensionLevel() { return Home_Level; }
 
     /**
      * Defines the actual teleporting implementation. This implementation may vary by mod loader and Minecraft version.
@@ -414,13 +419,14 @@ public abstract class TeleportingManagerV2
     @Override
     public void Dispose()
     {
-        completing_reqs = true; // Trash requests, do not process them
+        executing = true; // Trash requests, do not process them
         data = null;
         lock = null;
         Server = null;
         config = null;
         requests = null;
         genfeature = null;
+        Home_Level = null;
         Mining_Dim_Level = null;
     }
 }

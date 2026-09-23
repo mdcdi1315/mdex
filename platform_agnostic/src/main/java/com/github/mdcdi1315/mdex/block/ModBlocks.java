@@ -38,6 +38,8 @@ public final class ModBlocks
 
     public static void Initialize(IBlockRegistrar blocks)
     {
+        CreativeModeTab natural_blocks = BlockUtils.GetMinecraftCreativeModeTab("natural_blocks");
+        CreativeModeTab building_blocks = BlockUtils.GetMinecraftCreativeModeTab("building_blocks");
         CreativeModeTab functional_blocks_tab = BlockUtils.GetMinecraftCreativeModeTab("functional_blocks");
 
         blocks.Register("teleporter", new BlockRegistrationInformation(
@@ -65,15 +67,12 @@ public final class ModBlocks
                 functional_blocks_tab
         ));
 
-        InitializeHardstoneBlockFamily(blocks);
-        InitializeDeepGraniteBlockFamily(blocks);
+        InitializeHardstoneBlockFamily(blocks, natural_blocks, building_blocks);
+        InitializeDeepGraniteBlockFamily(blocks, natural_blocks, building_blocks);
     }
 
-    private static void InitializeHardstoneBlockFamily(IBlockRegistrar blocks)
+    private static void InitializeHardstoneBlockFamily(IBlockRegistrar blocks, CreativeModeTab natural_blocks, CreativeModeTab building_blocks)
     {
-        CreativeModeTab natural_blocks = BlockUtils.GetMinecraftCreativeModeTab("natural_blocks");
-        CreativeModeTab building_blocks = BlockUtils.GetMinecraftCreativeModeTab("building_blocks");
-
         blocks.Register("hardstone", new BlockRegistrationInformation(
                         (ResourceLocation identifier) -> new MDEXBaseBlock(
                                 BlockBehaviour.Properties.of()
@@ -135,7 +134,7 @@ public final class ModBlocks
         InitializeHardstoneOres(blocks, natural_blocks);
     }
 
-    private static void InitializeDeepGraniteBlockFamily(IBlockRegistrar blocks)
+    private static void InitializeDeepGraniteBlockFamily(IBlockRegistrar blocks, CreativeModeTab natural_blocks, CreativeModeTab building_blocks)
     {
         blocks.Register("granite", new BlockRegistrationInformation(
                     (ResourceLocation identifier) -> new MDEXBaseBlock(
@@ -145,7 +144,8 @@ public final class ModBlocks
                                     .requiresCorrectToolForDrops()
                                     .mapColor(MapColor.STONE)
                     ),
-                    ModBlocks::GetBlockItem
+                    ModBlocks::GetBlockItem,
+                    natural_blocks
                 )
         );
 
@@ -157,7 +157,8 @@ public final class ModBlocks
                                         .requiresCorrectToolForDrops()
                                         .mapColor(MapColor.STONE)
                         ),
-                        ModBlocks::GetBlockItem
+                        ModBlocks::GetBlockItem,
+                        building_blocks
                 )
         );
 
@@ -170,7 +171,8 @@ public final class ModBlocks
                                     .requiresCorrectToolForDrops()
                                     .mapColor(MapColor.STONE)
                     ),
-                    ModBlocks::GetBlockItem
+                    ModBlocks::GetBlockItem,
+                    building_blocks
                 )
         );
 
@@ -182,7 +184,8 @@ public final class ModBlocks
                                     .requiresCorrectToolForDrops()
                                     .mapColor(MapColor.STONE)
                     ),
-                    ModBlocks::GetBlockItem
+                    ModBlocks::GetBlockItem,
+                    building_blocks
                 )
         );
     }

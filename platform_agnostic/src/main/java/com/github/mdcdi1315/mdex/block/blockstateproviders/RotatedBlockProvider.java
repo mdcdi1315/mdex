@@ -1,5 +1,6 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
+import com.github.mdcdi1315.basemodslib.utils.random.EnumRandomLookup;
 import com.github.mdcdi1315.mdex.block.BlockUtils;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 import com.github.mdcdi1315.mdex.util.BlockNotFoundException;
@@ -18,9 +19,10 @@ public final class RotatedBlockProvider
     }
 
     @Override
-    public BlockState GetBlockState(BlockStateProviderContext context) {
+    public BlockState GetBlockState(BlockStateProviderContext context)
+    {
         // Use the desired block state that the user wants to, but set the axis property right after all the properties are defined in the provider itself
-        return Block.BlockState.setValue(RotatedPillarBlock.AXIS, Direction.Axis.getRandom(context.source()));
+        return Block.BlockState.setValue(RotatedPillarBlock.AXIS, new EnumRandomLookup<>(context.source(), Direction.Axis.class).GetRandomElement().orElseThrow());
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import com.github.mdcdi1315.mdex.dco_logic.DCOUtils;
 import com.github.mdcdi1315.basemodslib.utils.Extensions;
+import com.github.mdcdi1315.mdex.util.WrappedRandomSource;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
 import net.minecraft.core.BlockPos;
@@ -22,7 +23,7 @@ public class NoiseStateProvider
 
     @Override
     public BlockState GetBlockState(BlockStateProviderContext context) {
-        return this.GetRandomState(context.source(), States, context.position(), this.Data.scale());
+        return this.GetRandomState(((WrappedRandomSource)context.source()).GetOriginal(), States, context.position(), this.Data.scale());
     }
 
     protected BlockState GetRandomState_2(RandomSource rs, List<BlockState> possibleStates, BlockPos pos, double delta) {
@@ -42,9 +43,7 @@ public class NoiseStateProvider
     }
 
     @Override
-    public AbstractBlockStateProviderType<?> GetType() {
-        return NoiseStateProviderType.INSTANCE;
-    }
+    public AbstractBlockStateProviderType<?> GetType() { return NoiseStateProviderType.INSTANCE; }
 
     @Override
     protected boolean CompileImplementation() {

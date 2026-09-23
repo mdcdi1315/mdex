@@ -67,14 +67,14 @@ public final class CustomizableMonsterRoomFeature
     {
         if (FeaturePlacementUtils.SafeSetBlock(wgl, blockpos, details.SpawnerBlock, predicate))
         {
-            FeaturePlacementUtils.MakeTriggeredSpawns(wgl, blockpos , rs , details.AdditionalEntities , 12);
+            FeaturePlacementUtils.MakeTriggeredSpawns(wgl, blockpos, details.GetAdditionalEntitiesLookup(rs), 12);
 
             BlockEntity blockentity = wgl.getBlockEntity(blockpos);
 
             if (blockentity instanceof SpawnerBlockEntity sbe) {
-                var entry = FeaturePlacementUtils.SampleWeightedFromRandomSource(details.SpawnerEntityCandidates , rs);
-                if (entry != null) {
-                    sbe.setEntityId(entry.Entity , rs);
+                var entry = details.GetSpawnerLookup(rs).GetRandomElement();
+                if (entry.isPresent()) {
+                    sbe.setEntityId(entry.get().Entity , rs);
                 } else {
                     MDEXModInstance.LOGGER.warn("WARN: Cannot set the entity for the mob spawner entity at ({}, {}, {}) because the list lookup returned an empty entry. Setting the spawner to have the 'zombie' mob.", blockpos.getX(), blockpos.getY(), blockpos.getZ());
                     sbe.setEntityId(EntityType.ZOMBIE , rs);

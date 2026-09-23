@@ -60,7 +60,7 @@ public final class LayerPattern
                 layers = null;
                 break;
             }
-            computedweight += l.weight.getValue();
+            computedweight += l.weight;
         }
     }
 
@@ -79,10 +79,9 @@ public final class LayerPattern
         int rolled = random.nextInt(computedweight);
 
         // Find the random entry. If we have such an entry, return it.
-        for (var l : layers) {
-            if ((rolled -= l.weight.getValue()) < 0) {
-                return l;
-            }
+        for (var l : layers)
+        {
+            if ((rolled -= l.weight) < 0) { return l; }
         }
 
         // Give up if we could not find such a layer.
@@ -104,11 +103,11 @@ public final class LayerPattern
         // Finally, when weight determination is happening, the previous layer
         // is removed since it could cause unwanted inclusion problems.
 
-        int rolled = random.nextInt(computedweight - previous.weight.getValue());
+        int rolled = random.nextInt(computedweight - previous.weight);
 
         for (var l : layers) {
             // Means 'exclude the previous layer'.
-            if (previous != l && (rolled -= l.weight.getValue()) < 0) {
+            if (previous != l && (rolled -= l.weight) < 0) {
                 return l;
             }
         }

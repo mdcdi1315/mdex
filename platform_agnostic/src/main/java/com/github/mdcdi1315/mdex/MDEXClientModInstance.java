@@ -11,17 +11,14 @@ public final class MDEXClientModInstance
     implements IClientModInstance
 {
     @Override
-    public ConfigurationScreenFactory<Screen> RegisterConfigurationScreenFactory() {
-        return new DefaultConfigurationScreenFactory<>(MDEXModInstance.CONFIG, MDEXModInstance.MOD_ID);
+    public ConfigurationScreenFactory<Screen> RegisterConfigurationScreenFactory()
+    {
+        return new DefaultConfigurationScreenFactory<>(MDEXModInstance.CONFIG);
     }
 
     @Override
-    public String GetModId() {
-        return MDEXModInstance.MOD_ID;
-    }
+    public String GetModId() { return MDEXModInstance.MOD_ID; }
 
     @Override
-    public void Dispose() {
-
-    }
+    public void Dispose() { }
 }

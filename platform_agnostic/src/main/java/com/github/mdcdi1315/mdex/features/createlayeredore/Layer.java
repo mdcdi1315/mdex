@@ -16,27 +16,26 @@ package com.github.mdcdi1315.mdex.features.createlayeredore;
  */
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
+import com.github.mdcdi1315.basemodslib.utils.random.weighted.IWeightedEntry;
+import com.github.mdcdi1315.basemodslib.utils.random.weighted.WeightedRandomUtils;
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
-import com.github.mdcdi1315.mdex.util.weight.Weight;
 import com.github.mdcdi1315.mdex.dco_logic.Compilable;
-import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
 import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
 
 import com.mojang.serialization.Codec;
 
 import net.minecraft.util.RandomSource;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 public final class Layer
-    implements Compilable , IWeightedEntry
+    implements Compilable, IWeightedEntry
 {
-
     public List<List<SingleTargetBlockState>> targets;
     public final short min_size , max_size;
-    public Weight weight;
+    public int weight;
 
     public static Codec<Layer> GetCodec()
     {
@@ -45,12 +44,13 @@ public final class Layer
                 SingleTargetBlockState.GetListCodec().listOf().fieldOf("targets").forGetter((l) -> l.targets),
                 SIZE_CODEC.fieldOf("min_size").forGetter((l) -> l.min_size),
                 SIZE_CODEC.fieldOf("max_size").forGetter((l) -> l.max_size),
-                Weight.CODEC.fieldOf("weight").forGetter((l) -> l.weight),
+                WeightedRandomUtils.GetRecommendedRecordFieldConfig(),
                 Layer::new
         );
     }
 
-    public Layer(List<List<SingleTargetBlockState>> targets, short minSize, short maxSize, Weight weight) {
+    public Layer(List<List<SingleTargetBlockState>> targets, short minSize, short maxSize, int weight)
+    {
         this.targets = new ArrayList<>(targets.size());
         for (List<SingleTargetBlockState> ts : targets) {
             this.targets.add(new ArrayList<>(ts));
@@ -61,7 +61,7 @@ public final class Layer
     }
 
     @Override // from IWeightedEntry interface
-    public Weight getWeight() {
+    public int GetWeight() {
         return weight;
     }
 
@@ -107,14 +107,8 @@ public final class Layer
         }
     }
 
-    private void Cleanup()
-    {
-        weight = null;
-        targets = null;
-    }
+    private void Cleanup() { targets = null; }
 
     @Override
-    public boolean IsCompiled() {
-        return targets != null;
-    }
+    public boolean IsCompiled() { return targets != null; }
 }

@@ -3,7 +3,6 @@ package com.github.mdcdi1315.mdex.loottable;
 import com.github.mdcdi1315.basemodslib.utils.Extensions;
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
-import com.github.mdcdi1315.mdex.util.weight.Weight;
 
 import com.google.common.collect.ImmutableList;
 
@@ -32,7 +31,8 @@ public final class OptionalMDEXLootTableEntry
     private ResourceKey<LootTable> loot_table;
     private Holder.Reference<LootTable> actual_object;
 
-    public OptionalMDEXLootTableEntry(List<LootItemCondition> conditions, Weight weight, int quality, ResourceLocation loot_table) {
+    public OptionalMDEXLootTableEntry(List<LootItemCondition> conditions, int weight, int quality, ResourceLocation loot_table)
+    {
         super(conditions, weight, quality);
         actual_object = null;
         this.loot_table = ResourceKey.create(Registries.LOOT_TABLE, loot_table);
@@ -71,11 +71,11 @@ public final class OptionalMDEXLootTableEntry
         private final ItemStack stack;
         private final float weight, quality;
 
-        public LP_ENTRY(ItemStack stack, Weight weight, int quality)
+        public LP_ENTRY(ItemStack stack, int weight, int quality)
         {
             this.stack = stack;
+            this.weight = weight;
             this.quality = quality;
-            this.weight = weight.getValue();
         }
 
         @Override

@@ -38,10 +38,10 @@ public final class BiomeSpawnsModifier
         // Assume compiled from the caller
         public Entry(BiomeEntitySpawnEntry e)
         {
-            Entity = e.Entity.Entity;
+            weight = e.weight;
             min = e.min_inclusive;
             max = e.max_inclusive;
-            weight = e.weight.getValue();
+            Entity = e.Entity.Entity;
             Costs = e.costs.orElse(null);
         }
     }

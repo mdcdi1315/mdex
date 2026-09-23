@@ -1,9 +1,7 @@
 package com.github.mdcdi1315.mdex.loottable;
 
-import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 import com.github.mdcdi1315.basemodslib.utils.Extensions;
-
-import com.github.mdcdi1315.mdex.util.weight.Weight;
+import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -28,7 +26,7 @@ public final class OptionalMDEXLootTableItemEntry
     private final Item item;
     private final int random_count_bound;
 
-    public OptionalMDEXLootTableItemEntry(List<LootItemCondition> conditions, Weight weight, int quality, List<LootItemFunction> functions, int additional_random_count, ResourceLocation item_location)
+    public OptionalMDEXLootTableItemEntry(List<LootItemCondition> conditions, int weight, int quality, List<LootItemFunction> functions, int additional_random_count, ResourceLocation item_location)
     {
         super(conditions, weight, quality, functions);
         random_count_bound = additional_random_count;
@@ -56,13 +54,13 @@ public final class OptionalMDEXLootTableItemEntry
         private final float quality;
         private final List<LootItemFunction> functions;
 
-        public LP_ENTRY(Weight weight, Item item, int quality, int additional_random_count, List<LootItemFunction> functions)
+        public LP_ENTRY(int weight, Item item, int quality, int additional_random_count, List<LootItemFunction> functions)
         {
             this.item = item;
-            wt = weight.getValue();
+            this.wt = weight;
             this.quality = quality;
             this.functions = functions;
-            rc = additional_random_count;
+            this.rc = additional_random_count;
         }
 
         @Override

@@ -1,3 +1,7 @@
-### Version 2.2.7:
+### Version 2.2.8:
 
--> Fix double teleportation issue in single-player worlds.
+-> Fix advancements
+
+-> Clean up code
+
+-> Update BML Dependency to 1.0.38

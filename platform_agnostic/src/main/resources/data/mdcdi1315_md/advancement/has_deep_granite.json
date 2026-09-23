@@ -6,7 +6,7 @@
 			"conditions": {
 				"items": [
 					{
-						"item": "mdex:granite"
+						"items": "mdex:granite"
 					}
 				]
 			}

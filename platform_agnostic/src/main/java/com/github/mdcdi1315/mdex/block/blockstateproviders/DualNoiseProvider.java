@@ -1,6 +1,8 @@
 package com.github.mdcdi1315.mdex.block.blockstateproviders;
 
 import com.github.mdcdi1315.basemodslib.utils.Extensions;
+
+import com.github.mdcdi1315.mdex.util.WrappedRandomSource;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 import com.github.mdcdi1315.mdex.util.IntegerInclusiveRange;
 
@@ -31,7 +33,7 @@ public class DualNoiseProvider
 
     @Override
     public BlockState GetBlockState(BlockStateProviderContext context) {
-        var random = context.source();
+        var random = ((WrappedRandomSource)context.source()).GetOriginal();
         var pos = context.position();
         int i = (int) Math.round(Extensions.ClampedMapToRange(this.getSlowNoiseValue(random, pos), -1.0, 1.0, this.variety.GetSelectedMinInclusiveValue(), (this.variety.GetSelectedMaxInclusiveValue() + 1)));
         List<BlockState> list = Lists.newArrayListWithCapacity(i);

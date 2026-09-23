@@ -3,7 +3,10 @@ package com.github.mdcdi1315.mdex.block.blockstateproviders;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.DisallowNull;
 
+import com.github.mdcdi1315.basemodslib.utils.random.IRandomSource;
+
 import com.github.mdcdi1315.mdex.block.BlockUtils;
+import com.github.mdcdi1315.mdex.util.WrappedRandomSource;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
@@ -15,16 +18,14 @@ import net.minecraft.world.level.block.state.BlockState;
  * Apart from providing the required data for running the context,
  * it defines also and some utility methods.
  * @param getter The {@link BlockGetter} instance to read block states from. Not all block state providers do need this. See their doc for more info.
- * @param source The {@link RandomSource} instance to use.
+ * @param source The {@link IRandomSource} instance to use.
  * @param position The {@link BlockPos} that represents the requested position.
  */
-public record BlockStateProviderContext(@MaybeNull BlockGetter getter , @DisallowNull RandomSource source , @DisallowNull BlockPos position)
+public record BlockStateProviderContext(@MaybeNull BlockGetter getter , @DisallowNull IRandomSource source , @DisallowNull BlockPos position)
 {
     public BlockStateProviderContext(BlockGetter getter, RandomSource source , BlockPos position)
     {
-        this.getter = getter;
-        this.source = source;
-        this.position = position;
+        this(getter, new WrappedRandomSource(source), position);
     }
 
     public BlockStateProviderContext(RandomSource source , BlockPos position)

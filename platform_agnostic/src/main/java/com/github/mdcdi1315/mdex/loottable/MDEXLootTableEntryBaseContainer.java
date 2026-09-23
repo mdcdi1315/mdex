@@ -1,9 +1,8 @@
 package com.github.mdcdi1315.mdex.loottable;
 
-import com.github.mdcdi1315.basemodslib.codecs.ListCodec;
 import com.github.mdcdi1315.DotNetLayer.System.StringUtils;
 
-import com.github.mdcdi1315.mdex.util.weight.Weight;
+import com.github.mdcdi1315.basemodslib.codecs.ListCodec;
 
 import com.mojang.datafixers.Products;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -20,7 +19,7 @@ public abstract class MDEXLootTableEntryBaseContainer
 {
     protected final List<LootItemFunction> functions;
 
-    protected MDEXLootTableEntryBaseContainer(List<LootItemCondition> conditions, Weight weight, int quality, List<LootItemFunction> functions)
+    protected MDEXLootTableEntryBaseContainer(List<LootItemCondition> conditions, int weight, int quality, List<LootItemFunction> functions)
     {
         super(conditions, weight, quality);
         this.functions = functions;
@@ -37,7 +36,7 @@ public abstract class MDEXLootTableEntryBaseContainer
         }
     }
 
-    protected static <T extends MDEXLootTableEntryBaseContainer> Products.P4<RecordCodecBuilder.Mu<T>, List<LootItemCondition>, Weight, Integer, List<LootItemFunction>> CommonEntryFields(RecordCodecBuilder.Instance<T> instance)
+    protected static <T extends MDEXLootTableEntryBaseContainer> Products.P4<RecordCodecBuilder.Mu<T>, List<LootItemCondition>, Integer, Integer, List<LootItemFunction>> CommonEntryFields(RecordCodecBuilder.Instance<T> instance)
     {
         return CommonBaseEntryFields(instance).and(
                 new ListCodec<>(LootItemFunctions.ROOT_CODEC).optionalFieldOf("functions", List.of()).forGetter((T i) -> i.functions)

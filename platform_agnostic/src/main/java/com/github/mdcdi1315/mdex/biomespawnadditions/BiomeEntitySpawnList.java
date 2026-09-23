@@ -4,6 +4,8 @@ import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
 
 import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
 
+import com.github.mdcdi1315.basemodslib.codecs.ListCodec;
+
 import com.mojang.serialization.Codec;
 
 import net.minecraft.world.entity.MobCategory;
@@ -17,7 +19,7 @@ public record BiomeEntitySpawnList(MobCategory category, List<BiomeEntitySpawnEn
     {
         return CodecUtils.CreateCodecDirect(
                 MobCategory.CODEC.fieldOf("category").forGetter(BiomeEntitySpawnList::category),
-                BiomeEntitySpawnEntry.GetCodec().listOf().fieldOf("entities").forGetter(BiomeEntitySpawnList::entries),
+                new ListCodec<>(BiomeEntitySpawnEntry.GetCodec()).fieldOf("entities").forGetter(BiomeEntitySpawnList::entries),
                 BiomeEntitySpawnList::new
         );
     }

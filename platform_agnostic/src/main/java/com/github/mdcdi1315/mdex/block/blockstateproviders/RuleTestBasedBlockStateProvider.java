@@ -6,6 +6,7 @@ import com.github.mdcdi1315.mdex.dco_logic.DCOUtils;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 import com.github.mdcdi1315.mdex.util.SingleTargetBlockState;
 
+import com.github.mdcdi1315.mdex.util.WrappedRandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public final class RuleTestBasedBlockStateProvider
     {
         for (var t : RuleTargets)
         {
-            if (t.Target.test(context.GetStateAtPosition() , context.source())) {
+            if (t.Target.test(context.GetStateAtPosition() , ((WrappedRandomSource)context.source()).GetOriginal())) {
                 return t.State.BlockState;
             }
         }

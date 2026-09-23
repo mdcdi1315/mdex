@@ -4,9 +4,10 @@ import com.github.mdcdi1315.DotNetLayer.System.IDisposable;
 import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
+import com.github.mdcdi1315.basemodslib.utils.random.weighted.IWeightedEntry;
+import com.github.mdcdi1315.basemodslib.utils.random.weighted.WeightedRandomUtils;
 
 import com.github.mdcdi1315.mdex.util.SpawnCost;
-import com.github.mdcdi1315.mdex.util.weight.Weight;
 import com.github.mdcdi1315.mdex.dco_logic.Compilable;
 import com.github.mdcdi1315.mdex.util.CompilableEntityType;
 
@@ -15,29 +16,32 @@ import com.mojang.serialization.Codec;
 import java.util.Optional;
 
 public final class BiomeEntitySpawnEntry
-    implements Compilable , IDisposable
+    implements Compilable, IWeightedEntry, IDisposable
 {
-    public CompilableEntityType Entity;
+    public int weight;
     public byte min_inclusive;
     public byte max_inclusive;
     // This field may be undefined.
     // If such case, the modifier will not apply spawn costs for this entry.
     public Optional<SpawnCost> costs;
-    public Weight weight;
+    public CompilableEntityType Entity;
 
     @Override
-    public void Compile() {
+    public void Compile()
+    {
         try {
             Entity.Compile();
         } catch (Exception e) {
             DestroyData();
             return;
         }
-        if (!Entity.IsCompiled()) {
+        if (!Entity.IsCompiled())
+        {
             DestroyData();
             return;
         }
-        if (max_inclusive < min_inclusive) {
+        if (max_inclusive < min_inclusive)
+        {
             DestroyData();
             throw new InvalidOperationException(
                     String.format(
@@ -55,20 +59,15 @@ public final class BiomeEntitySpawnEntry
     {
         Entity = null;
         costs = null;
-        weight = null; // We can null out the weight value as well. Wondering why did not included it.
     }
 
     @Override
-    public boolean IsCompiled() {
-        return Entity != null;
-    }
+    public boolean IsCompiled() { return Entity != null; }
 
     @Override
-    public void Dispose() {
-        DestroyData();
-    }
+    public void Dispose() { DestroyData(); }
 
-    private BiomeEntitySpawnEntry(CompilableEntityType ent , byte min , byte max , Optional<SpawnCost> c , Weight w)
+    private BiomeEntitySpawnEntry(CompilableEntityType ent , byte min , byte max , Optional<SpawnCost> c , int w)
     {
         Entity = ent;
         min_inclusive = min;
@@ -85,8 +84,11 @@ public final class BiomeEntitySpawnEntry
                 countcodec.fieldOf("min_count").forGetter((c) -> c.min_inclusive),
                 countcodec.fieldOf("max_count").forGetter((c) -> c.max_inclusive),
                 SpawnCost.GetCodec().optionalFieldOf("spawn_costs").forGetter((c) -> c.costs),
-                Weight.CODEC.fieldOf("weight").forGetter((c) -> c.weight),
+                WeightedRandomUtils.GetRecommendedRecordFieldConfig(),
                 BiomeEntitySpawnEntry::new
         );
     }
+
+    @Override
+    public int GetWeight() { return weight; }
 }

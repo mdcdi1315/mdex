@@ -5,8 +5,11 @@ import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNul
 
 import com.github.mdcdi1315.basemodslib.BaseModsLib;
 import com.github.mdcdi1315.basemodslib.utils.Extensions;
+import com.github.mdcdi1315.basemodslib.utils.function.FunctionManipulations;
+import com.github.mdcdi1315.basemodslib.utils.random.weighted.WeightedRandomLookup;
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
+import com.github.mdcdi1315.mdex.util.WrappedRandomSource;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.BlockPos;
@@ -39,7 +42,7 @@ public final class MDEXAggressiveSpawnerImpl
         ArgumentNullException.ThrowIfNull(spawners, "spawners");
         this.spawners = spawners;
         mob_cap_values = new EnumMap<>(MobCategory.class);
-        player_selector_predicate = BaseModsLib.IsDevelopmentEnvironment() ? new DevPredicate() : new SurvivalModePredicate();
+        player_selector_predicate = BaseModsLib.IsDevelopmentEnvironment() ? FunctionManipulations.AlwaysTrue() : new SurvivalModePredicate();
     }
 
     @Override
@@ -132,22 +135,28 @@ public final class MDEXAggressiveSpawnerImpl
 
     private int SpawnCode(ServerLevel level, ServerPlayer p, AggressiveSpawnerEntryList lst)
     {
-        Optional<AggressiveSpawnerEntry> e;
         int spawned = 0;
-        boolean friendly = false;
         BlockPos position;
-        for (AggressiveSpawnerEntry g : lst.Entries.GetRandomWeightedEntriesIterable(level.random, Extensions.Ceiling(level.random.nextFloat() * 4.0F)))
+        boolean friendly = false;
+        Optional<AggressiveSpawnerEntry> e;
+        int rolls = Extensions.Ceiling(level.random.nextFloat() * 4.0F);
+        var lookup = new WeightedRandomLookup<>(new WrappedRandomSource(level.random), lst.Entries);
+        for (int I = 0; I < rolls; I++)
         {
-            EntityType<?> t = g.Entity.Entity;
-            if (friendly = t.getCategory().isFriendly()) {
-                MDEXModInstance.LOGGER.warn("MDEXAggressiveSpawnerImpl: Friendly mobs are not allowed to be spawned with the aggressive spawner! Entity: {}", BuiltInRegistries.ENTITY_TYPE.getKey(t));
-                continue;
+            e = lookup.GetRandomElement();
+            if (e.isPresent()) {
+                EntityType<?> t = e.get().Entity.Entity;
+                if (friendly = t.getCategory().isFriendly()) {
+                    MDEXModInstance.LOGGER.warn("MDEXAggressiveSpawnerImpl: Friendly mobs are not allowed to be spawned with the aggressive spawner! Entity: {}", BuiltInRegistries.ENTITY_TYPE.getKey(t));
+                    continue;
+                }
+                position = GetRandomPositionWithin(level.random, p.blockPosition());
+                spawned += SpawnDirect(level, t, position, lst.Category, e.get().GetRandomNumberOfMobsToSpawn(level.random));
             }
-            position = GetRandomPositionWithin(level.random, p.blockPosition());
-            spawned += SpawnDirect(level, t, position, lst.Category, g.GetRandomNumberOfMobsToSpawn(level.random));
         }
-        if (!friendly && spawned == 0) {
-            e = lst.Entries.GetRandom(level.random);
+        if (!friendly && spawned == 0)
+        {
+            e = lookup.GetRandomElement();
             if (e.isPresent()) {
                 position = GetRandomPositionWithin(level.random, BlockPos.containing(p.pick(20f, 0f, false).getLocation()));
                 spawned += SpawnDirect(level, e.get().Entity.Entity, position, lst.Category, e.get().GetRandomNumberOfMobsToSpawn(level.random));
@@ -197,13 +206,6 @@ public final class MDEXAggressiveSpawnerImpl
                 return current_value + integer;
             }
         }
-    }
-
-    private record DevPredicate()
-        implements Predicate<ServerPlayer>
-    {
-        @Override
-        public boolean test(ServerPlayer player) { return true; }
     }
 
     private record SurvivalModePredicate()

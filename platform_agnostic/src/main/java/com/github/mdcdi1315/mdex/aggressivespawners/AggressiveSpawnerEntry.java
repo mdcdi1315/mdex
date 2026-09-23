@@ -1,21 +1,22 @@
 package com.github.mdcdi1315.mdex.aggressivespawners;
 
 import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
-import com.github.mdcdi1315.mdex.MDEXModInstance;
+import com.github.mdcdi1315.basemodslib.utils.random.weighted.IWeightedEntry;
+import com.github.mdcdi1315.basemodslib.utils.random.weighted.WeightedRandomUtils;
 
-import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
-import com.github.mdcdi1315.mdex.util.weight.Weight;
+import com.github.mdcdi1315.mdex.MDEXModInstance;
 import com.github.mdcdi1315.mdex.dco_logic.Compilable;
 import com.github.mdcdi1315.mdex.util.CompilableEntityType;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.core.registries.BuiltInRegistries;
+
 import net.minecraft.util.RandomSource;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public final class AggressiveSpawnerEntry
         implements Compilable, IWeightedEntry
 {
-    public Weight weight;
+    public int weight;
     public byte min_inclusive;
     public byte max_inclusive;
     public CompilableEntityType Entity;
@@ -24,7 +25,7 @@ public final class AggressiveSpawnerEntry
     {
         var countcodec = CodecUtils.ByteRange(1 , 127);
         return CodecUtils.CreateCodecDirect(
-                Weight.CODEC.fieldOf("weight").forGetter((AggressiveSpawnerEntry e) -> e.weight),
+                WeightedRandomUtils.GetRecommendedRecordFieldConfig(),
                 countcodec.fieldOf("min_inclusive").forGetter((AggressiveSpawnerEntry e) -> e.min_inclusive),
                 countcodec.fieldOf("max_inclusive").forGetter((AggressiveSpawnerEntry e) -> e.max_inclusive),
                 CompilableEntityType.GetCodec().fieldOf("entity").forGetter((AggressiveSpawnerEntry e) -> e.Entity),
@@ -32,7 +33,7 @@ public final class AggressiveSpawnerEntry
         );
     }
 
-    public AggressiveSpawnerEntry(Weight w, byte min_inclusive, byte max_inclusive, CompilableEntityType ent)
+    public AggressiveSpawnerEntry(int w, byte min_inclusive, byte max_inclusive, CompilableEntityType ent)
     {
         weight = w;
         Entity = ent;
@@ -49,7 +50,6 @@ public final class AggressiveSpawnerEntry
     private void DestroyData()
     {
         Entity = null;
-        weight = null; // We can null out the weight value as well. Wondering why did not included it.
     }
 
     @Override
@@ -75,5 +75,5 @@ public final class AggressiveSpawnerEntry
     }
 
     @Override
-    public Weight getWeight() { return weight; }
+    public int GetWeight() { return weight; }
 }

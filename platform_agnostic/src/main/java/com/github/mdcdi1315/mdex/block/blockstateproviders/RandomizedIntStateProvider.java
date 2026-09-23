@@ -4,6 +4,7 @@ import com.github.mdcdi1315.DotNetLayer.System.ArgumentException;
 import com.github.mdcdi1315.DotNetLayer.System.InvalidOperationException;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 
+import com.github.mdcdi1315.mdex.util.WrappedRandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -42,7 +43,7 @@ public final class RandomizedIntStateProvider
             ValidateProperty();
         }
 
-        return blockstate.setValue(this.property, this.values.sample(context.source()));
+        return blockstate.setValue(this.property, this.values.sample(((WrappedRandomSource)context.source()).GetOriginal()));
     }
 
     private static IntegerProperty findProperty(BlockState state, String propertyName)

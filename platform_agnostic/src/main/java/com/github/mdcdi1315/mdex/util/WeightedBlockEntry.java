@@ -1,12 +1,10 @@
 package com.github.mdcdi1315.mdex.util;
 
-import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.NotNull;
+import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
+import com.github.mdcdi1315.basemodslib.utils.random.weighted.IWeightedEntry;
 
 import com.github.mdcdi1315.mdex.MDEXModInstance;
-import com.github.mdcdi1315.mdex.util.weight.Weight;
 import com.github.mdcdi1315.mdex.dco_logic.Compilable;
-import com.github.mdcdi1315.basemodslib.codecs.CodecUtils;
-import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
 
 import com.mojang.serialization.Codec;
 
@@ -21,15 +19,16 @@ public class WeightedBlockEntry
 {
     private ResourceLocation BlockID;
     public Block Block;
-    private final Weight weight;
+    private final int weight;
 
-    public WeightedBlockEntry(ResourceLocation loc , Weight t)
+    public WeightedBlockEntry(ResourceLocation loc , int t)
     {
         BlockID = loc;
         weight = t;
         this.Block = null;
     }
 
+    @Override
     public void Compile()
     {
         Optional<Block> g = BuiltInRegistries.BLOCK.getOptional(BlockID);
@@ -41,23 +40,18 @@ public class WeightedBlockEntry
         BlockID = null;
     }
 
-    public boolean IsCompiled()
-    {
-        return this.Block != null;
-    }
-
     public static Codec<WeightedBlockEntry> GetCodec()
     {
         return CodecUtils.CreateCodecDirect(
                 ResourceLocation.CODEC.fieldOf("id").forGetter((WeightedBlockEntry e) -> e.BlockID),
-                Weight.CODEC.optionalFieldOf("weight" , Weight.ONE).forGetter((WeightedBlockEntry e) -> e.weight),
+                CodecUtils.ZERO_OR_POSITIVE_INTEGER.optionalFieldOf("weight", 1).forGetter((WeightedBlockEntry e) -> e.weight),
                 WeightedBlockEntry::new
         );
     }
 
     @Override
-    @NotNull
-    public Weight getWeight() {
-        return weight;
-    }
+    public int GetWeight() { return weight; }
+
+    @Override
+    public boolean IsCompiled() { return this.Block != null; }
 }

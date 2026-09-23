@@ -13,8 +13,8 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.entity.MobCategory;
 import net.minecraft.util.random.WeightedList;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 
 import java.util.Map;
@@ -39,10 +39,10 @@ public final class BiomeSpawnsModifier
         // Assume compiled from the caller
         public Entry(BiomeEntitySpawnEntry e)
         {
-            Entity = e.Entity.Entity;
+            weight = e.weight;
             min = e.min_inclusive;
             max = e.max_inclusive;
-            weight = e.weight.getValue();
+            Entity = e.Entity.Entity;
             Costs = e.costs.orElse(null);
         }
     }

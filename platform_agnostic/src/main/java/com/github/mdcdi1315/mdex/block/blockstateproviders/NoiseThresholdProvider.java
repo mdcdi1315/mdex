@@ -4,6 +4,7 @@ import com.github.mdcdi1315.mdex.dco_logic.DCOUtils;
 import com.github.mdcdi1315.basemodslib.utils.Extensions;
 import com.github.mdcdi1315.mdex.util.CompilableBlockState;
 
+import com.github.mdcdi1315.mdex.util.WrappedRandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public final class NoiseThresholdProvider
 
     @Override
     public BlockState GetBlockState(BlockStateProviderContext context) {
-        var random = context.source();
+        var random = ((WrappedRandomSource)context.source()).GetOriginal();
         if (this.GetNoiseValue(random , context.position(), Data.scale()) < Threshold) {
             return Extensions.SelectRandomFromList(LowStates , random).BlockState;
         } else {

@@ -3,11 +3,13 @@ package com.github.mdcdi1315.mdex.features;
 import com.github.mdcdi1315.DotNetLayer.System.*;
 import com.github.mdcdi1315.DotNetLayer.System.Diagnostics.CodeAnalysis.MaybeNull;
 
+import com.github.mdcdi1315.basemodslib.utils.random.RandomUtils;
+import com.github.mdcdi1315.basemodslib.utils.random.IRandomLookup;
+import com.github.mdcdi1315.basemodslib.utils.collections.CollectionManipulations;
+
 import com.github.mdcdi1315.mdex.MDEXModInstance;
 import com.github.mdcdi1315.mdex.util.RectAreaIterable;
-import com.github.mdcdi1315.mdex.util.weight.WeightUtils;
 import com.github.mdcdi1315.mdex.util.WeightedEntityEntry;
-import com.github.mdcdi1315.mdex.util.weight.IWeightedEntry;
 import com.github.mdcdi1315.mdex.features.config.ModdedFeatureConfiguration;
 
 import net.minecraft.tags.TagKey;
@@ -18,8 +20,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.AirBlock;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -27,8 +29,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
-import java.lang.Exception;
 import java.util.List;
+import java.lang.Exception;
 
 @SuppressWarnings("unused")
 public final class FeaturePlacementUtils
@@ -220,12 +222,6 @@ public final class FeaturePlacementUtils
         return oldState.predicate(level.getBlockState(pos)) && level.setBlock(pos, state, 2);
     }
 
-    public static @MaybeNull <T extends IWeightedEntry> T SampleWeightedFromRandomSource(List<T> list , RandomSource rs)
-    {
-        // TODO: Optimize weighted calculations at some moment.
-        return WeightUtils.GetRandomItem(rs , list).orElse(null);
-    }
-
     public static void TrySpawnEntityAtChunkGenPhase(ServerLevelAccessor level , BlockPos finalpos , EntityType<?> type)
             throws ArgumentNullException
     {
@@ -275,28 +271,24 @@ public final class FeaturePlacementUtils
      * The entities are placed on the world using the mob spawn type {@link EntitySpawnReason#CHUNK_GENERATION}.
      * @param level The {@link ServerLevelAccessor} object to apply the entities to.
      * @param basepos The block position where to place the entities to.
-     * @param rs The {@link RandomSource} instance to use for randomization.
      * @param entityData A weighted list of entities to pick from.
      * @param maxtries Maximum spawn attempts to perform after an entity has been randomly picked out.
      * @throws ArgumentNullException <strong>level</strong> or <strong>basepos</strong> or <strong>entityData</strong> is <strong>null</strong>.
      * @throws ArgumentOutOfRangeException <strong>maxtries</strong> was negative.
      */
-    public static void MakeTriggeredSpawns(ServerLevelAccessor level , BlockPos basepos , @MaybeNull RandomSource rs , List<WeightedEntityEntry> entityData , int maxtries)
+    public static void MakeTriggeredSpawns(ServerLevelAccessor level, BlockPos basepos, IRandomLookup<WeightedEntityEntry> entityData, int maxtries)
             throws ArgumentNullException , ArgumentOutOfRangeException
     {
         ArgumentNullException.ThrowIfNull(level , "level");
         ArgumentNullException.ThrowIfNull(basepos , "basepos");
         ArgumentNullException.ThrowIfNull(entityData , "entityData");
-        if (rs == null) {
-            rs = level.getRandom();
-        }
         if (maxtries < 0) {
             throw new ArgumentOutOfRangeException("maxtries" , "Maximum tries must not be a negative number!!!");
         }
-        if (entityData.isEmpty()) { return; }
-        var et = WeightUtils.GetRandomItem(rs, entityData);
+        if (CollectionManipulations.IsEmpty(entityData.GetCollection())) { return; }
+        var et = entityData.GetRandomElement();
         if (et.isPresent() == false) { return; }
-        int mt = rs.nextIntBetweenInclusive(0 , maxtries);
+        int mt = RandomUtils.NextIntInRange(entityData.GetRandomSource(), 0, maxtries);
         boolean flag = false;
         BlockPos finalpos;
         var entitytype = et.get();
@@ -310,7 +302,7 @@ public final class FeaturePlacementUtils
                 finalpos = basepos.offset(1 , 0 , 0);
                 flag = true;
             }
-            TrySpawnEntityAtChunkGenPhaseInternal(level, finalpos , entitytype.Entity);
+            TrySpawnEntityAtChunkGenPhaseInternal(level, finalpos, entitytype.Entity);
         }
     }
 
